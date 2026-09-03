@@ -1,0 +1,101 @@
+@import "tailwindcss";
+
+/* Tokens — ver docs/05-DESIGN-SYSTEM.md y el handoff de Claude Design
+   (UI Mockups sistema facturación/design_handoff_doctor_motor/README.md).
+   PWA oscura fija, sin conmutador — mismos valores que el handoff. */
+@theme {
+  /* Único breakpoint del handoff: usar `md:` en todo el código para que
+     signifique siempre 900px (no el 768px por defecto de Tailwind). */
+  --breakpoint-md: 900px;
+
+  --color-lime-50: #F4FCE4;   --color-lime-500: #8FD62E;
+  --color-lime-100: #E7F9C6;  --color-lime-600: #74B31F;
+  --color-lime-200: #D0F395;  --color-lime-700: #588718;
+  --color-lime-300: #B6EC5E;  --color-lime-800: #446618;
+  --color-lime-400: #9FE03A;  --color-lime-900: #394F1A;
+  --color-lime-950: #1D2B08;
+
+  --color-lime-ink: #10130A;
+  --color-lime-txt: #B6EC5E;
+
+  --color-amb: #E8B23A;
+  --color-amb-txt: #F0C55C;
+  --color-amb-bg: rgba(232,178,58,.12);
+
+  --color-cor: #E8654B;
+  --color-cor-txt: #F09A86;
+  --color-cor-bg: rgba(232,101,75,.12);
+
+  --color-cya: #4FA9C9;
+  --color-cya-txt: #8FCBE0;
+  --color-cya-bg: rgba(79,169,201,.12);
+
+  --color-app-bg: #0B0D10;
+  --color-app-surface: #14171C;
+  --color-app-surface-2: #1B1F26;
+  --color-app-surface-3: #22272F;
+  --color-app-text: #E9EDF0;
+  --color-app-muted: rgba(233,237,240,.56);
+  --color-app-faint: rgba(233,237,240,.40);
+  --color-app-line: rgba(233,237,240,.10);
+  --color-app-line-2: rgba(233,237,240,.06);
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, Menlo, monospace;
+
+  --radius-card: 0.875rem;   /* 14px, uso genérico previo */
+  --radius-pill: 99px;
+  --radius-control: 12px;
+  --radius-kanban: 13px;
+  --radius-section: 16px;
+  --radius-hero: 18px;
+  --radius-sheet: 20px;
+  --radius-logo: 22px;
+
+  --shadow-card: 0 1px 2px rgba(0,0,0,.4), 0 14px 34px -16px rgba(0,0,0,.6);
+  --shadow-cta-lime: 0 12px 26px -12px rgba(143,214,46,.8);
+  --shadow-cta-lime-lg: 0 16px 34px -16px rgba(143,214,46,.85);
+  --shadow-sheet: 0 -20px 50px -20px rgba(0,0,0,.5);
+  --shadow-toast: 0 14px 34px -12px rgba(0,0,0,.6);
+
+  --pad-page: 18px;
+  --content-max: 1180px;
+}
+
+@media (min-width: 900px) {
+  :root {
+    --pad-page: 28px;
+  }
+}
+
+:root {
+  color-scheme: dark;
+}
+
+@keyframes dmUp    { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes dmFade  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes dmIn    { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes dmPulse { 0%, 100% { opacity: .45; transform: scale(1); } 50% { opacity: .1; transform: scale(1.9); } }
+
+.dm-in { animation: dmIn .35s ease both; }
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--color-app-bg);
+  color: var(--color-app-text);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+#root {
+  min-height: 100svh;
+}
+
+/* Kanban / listas con scroll horizontal sin scrollbar visible */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
