@@ -34,4 +34,9 @@ class CajaCierre extends Model
     {
         return $this->hasMany(Pago::class, 'caja_cierre_id');
     }
+
+    public static function abiertaDe(int $cajeroId): ?self
+    {
+        return static::where('cajero_id', $cajeroId)->where('estado', 'abierta')->first();
+    }
 }

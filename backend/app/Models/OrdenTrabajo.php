@@ -84,4 +84,18 @@ class OrdenTrabajo extends Model
     {
         return $this->hasMany(CostoDirecto::class, 'orden_trabajo_id');
     }
+
+    public static function generarCodigo(): string
+    {
+        $anio = now()->year;
+        $ultimo = static::withTrashed()
+            ->where('codigo', 'like', "OT-{$anio}-%")
+            ->lockForUpdate()
+            ->orderByDesc('id')
+            ->value('codigo');
+
+        $siguiente = $ultimo ? ((int) substr($ultimo, -4)) + 1 : 1;
+
+        return sprintf('OT-%d-%04d', $anio, $siguiente);
+    }
 }

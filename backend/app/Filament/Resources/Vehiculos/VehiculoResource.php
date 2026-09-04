@@ -5,7 +5,9 @@ namespace App\Filament\Resources\Vehiculos;
 use App\Filament\Resources\Vehiculos\Pages\CreateVehiculo;
 use App\Filament\Resources\Vehiculos\Pages\EditVehiculo;
 use App\Filament\Resources\Vehiculos\Pages\ListVehiculos;
+use App\Filament\Resources\Vehiculos\Pages\ViewVehiculo;
 use App\Filament\Resources\Vehiculos\Schemas\VehiculoForm;
+use App\Filament\Resources\Vehiculos\Schemas\VehiculoInfolist;
 use App\Filament\Resources\Vehiculos\Tables\VehiculosTable;
 use App\Models\Vehiculo;
 use BackedEnum;
@@ -38,6 +40,11 @@ class VehiculoResource extends Resource
         return VehiculosTable::configure($table);
     }
 
+    public static function infolist(Schema $schema): Schema
+    {
+        return VehiculoInfolist::configure($schema);
+    }
+
     public static function getRelations(): array
     {
         return [
@@ -50,6 +57,7 @@ class VehiculoResource extends Resource
         return [
             'index' => ListVehiculos::route('/'),
             'create' => CreateVehiculo::route('/create'),
+            'view' => ViewVehiculo::route('/{record}'),
             'edit' => EditVehiculo::route('/{record}/edit'),
         ];
     }

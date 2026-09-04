@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Cliente;
+use App\Models\User;
 use App\Services\WhatsAppService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 class ClienteController extends Controller
 {
@@ -74,14 +77,34 @@ class ClienteController extends Controller
     }
 
     /**
-     * Envía un enlace de creación de cuenta por WhatsApp.
+     * Envía un enlace de acceso por WhatsApp — crea la cuenta de usuario del cliente si
+     * todavía no tiene una vinculada. El cliente no define contraseña (igual que el resto
+     * del login por WhatsApp): al abrir el enlace queda logueado directo en "Mi garaje".
      */
     public function invitar(Cliente $cliente): JsonResponse
     {
+        if (! $cliente->user_id) {
+            $user = User::create([
+                'nombre' => $cliente->nombre,
+                'email' => $cliente->correo,
+                'telefono_whatsapp' => $cliente->telefono_whatsapp,
+                'rol' => 'cliente',
+                'activo' => true,
+            ]);
+            $cliente->update(['user_id' => $user->id]);
+        }
+
+        $token = Str::random(48);
+        Cache::put("whatsapp_login:{$token}", $cliente->user_id, now()->addDays(7));
+
         $this->whatsApp->enviarPlantilla(
             telefono: $cliente->telefono_whatsapp,
             plantilla: 'invitacion_cuenta',
-            parametros: ['nombre' => $cliente->nombre],
+            parametros: [
+                'nombre' => $cliente->nombre,
+                'link' => config('services.frontend.url')."/auth/whatsapp/{$token}",
+            ],
+            userId: $cliente->user_id,
         );
 
         return response()->json(['message' => 'Invitación enviada por WhatsApp.']);

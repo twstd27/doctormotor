@@ -49,7 +49,7 @@ class OrdenTrabajoController extends Controller
         ]);
 
         $orden = DB::transaction(function () use ($data, $request) {
-            $data['codigo'] = $this->generarCodigo();
+            $data['codigo'] = OrdenTrabajo::generarCodigo();
             $data['recibido_por_id'] = $request->user()->id;
             $data['estado'] = 'recepcionado';
             $data['fecha_ingreso'] = now();
@@ -187,17 +187,4 @@ class OrdenTrabajoController extends Controller
         );
     }
 
-    private function generarCodigo(): string
-    {
-        $anio = now()->year;
-        $ultimo = OrdenTrabajo::withTrashed()
-            ->where('codigo', 'like', "OT-{$anio}-%")
-            ->lockForUpdate()
-            ->orderByDesc('id')
-            ->value('codigo');
-
-        $siguiente = $ultimo ? ((int) substr($ultimo, -4)) + 1 : 1;
-
-        return sprintf('OT-%d-%04d', $anio, $siguiente);
-    }
 }

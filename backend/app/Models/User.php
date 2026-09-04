@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use Database\Factories\UserFactory;
+use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasName;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,7 +17,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 #[Fillable(['nombre', 'email', 'telefono_whatsapp', 'password', 'google_id', 'rol', 'activo'])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable implements HasName
+class User extends Authenticatable implements FilamentUser, HasName
 {
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, HasRoles, Notifiable;
@@ -23,6 +25,15 @@ class User extends Authenticatable implements HasName
     public function getFilamentName(): string
     {
         return $this->nombre;
+    }
+
+    /**
+     * El panel /admin es para back-office (Super Admin, Cajero) — técnico y cliente
+     * viven en la PWA, nunca deberían poder entrar acá.
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return in_array($this->rol, ['super_admin', 'cajero'], true);
     }
 
     /**

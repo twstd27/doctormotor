@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\CajaCierre;
 use App\Models\Cliente;
 use App\Models\Pago;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -19,6 +20,7 @@ class PagoController extends Controller
             'cliente_id' => ['required', 'exists:clientes,id'],
             'tipo' => ['required', 'in:anticipo,parcial,completo,abono_deuda'],
             'metodo' => ['required', 'in:efectivo,qr,tarjeta'],
+            'tipo_documento' => ['nullable', 'in:recibo,factura'],
             'monto' => ['required', 'numeric', 'min:0.01'],
             'referencia_externa' => ['nullable', 'string', 'max:100'],
         ]);
@@ -26,6 +28,10 @@ class PagoController extends Controller
         $pago = Pago::create([
             ...$data,
             'cajero_id' => $request->user()->id,
+            // Vincula el pago al turno de caja abierto del cajero — sin esto, el cierre de
+            // caja nunca podría sumar el efectivo cobrado durante el turno (ver
+            // CajaController::cierre, que suma $caja->pagos()).
+            'caja_cierre_id' => CajaCierre::abiertaDe($request->user()->id)?->id,
             'fecha' => now(),
         ]);
 

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[Fillable([
     'orden_trabajo_id', 'cliente_id', 'cajero_id', 'caja_cierre_id', 'tipo', 'metodo',
-    'monto', 'referencia_externa', 'comprobante_url', 'fecha',
+    'tipo_documento', 'monto', 'referencia_externa', 'comprobante_url', 'fecha',
 ])]
 class Pago extends Model
 {
