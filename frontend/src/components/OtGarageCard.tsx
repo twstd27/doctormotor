@@ -1,5 +1,6 @@
-import { CaretDown, CaretUp, FilePdf } from '@phosphor-icons/react'
+import { CaretDown, CaretUp, FilePdf, Images } from '@phosphor-icons/react'
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { ESTADOS, pasoCompletado, type OrdenTrabajoCliente } from '../lib/garaje'
 
 interface OtGarageCardProps {
@@ -90,15 +91,25 @@ export default function OtGarageCard({ ot, onDescargarHistorial }: OtGarageCardP
         )}
       </div>
 
-      <button
-        type="button"
-        onClick={() => onDescargarHistorial(ot.vehiculo.id)}
-        className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-xl text-sm font-medium text-cor"
-        style={{ border: '1px solid var(--color-app-line)' }}
-      >
-        <FilePdf size={18} />
-        Descargar historial clínico
-      </button>
+      <div className="mt-3 grid grid-cols-2 gap-2">
+        <Link
+          to={`/ordenes-trabajo/${ot.id}/evidencias`}
+          className="flex h-12 items-center justify-center gap-2 rounded-xl text-sm font-medium text-cor"
+          style={{ border: '1px solid var(--color-app-line)' }}
+        >
+          <Images size={18} />
+          Ver fotos
+        </Link>
+        <button
+          type="button"
+          onClick={() => onDescargarHistorial(ot.vehiculo.id)}
+          className="flex h-12 items-center justify-center gap-2 rounded-xl text-sm font-medium text-cor"
+          style={{ border: '1px solid var(--color-app-line)' }}
+        >
+          <FilePdf size={18} />
+          Historial
+        </button>
+      </div>
     </article>
   )
 }

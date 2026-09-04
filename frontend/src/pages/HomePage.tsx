@@ -42,7 +42,6 @@ function StatCard({
 export default function HomePage() {
   const user = useAuthStore((s) => s.user)
   const hasHydrated = useAuthStore((s) => s.hasHydrated)
-  const clearAuth = useAuthStore((s) => s.clearAuth)
   const esTecnico = user?.rol !== 'cliente'
 
   const { data: ordenes = [] } = useQuery({
@@ -107,15 +106,6 @@ export default function HomePage() {
           </>
         )}
       </div>
-
-      <button
-        type="button"
-        onClick={clearAuth}
-        className="mt-6 h-12 w-full rounded-xl text-sm font-medium text-app-muted"
-        style={{ border: '1px solid var(--color-app-line)' }}
-      >
-        Cerrar sesión
-      </button>
     </AppShell>
   )
 }

@@ -1,8 +1,15 @@
-import { CaretLeft, CarProfile, House, SquaresFour } from '@phosphor-icons/react'
-import type { ReactNode } from 'react'
+import { CaretLeft, CarProfile, Garage, House, SignOut, SquaresFour } from '@phosphor-icons/react'
+import { useState, type ReactNode } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useAuthStore } from '../store/auth'
+import { useAuthStore, type AuthUser } from '../store/auth'
 import Toast from './Toast'
+
+const ROL_LABEL: Record<string, string> = {
+  super_admin: 'Super admin',
+  cajero: 'Cajero',
+  operador_tecnico: 'Operador técnico',
+  cliente: 'Cliente',
+}
 
 interface NavItem {
   to: string
@@ -21,6 +28,7 @@ const TECNICO_NAV: NavItem[] = [
 const CLIENTE_NAV: NavItem[] = [
   { to: '/', label: 'Inicio', icon: (w) => <House weight={w} size={22} /> },
   { to: '/garaje', label: 'Mi garaje', icon: (w) => <CarProfile weight={w} size={22} /> },
+  { to: '/vehiculos', label: 'Vehículos', icon: (w) => <Garage weight={w} size={22} /> },
 ]
 
 function iniciales(nombre: string) {
@@ -30,6 +38,54 @@ function iniciales(nombre: string) {
     .slice(0, 2)
     .map((p) => p[0]?.toUpperCase())
     .join('')
+}
+
+function UserMenu({ user }: { user: AuthUser }) {
+  const [abierto, setAbierto] = useState(false)
+  const clearAuth = useAuthStore((s) => s.clearAuth)
+  const navigate = useNavigate()
+
+  function salir() {
+    clearAuth()
+    navigate('/login')
+  }
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        onClick={() => setAbierto((v) => !v)}
+        aria-label="Cuenta"
+        className="flex size-9 shrink-0 items-center justify-center rounded-full bg-app-surface-3 text-sm font-semibold"
+      >
+        {iniciales(user.nombre)}
+      </button>
+
+      {abierto && (
+        <>
+          <button type="button" aria-label="Cerrar menú" onClick={() => setAbierto(false)} className="fixed inset-0 z-40 cursor-default" />
+          <div
+            className="dm-in absolute top-[calc(100%+8px)] right-0 z-50 w-[220px] overflow-hidden rounded-2xl bg-app-surface"
+            style={{ border: '1px solid var(--color-app-line)', boxShadow: 'var(--shadow-card)' }}
+          >
+            <div className="px-4 py-3">
+              <p className="truncate text-sm font-semibold">{user.nombre}</p>
+              <p className="truncate text-xs text-app-muted">{ROL_LABEL[user.rol] ?? user.rol}</p>
+            </div>
+            <button
+              type="button"
+              onClick={salir}
+              className="flex w-full items-center gap-2.5 px-4 py-3 text-left text-sm font-medium text-app-text"
+              style={{ borderTop: '1px solid var(--color-app-line)' }}
+            >
+              <SignOut size={18} />
+              Cerrar sesión
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  )
 }
 
 function Nav({ items, layout }: { items: NavItem[]; layout: 'rail' | 'tabbar' }) {
@@ -133,11 +189,7 @@ export default function AppShell({ title, subtitle, back, rightAction, children 
               <h1 className="text-[27px] leading-[1.15] font-semibold tracking-[-0.03em]">{title}</h1>
               {subtitle && <p className="mt-0.5 text-[13px] text-app-muted">{subtitle}</p>}
             </div>
-            {user && (
-              <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-app-surface-3 text-sm font-semibold">
-                {iniciales(user.nombre)}
-              </div>
-            )}
+            {user && <UserMenu user={user} />}
           </div>
         </header>
 

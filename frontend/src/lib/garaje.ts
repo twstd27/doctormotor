@@ -32,6 +32,17 @@ export async function misVehiculos(): Promise<Vehiculo[]> {
   return res.data
 }
 
+export async function descargarHistorialClinico(vehiculoId: number, token: string, apiUrl: string): Promise<void> {
+  const res = await fetch(`${apiUrl}/vehiculos/${vehiculoId}/historial/pdf`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  if (!res.ok) return
+  const blob = await res.blob()
+  const url = URL.createObjectURL(blob)
+  window.open(url, '_blank')
+  setTimeout(() => URL.revokeObjectURL(url), 60000)
+}
+
 export async function misOrdenesTrabajo(): Promise<OrdenTrabajoCliente[]> {
   const res = await api<{ data: OrdenTrabajoCliente[] }>('/me/ordenes-trabajo')
   return res.data

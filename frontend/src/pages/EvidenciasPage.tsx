@@ -1,5 +1,5 @@
 import { ArrowsClockwise, Camera, CloudArrowUp, CloudSlash, Image, Video } from '@phosphor-icons/react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import AppShell from '../components/AppShell'
 import { encolarEvidencia, evidenciasDeOt, sincronizarCola, type EvidenciaPendiente } from '../lib/offlineQueue'
@@ -15,6 +15,7 @@ interface ItemVista {
   tomadaAt: string
   tamano?: number
   subidoPor?: string
+  imagenUrl?: string
   chip: { label: string; className: string }
 }
 
@@ -40,15 +41,18 @@ export default function EvidenciasPage() {
   const { id } = useParams<{ id: string }>()
   const otId = Number(id)
   const token = useAuthStore((s) => s.token)
+  const user = useAuthStore((s) => s.user)
+  const esCliente = user?.rol === 'cliente'
   const inputRef = useRef<HTMLInputElement>(null)
 
   const [items, setItems] = useState<EvidenciaPendiente[]>([])
   const [servidor, setServidor] = useState<EvidenciaServidor[]>([])
   const [enLinea, setEnLinea] = useState(navigator.onLine)
   const [sincronizando, setSincronizando] = useState(false)
+  const [previews, setPreviews] = useState<Record<string, string>>({})
 
   const refrescar = useCallback(async () => {
-    setItems(await evidenciasDeOt(otId))
+    if (!esCliente) setItems(await evidenciasDeOt(otId))
     if (navigator.onLine) {
       try {
         setServidor(await evidenciasDeOtServidor(otId))
@@ -56,21 +60,22 @@ export default function EvidenciasPage() {
         // sin conexión o error de red — se conserva la última lista del servidor conocida
       }
     }
-  }, [otId])
+  }, [otId, esCliente])
 
   const sincronizar = useCallback(async () => {
-    if (!token || !navigator.onLine) return
+    if (esCliente || !token || !navigator.onLine) return
     setSincronizando(true)
     await sincronizarCola(token, API_URL, () => refrescar())
     await refrescar()
     setSincronizando(false)
-  }, [token, refrescar])
+  }, [token, refrescar, esCliente])
 
   useEffect(() => {
     refrescar()
   }, [refrescar])
 
   useEffect(() => {
+    if (esCliente) return
     function onOnline() {
       setEnLinea(true)
       sincronizar()
@@ -89,7 +94,18 @@ export default function EvidenciasPage() {
       window.removeEventListener('offline', onOffline)
       clearInterval(intervalo)
     }
-  }, [sincronizar])
+  }, [sincronizar, esCliente])
+
+  useEffect(() => {
+    const nuevos: Record<string, string> = {}
+    for (const item of items) {
+      if (item.tipoArchivo.startsWith('image')) nuevos[item.uuid] = URL.createObjectURL(item.archivo)
+    }
+    setPreviews(nuevos)
+    return () => {
+      Object.values(nuevos).forEach((url) => URL.revokeObjectURL(url))
+    }
+  }, [items])
 
   async function agregarArchivos(files: FileList | null) {
     if (!files) return
@@ -102,23 +118,33 @@ export default function EvidenciasPage() {
 
   const localesPendientes = items.filter((i) => i.estado !== 'sincronizado')
 
-  const itemsServidor: ItemVista[] = servidor.map((e) => ({
-    key: e.uuid_cliente,
-    nombre: e.etiqueta || e.url.split('/').pop() || 'archivo',
-    tipo: e.tipo,
-    tomadaAt: e.tomada_at,
-    subidoPor: e.subido_por?.nombre,
-    chip: { label: 'Sincronizado', className: 'bg-lime-500/15 text-lime-txt' },
-  }))
+  const itemsServidor: ItemVista[] = useMemo(
+    () =>
+      servidor.map((e) => ({
+        key: e.uuid_cliente,
+        nombre: e.etiqueta || e.url.split('/').pop() || 'archivo',
+        tipo: e.tipo,
+        tomadaAt: e.tomada_at,
+        subidoPor: e.subido_por?.nombre,
+        imagenUrl: e.tipo === 'foto' ? e.url : undefined,
+        chip: { label: 'Sincronizado', className: 'bg-lime-500/15 text-lime-txt' },
+      })),
+    [servidor],
+  )
 
-  const itemsLocales: ItemVista[] = localesPendientes.map((item) => ({
-    key: item.uuid,
-    nombre: item.nombreArchivo,
-    tipo: item.tipoArchivo,
-    tomadaAt: item.tomadaAt,
-    tamano: item.archivo.size,
-    chip: chipLocal(item, sincronizando),
-  }))
+  const itemsLocales: ItemVista[] = useMemo(
+    () =>
+      localesPendientes.map((item) => ({
+        key: item.uuid,
+        nombre: item.nombreArchivo,
+        tipo: item.tipoArchivo,
+        tomadaAt: item.tomadaAt,
+        tamano: item.archivo.size,
+        imagenUrl: previews[item.uuid],
+        chip: chipLocal(item, sincronizando),
+      })),
+    [localesPendientes, previews, sincronizando],
+  )
 
   const itemsVista = [...itemsLocales, ...itemsServidor].sort(
     (a, b) => new Date(b.tomadaAt).getTime() - new Date(a.tomadaAt).getTime(),
@@ -126,40 +152,50 @@ export default function EvidenciasPage() {
   const pendientes = localesPendientes.length
 
   return (
-    <AppShell title="Fotos y videos" subtitle="Evidencia del trabajo" back={{ label: 'Tablero', to: '/ordenes-trabajo' }}>
-      <div
-        className={`flex items-center gap-3 rounded-2xl px-[15px] py-[13px] ${enLinea ? 'bg-cya-bg text-cya-txt' : 'bg-amb-bg text-amb-txt'}`}
-        style={{ border: `1px solid ${enLinea ? 'var(--color-cya)' : 'var(--color-amb)'}` }}
-      >
-        {enLinea ? <CloudArrowUp weight="fill" size={20} /> : <CloudSlash weight="fill" size={20} />}
-        <p className="text-sm font-medium">
-          {enLinea ? 'Conectado — Las evidencias se suben al instante' : 'Sin conexión — Se guardan en el celular y se suben después'}
-        </p>
-        {sincronizando && <ArrowsClockwise size={18} className="ml-auto animate-spin opacity-60" />}
-      </div>
+    <AppShell
+      title="Fotos y videos"
+      subtitle="Evidencia del trabajo"
+      back={esCliente ? { label: 'Mi garaje', to: '/garaje' } : { label: 'Tablero', to: '/ordenes-trabajo' }}
+    >
+      {!esCliente && (
+        <div
+          className={`flex items-center gap-3 rounded-2xl px-[15px] py-[13px] ${enLinea ? 'bg-cya-bg text-cya-txt' : 'bg-amb-bg text-amb-txt'}`}
+          style={{ border: `1px solid ${enLinea ? 'var(--color-cya)' : 'var(--color-amb)'}` }}
+        >
+          {enLinea ? <CloudArrowUp weight="fill" size={20} /> : <CloudSlash weight="fill" size={20} />}
+          <p className="text-sm font-medium">
+            {enLinea ? 'Conectado — Las evidencias se suben al instante' : 'Sin conexión — Se guardan en el celular y se suben después'}
+          </p>
+          {sincronizando && <ArrowsClockwise size={18} className="ml-auto animate-spin opacity-60" />}
+        </div>
+      )}
 
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/*,video/*"
-        capture="environment"
-        multiple
-        className="hidden"
-        onChange={(e) => agregarArchivos(e.target.files)}
-      />
+      {!esCliente && (
+        <>
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/*,video/*"
+            capture="environment"
+            multiple
+            className="hidden"
+            onChange={(e) => agregarArchivos(e.target.files)}
+          />
 
-      <button
-        type="button"
-        onClick={() => inputRef.current?.click()}
-        className="mt-3.5 flex h-[172px] w-full flex-col items-center justify-center gap-1 rounded-[18px] bg-lime-500 text-lime-ink"
-        style={{ boxShadow: 'var(--shadow-cta-lime-lg)' }}
-      >
-        <Camera weight="fill" size={38} />
-        <span className="text-[17px] font-semibold">Tomar foto o video</span>
-        <span className="text-[12.5px] opacity-70">Se abre la cámara del celular</span>
-      </button>
+          <button
+            type="button"
+            onClick={() => inputRef.current?.click()}
+            className="mt-3.5 flex h-[172px] w-full flex-col items-center justify-center gap-1 rounded-[18px] bg-lime-500 text-lime-ink"
+            style={{ boxShadow: 'var(--shadow-cta-lime-lg)' }}
+          >
+            <Camera weight="fill" size={38} />
+            <span className="text-[17px] font-semibold">Tomar foto o video</span>
+            <span className="text-[12.5px] opacity-70">Se abre la cámara del celular</span>
+          </button>
+        </>
+      )}
 
-      <section className="mt-3.5 rounded-2xl bg-app-surface p-4" style={{ border: '1px solid var(--color-app-line)' }}>
+      <section className={`rounded-2xl bg-app-surface p-4 ${esCliente ? '' : 'mt-3.5'}`} style={{ border: '1px solid var(--color-app-line)' }}>
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold">Evidencias de OT-{otId}</h2>
           <span className="text-[11.5px] text-app-faint">
@@ -168,27 +204,43 @@ export default function EvidenciasPage() {
           </span>
         </div>
 
-        <div className="mt-3 flex flex-col gap-3">
-          {itemsVista.map((item) => (
-            <div key={item.key} className="flex items-center gap-3">
-              <div className="flex size-[52px] shrink-0 items-center justify-center rounded-[11px] bg-app-surface-3">
-                {item.tipo.startsWith('video') ? <Video size={22} className="text-app-faint" /> : <Image size={22} className="text-app-faint" />}
+        <div className="mt-3 grid grid-cols-3 gap-2.5 sm:grid-cols-4 md:grid-cols-6">
+          {itemsVista.map((item) => {
+            const contenido = item.imagenUrl ? (
+              <img src={item.imagenUrl} alt={item.nombre} className="size-full object-cover" />
+            ) : item.tipo.startsWith('video') ? (
+              <Video size={26} className="text-app-faint" />
+            ) : (
+              <Image size={26} className="text-app-faint" />
+            )
+            return (
+              <div key={item.key} className="flex flex-col gap-1">
+                {item.imagenUrl ? (
+                  <button
+                    type="button"
+                    onClick={() => window.open(item.imagenUrl, '_blank')}
+                    className="aspect-square w-full overflow-hidden rounded-[11px] bg-app-surface-3"
+                  >
+                    {contenido}
+                  </button>
+                ) : (
+                  <div className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-[11px] bg-app-surface-3">
+                    {contenido}
+                  </div>
+                )}
+                <span className={`self-start rounded-full px-1.5 py-0.5 text-[9.5px] font-medium ${item.chip.className}`}>{item.chip.label}</span>
+                <p className="truncate text-[10.5px] text-app-faint">{item.subidoPor ?? tamano(item.tamano ?? 0)} · {hace(item.tomadaAt)}</p>
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-[13.5px] font-medium">{item.nombre}</p>
-                <p className="text-[11.5px] text-app-faint">
-                  {item.tamano !== undefined ? `${tamano(item.tamano)} · ` : ''}
-                  {item.subidoPor ? `${item.subidoPor} · ` : ''}
-                  {hace(item.tomadaAt)}
-                </p>
-              </div>
-              <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ${item.chip.className}`}>{item.chip.label}</span>
-            </div>
-          ))}
-          {itemsVista.length === 0 && <p className="py-4 text-center text-sm text-app-muted">Todavía no hay fotos o videos.</p>}
+            )
+          })}
+          {itemsVista.length === 0 && (
+            <p className="col-span-full py-4 text-center text-sm text-app-muted">
+              {esCliente ? 'Todavía no hay fotos ni videos de este trabajo.' : 'Todavía no agregaste fotos o videos.'}
+            </p>
+          )}
         </div>
 
-        {itemsVista.length > 0 && (
+        {!esCliente && itemsVista.length > 0 && (
           <p className="mt-3 text-[11.5px] text-app-faint">
             Las evidencias se guardan en el celular y se suben solas cuando vuelve la señal.
           </p>

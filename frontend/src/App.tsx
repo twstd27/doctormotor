@@ -8,6 +8,7 @@ import InvitacionTecnicoPage from './pages/InvitacionTecnicoPage'
 import KanbanPage from './pages/KanbanPage'
 import LoginPage from './pages/LoginPage'
 import PresupuestoPage from './pages/PresupuestoPage'
+import VehiculosPage from './pages/VehiculosPage'
 import WhatsappVerifyPage from './pages/WhatsappVerifyPage'
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
       <Route path="/ordenes-trabajo/:id/inspeccion" element={<InspeccionPage />} />
       <Route path="/ordenes-trabajo/:id/evidencias" element={<EvidenciasPage />} />
       <Route path="/garaje" element={<GaragePage />} />
+      <Route path="/vehiculos" element={<VehiculosPage />} />
       <Route path="/presupuestos/:id" element={<PresupuestoPage />} />
       <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
       <Route path="/auth/whatsapp/:token" element={<WhatsappVerifyPage />} />
