@@ -3,12 +3,13 @@
 namespace App\Filament\Widgets;
 
 use App\Models\OrdenTrabajo;
-use Filament\Widgets\StatsOverviewWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
+use Filament\Widgets\Widget;
 
-class OrdenesPorEstadoOverview extends StatsOverviewWidget
+class OrdenesPorEstadoOverview extends Widget
 {
-    protected ?string $heading = 'Órdenes por estado';
+    protected string $view = 'filament.widgets.ordenes-por-estado-overview';
+
+    protected int | string | array $columnSpan = 'full';
 
     private const LABELS = [
         'recepcionado' => 'Recepcionado',
@@ -30,7 +31,14 @@ class OrdenesPorEstadoOverview extends StatsOverviewWidget
         'entregado' => 'gray',
     ];
 
-    protected function getStats(): array
+    private const CLASES_DOT = [
+        'gray' => 'bg-gray-500',
+        'info' => 'bg-cyan-400',
+        'warning' => 'bg-amber-400',
+        'success' => 'bg-lime-400',
+    ];
+
+    protected function getViewData(): array
     {
         $conteos = OrdenTrabajo::query()
             ->whereIn('estado', array_keys(self::LABELS))
@@ -38,10 +46,15 @@ class OrdenesPorEstadoOverview extends StatsOverviewWidget
             ->groupBy('estado')
             ->pluck('total', 'estado');
 
-        return collect(self::LABELS)
-            ->map(fn (string $label, string $estado) => Stat::make($label, (string) ($conteos[$estado] ?? 0))
-                ->color(self::COLORES[$estado]))
+        $filas = collect(self::LABELS)
+            ->map(fn (string $label, string $estado) => [
+                'label' => $label,
+                'dotClass' => self::CLASES_DOT[self::COLORES[$estado]],
+                'total' => (int) ($conteos[$estado] ?? 0),
+            ])
             ->values()
             ->all();
+
+        return ['filas' => $filas];
     }
 }
