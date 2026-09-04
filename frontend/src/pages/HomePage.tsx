@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { CarProfile, SquaresFour, Wrench } from '@phosphor-icons/react'
+import { CarProfile, Hourglass, SquaresFour, Wrench } from '@phosphor-icons/react'
 import { Link, Navigate } from 'react-router-dom'
 import AppShell from '../components/AppShell'
 import { misOrdenesTrabajo, misVehiculos } from '../lib/garaje'
@@ -42,22 +42,24 @@ function StatCard({
 export default function HomePage() {
   const user = useAuthStore((s) => s.user)
   const hasHydrated = useAuthStore((s) => s.hasHydrated)
-  const esTecnico = user?.rol !== 'cliente'
+  const esCliente = user?.rol === 'cliente'
+  const esTecnico = user?.rol === 'operador_tecnico'
+  const esAdmin = user?.rol === 'super_admin' || user?.rol === 'cajero'
 
   const { data: ordenes = [] } = useQuery({
     queryKey: ['ordenes-trabajo'],
     queryFn: listarOrdenesTrabajo,
-    enabled: hasHydrated && !!user && esTecnico,
+    enabled: hasHydrated && !!user && !esCliente,
   })
   const { data: vehiculos = [] } = useQuery({
     queryKey: ['me', 'vehiculos'],
     queryFn: misVehiculos,
-    enabled: hasHydrated && !!user && !esTecnico,
+    enabled: hasHydrated && !!user && esCliente,
   })
   const { data: ordenesCliente = [] } = useQuery({
     queryKey: ['me', 'ordenes-trabajo'],
     queryFn: misOrdenesTrabajo,
-    enabled: hasHydrated && !!user && !esTecnico,
+    enabled: hasHydrated && !!user && esCliente,
   })
 
   if (hasHydrated && !user) return <Navigate to="/login" replace />
@@ -65,6 +67,7 @@ export default function HomePage() {
 
   const activas = ordenes.filter((o) => o.estado !== 'entregado' && o.estado !== 'cancelado')
   const asignadasAMi = ordenes.filter((o) => o.tecnico_asignado?.id === user.id)
+  const esperandoAprobacion = ordenes.filter((o) => o.estado === 'esperando_aprobacion')
   const enTaller = ordenesCliente.filter((o) => o.estado !== 'entregado' && o.estado !== 'cancelado')
 
   return (
@@ -81,29 +84,36 @@ export default function HomePage() {
           <p className="relative text-[13px] text-app-muted">Bienvenida/o</p>
           <h2 className="relative mt-1 text-2xl font-semibold tracking-[-0.02em]">{user.nombre.split(' ')[0]}</h2>
           <p className="relative mt-2 max-w-[34ch] text-sm leading-[1.5] text-app-muted">
-            {esTecnico
-              ? 'Revisá el tablero de órdenes de trabajo y avanzá cada vehículo por su etapa.'
-              : 'Seguí el avance de tu vehículo y aprobá presupuestos sin llamar al taller.'}
+            {esCliente
+              ? 'Seguí el avance de tu vehículo y aprobá presupuestos sin llamar al taller.'
+              : 'Revisá el tablero de órdenes de trabajo y avanzá cada vehículo por su etapa.'}
           </p>
           <Link
-            to={esTecnico ? '/ordenes-trabajo' : '/garaje'}
+            to={esCliente ? '/garaje' : '/ordenes-trabajo'}
             className="relative mt-6 flex h-[54px] w-full max-w-[340px] items-center justify-center rounded-xl bg-lime-500 text-[15px] font-semibold text-lime-ink"
             style={{ boxShadow: 'var(--shadow-cta-lime)' }}
           >
-            {esTecnico ? 'Abrir tablero' : 'Ver mi garaje'}
+            {esCliente ? 'Ver mi garaje' : 'Abrir tablero'}
           </Link>
         </div>
 
-        {esTecnico ? (
+        {esCliente ? (
+          <>
+            <StatCard icon={<CarProfile size={16} />} tone="cya" label="VEHÍCULOS" value={vehiculos.length} hint="Registrados a tu nombre" />
+            <StatCard icon={<Wrench size={16} />} tone="amb" label="EN EL TALLER" value={enTaller.length} hint="En proceso ahora mismo" />
+          </>
+        ) : esTecnico ? (
           <>
             <StatCard icon={<SquaresFour size={16} />} tone="cya" label="ÓRDENES ACTIVAS" value={activas.length} hint="En todo el tablero" />
             <StatCard icon={<Wrench size={16} />} tone="amb" label="ASIGNADAS A MÍ" value={asignadasAMi.length} hint="Bajo tu responsabilidad" />
           </>
         ) : (
-          <>
-            <StatCard icon={<CarProfile size={16} />} tone="cya" label="VEHÍCULOS" value={vehiculos.length} hint="Registrados a tu nombre" />
-            <StatCard icon={<Wrench size={16} />} tone="amb" label="EN EL TALLER" value={enTaller.length} hint="En proceso ahora mismo" />
-          </>
+          esAdmin && (
+            <>
+              <StatCard icon={<SquaresFour size={16} />} tone="cya" label="ÓRDENES ACTIVAS" value={activas.length} hint="En todo el tablero" />
+              <StatCard icon={<Hourglass size={16} />} tone="amb" label="ESPERANDO APROBACIÓN" value={esperandoAprobacion.length} hint="Presupuestos pendientes del cliente" />
+            </>
+          )
         )}
       </div>
     </AppShell>

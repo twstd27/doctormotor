@@ -187,7 +187,6 @@ export default function EvidenciasPage() {
             type="file"
             accept="image/*,video/*"
             capture="environment"
-            multiple
             className="hidden"
             onChange={(e) => agregarArchivos(e.target.files)}
           />
