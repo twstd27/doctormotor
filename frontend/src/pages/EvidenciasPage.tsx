@@ -1,4 +1,4 @@
-import { ArrowsClockwise, Camera, CloudArrowUp, CloudSlash, Image, MagnifyingGlassPlus, Video, X } from '@phosphor-icons/react'
+import { ArrowsClockwise, Camera, CloudArrowUp, CloudSlash, Image, ImagesSquare, MagnifyingGlassPlus, VideoCamera, Video, X } from '@phosphor-icons/react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import AppShell from '../components/AppShell'
@@ -43,7 +43,9 @@ export default function EvidenciasPage() {
   const token = useAuthStore((s) => s.token)
   const user = useAuthStore((s) => s.user)
   const esCliente = user?.rol === 'cliente'
-  const inputRef = useRef<HTMLInputElement>(null)
+  const fotoRef = useRef<HTMLInputElement>(null)
+  const videoRef = useRef<HTMLInputElement>(null)
+  const galeriaRef = useRef<HTMLInputElement>(null)
 
   const [items, setItems] = useState<EvidenciaPendiente[]>([])
   const [servidor, setServidor] = useState<EvidenciaServidor[]>([])
@@ -182,25 +184,43 @@ export default function EvidenciasPage() {
 
       {!esCliente && (
         <>
-          <input
-            ref={inputRef}
-            type="file"
-            accept="image/*,video/*"
-            capture="environment"
-            className="hidden"
-            onChange={(e) => agregarArchivos(e.target.files)}
-          />
+          {/* Un input por tipo — Android no ofrece la cámara si accept mezcla image/* y
+              video/* junto con capture, así que cada acción necesita su propio input. */}
+          <input ref={fotoRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => agregarArchivos(e.target.files)} />
+          <input ref={videoRef} type="file" accept="video/*" capture="environment" className="hidden" onChange={(e) => agregarArchivos(e.target.files)} />
+          <input ref={galeriaRef} type="file" accept="image/*,video/*" multiple className="hidden" onChange={(e) => agregarArchivos(e.target.files)} />
 
           <button
             type="button"
-            onClick={() => inputRef.current?.click()}
-            className="mt-3.5 flex h-[172px] w-full flex-col items-center justify-center gap-1 rounded-[18px] bg-lime-500 text-lime-ink"
+            onClick={() => fotoRef.current?.click()}
+            className="mt-3.5 flex h-[140px] w-full flex-col items-center justify-center gap-1 rounded-[18px] bg-lime-500 text-lime-ink"
             style={{ boxShadow: 'var(--shadow-cta-lime-lg)' }}
           >
-            <Camera weight="fill" size={38} />
-            <span className="text-[17px] font-semibold">Tomar foto o video</span>
+            <Camera weight="fill" size={34} />
+            <span className="text-[17px] font-semibold">Tomar foto</span>
             <span className="text-[12.5px] opacity-70">Se abre la cámara del celular</span>
           </button>
+
+          <div className="mt-2.5 grid grid-cols-2 gap-2.5">
+            <button
+              type="button"
+              onClick={() => videoRef.current?.click()}
+              className="flex h-12 items-center justify-center gap-2 rounded-xl text-sm font-medium"
+              style={{ border: '1px solid var(--color-app-line)' }}
+            >
+              <VideoCamera size={18} />
+              Grabar video
+            </button>
+            <button
+              type="button"
+              onClick={() => galeriaRef.current?.click()}
+              className="flex h-12 items-center justify-center gap-2 rounded-xl text-sm font-medium"
+              style={{ border: '1px solid var(--color-app-line)' }}
+            >
+              <ImagesSquare size={18} />
+              Elegir de galería
+            </button>
+          </div>
         </>
       )}
 
