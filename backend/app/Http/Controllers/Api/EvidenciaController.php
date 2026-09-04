@@ -13,7 +13,9 @@ class EvidenciaController extends Controller
 {
     public function index(OrdenTrabajo $ordenes_trabajo): JsonResponse
     {
-        return response()->json(['data' => $ordenes_trabajo->evidencias()->latest('tomada_at')->get()]);
+        return response()->json([
+            'data' => $ordenes_trabajo->evidencias()->with('subidoPor:id,nombre')->latest('tomada_at')->get(),
+        ]);
     }
 
     public function store(Request $request, OrdenTrabajo $ordenes_trabajo): JsonResponse

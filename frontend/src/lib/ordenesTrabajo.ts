@@ -64,6 +64,21 @@ interface PaginatedResponse<T> {
   data: T[]
 }
 
+export interface EvidenciaServidor {
+  id: number
+  uuid_cliente: string
+  tipo: 'foto' | 'video'
+  url: string
+  etiqueta: string | null
+  tomada_at: string
+  subido_por: { id: number; nombre: string } | null
+}
+
+export async function evidenciasDeOtServidor(otId: number): Promise<EvidenciaServidor[]> {
+  const res = await api<{ data: EvidenciaServidor[] }>(`/ordenes-trabajo/${otId}/evidencias`)
+  return res.data
+}
+
 export async function listarOrdenesTrabajo(): Promise<OrdenTrabajo[]> {
   const res = await api<PaginatedResponse<OrdenTrabajo>>('/ordenes-trabajo?estado=&per_page=100')
   return res.data
