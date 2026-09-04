@@ -41,6 +41,12 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'frontend' => [
+        // Dominio de la PWA — los enlaces que se mandan por WhatsApp (login, invitación
+        // de técnicos) apuntan acá, nunca a una ruta de la API.
+        'url' => env('FRONTEND_URL', 'http://localhost:5173'),
+    ],
+
     'whatsapp' => [
         'token' => env('WHATSAPP_TOKEN'),
         'phone_number_id' => env('WHATSAPP_PHONE_NUMBER_ID'),

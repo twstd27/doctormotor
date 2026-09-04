@@ -4,6 +4,7 @@ import GaragePage from './pages/GaragePage'
 import GoogleCallbackPage from './pages/GoogleCallbackPage'
 import HomePage from './pages/HomePage'
 import InspeccionPage from './pages/InspeccionPage'
+import InvitacionTecnicoPage from './pages/InvitacionTecnicoPage'
 import KanbanPage from './pages/KanbanPage'
 import LoginPage from './pages/LoginPage'
 import PresupuestoPage from './pages/PresupuestoPage'
@@ -21,6 +22,7 @@ function App() {
       <Route path="/presupuestos/:id" element={<PresupuestoPage />} />
       <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />
       <Route path="/auth/whatsapp/:token" element={<WhatsappVerifyPage />} />
+      <Route path="/invitacion/:token" element={<InvitacionTecnicoPage />} />
     </Routes>
   )
 }

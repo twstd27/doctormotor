@@ -41,6 +41,8 @@ Route::prefix('v1')->group(function () {
         Route::post('/google/callback', [AuthController::class, 'googleCallback']);
         Route::post('/password/forgot', [AuthController::class, 'forgotPassword']);
         Route::post('/password/reset', [AuthController::class, 'resetPassword']);
+        Route::get('/invitacion/{token}', [AuthController::class, 'invitacionTecnico']);
+        Route::post('/invitacion/{token}/aceptar', [AuthController::class, 'aceptarInvitacion']);
 
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/logout', [AuthController::class, 'logout']);

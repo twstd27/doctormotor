@@ -33,14 +33,14 @@ class UserForm
                 TextInput::make('telefono_whatsapp')
                     ->label('WhatsApp')
                     ->tel()
-                    ->maxLength(20),
+                    ->maxLength(20)
+                    ->helperText('Necesario para poder invitar por WhatsApp si se deja la contraseña vacía.'),
                 TextInput::make('password')
                     ->label('Contraseña')
                     ->password()
                     ->revealable()
                     ->dehydrated(fn ($state) => filled($state))
-                    ->required(fn (string $operation) => $operation === 'create')
-                    ->helperText('Dejar vacío al editar para no cambiar la contraseña actual.'),
+                    ->helperText('Dejar vacío para invitar por WhatsApp (el usuario define su propia contraseña al aceptar), o al editar para no cambiar la actual.'),
                 Toggle::make('activo')
                     ->label('Activo')
                     ->default(true),

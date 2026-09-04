@@ -69,7 +69,9 @@ class AuthController extends Controller
         $this->whatsApp->enviarPlantilla(
             telefono: $user->telefono_whatsapp,
             plantilla: 'enlace_acceso',
-            parametros: ['link' => url("/api/v1/auth/whatsapp/verify/{$token}")],
+            // Apunta al FRONTEND (la SPA es la que hace el POST de canje), no a la API
+            // directo — un enlace a una ruta POST-only no funciona al hacer clic.
+            parametros: ['link' => config('services.frontend.url')."/auth/whatsapp/{$token}"],
             userId: $user->id,
         );
 
@@ -93,6 +95,53 @@ class AuthController extends Controller
         }
 
         $user = User::findOrFail($userId);
+
+        return $this->issueTokenResponse($user);
+    }
+
+    /**
+     * Datos básicos para pintar la pantalla de invitación (nombre a mostrar) antes de
+     * que el técnico defina su contraseña. No consume el token — eso lo hace
+     * `aceptarInvitacion`, así el técnico puede recargar la pantalla sin perder el enlace.
+     */
+    public function invitacionTecnico(string $token): JsonResponse
+    {
+        $userId = Cache::get("invitacion_tecnico:{$token}");
+
+        if (! $userId) {
+            return response()->json([
+                'message' => 'La invitación expiró o ya fue utilizada.',
+            ], 410);
+        }
+
+        $user = User::findOrFail($userId);
+
+        return response()->json(['data' => ['nombre' => $user->nombre, 'rol' => $user->rol]]);
+    }
+
+    /**
+     * Canjea la invitación: define la contraseña, activa la cuenta y entrega una sesión.
+     */
+    public function aceptarInvitacion(Request $request, string $token): JsonResponse
+    {
+        $data = $request->validate([
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $userId = Cache::pull("invitacion_tecnico:{$token}");
+
+        if (! $userId) {
+            return response()->json([
+                'message' => 'La invitación expiró o ya fue utilizada.',
+            ], 410);
+        }
+
+        $user = User::findOrFail($userId);
+        $user->forceFill([
+            'password' => Hash::make($data['password']),
+            'activo' => true,
+            'email_verified_at' => now(),
+        ])->save();
 
         return $this->issueTokenResponse($user);
     }
