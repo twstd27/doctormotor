@@ -1,4 +1,4 @@
-import { CaretLeft, Camera, CarProfile, House, Receipt, Signature, SquaresFour } from '@phosphor-icons/react'
+import { CaretLeft, CarProfile, House, SquaresFour } from '@phosphor-icons/react'
 import type { ReactNode } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/auth'
@@ -10,17 +10,17 @@ interface NavItem {
   icon: (weight: 'regular' | 'fill') => ReactNode
 }
 
+// Evidencias, Inspección y Presupuesto no son pantallas de destino genérico — siempre
+// pertenecen a una OT o presupuesto puntual, así que no van como ítem de navegación fijo
+// (se llega a ellas desde el detalle de la OT o el aviso en Mi garaje).
 const TECNICO_NAV: NavItem[] = [
   { to: '/', label: 'Inicio', icon: (w) => <House weight={w} size={22} /> },
   { to: '/ordenes-trabajo', label: 'Órdenes', icon: (w) => <SquaresFour weight={w} size={22} /> },
-  { to: '/ordenes-trabajo', label: 'Evidencias', icon: (w) => <Camera weight={w} size={22} /> },
-  { to: '/ordenes-trabajo', label: 'Inspección', icon: (w) => <Signature weight={w} size={22} /> },
 ]
 
 const CLIENTE_NAV: NavItem[] = [
   { to: '/', label: 'Inicio', icon: (w) => <House weight={w} size={22} /> },
   { to: '/garaje', label: 'Mi garaje', icon: (w) => <CarProfile weight={w} size={22} /> },
-  { to: '/garaje', label: 'Presupuesto', icon: (w) => <Receipt weight={w} size={22} /> },
 ]
 
 function iniciales(nombre: string) {

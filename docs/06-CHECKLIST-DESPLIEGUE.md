@@ -25,8 +25,15 @@ reales).
 
 ## 2. Pasos de despliegue (cuando haya acceso al droplet)
 
-- [ ] Instalar PHP 8.3, Composer, Node 24+, PostgreSQL 18, Redis en el droplet (mismo stack que
-      local, ver `README.md`).
+> El droplet **no está vacío** — ya aloja otro proyecto en PHP 7.4 y otro en PHP 8.3. Ver
+> `07-DESPLIEGUE-PRUEBAS.md` §0 para las reglas de convivencia (nunca `apt upgrade` a secas,
+> pool de PHP-FPM y server block de Nginx propios, no tocar lo que ya corre ahí) antes de
+> seguir esta lista.
+
+- [ ] PHP 8.3 y Composer ya están en el droplet (se usan para el otro proyecto reciente) —
+      solo falta agregar las extensiones que falten (`php8.3-pgsql`, `php8.3-redis`) y
+      Node 24+, PostgreSQL (nuevo) y Redis (si no existe ya) — ver el detalle en
+      `07-DESPLIEGUE-PRUEBAS.md`.
 - [ ] Clonar el repo, `composer install --no-dev --optimize-autoloader`.
 - [ ] Configurar `.env` de producción: `APP_ENV=production`, `APP_DEBUG=false`, credenciales
       reales de DB/Redis/Google/WhatsApp/Spaces.

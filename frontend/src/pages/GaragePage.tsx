@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
-import { CarProfile, FilePdf, Receipt } from '@phosphor-icons/react'
+import { CarProfile, Receipt } from '@phosphor-icons/react'
 import { Link, Navigate } from 'react-router-dom'
 import AppShell from '../components/AppShell'
-import { ESTADOS, misOrdenesTrabajo, misVehiculos, pasoCompletado } from '../lib/garaje'
+import OtGarageCard from '../components/OtGarageCard'
+import { misOrdenesTrabajo, misVehiculos } from '../lib/garaje'
 import { useAuthStore } from '../store/auth'
 
 const API_URL = import.meta.env.VITE_API_URL as string
@@ -66,63 +67,9 @@ export default function GaragePage() {
         </p>
       )}
 
-      <div className="flex flex-col gap-3.5">
+      <div className="no-scrollbar -mx-[var(--pad-page)] flex gap-3 overflow-x-auto px-[var(--pad-page)] pb-1 [scroll-snap-type:x_mandatory] md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0">
         {ordenesActivas.map((ot) => (
-          <article key={ot.id} className="rounded-[18px] bg-app-surface p-4" style={{ border: '1px solid var(--color-app-line)', boxShadow: 'var(--shadow-card)' }}>
-            <p className="font-mono text-[11px] tracking-[0.04em] text-app-faint">{ot.codigo}</p>
-            <h2 className="mt-0.5 text-[19px] font-semibold tracking-[-0.02em]">
-              {ot.vehiculo.marca} {ot.vehiculo.modelo}
-            </h2>
-            <p className="text-xs text-app-faint">{ot.vehiculo.placa}</p>
-            <p className="mt-2 text-[13px] leading-[1.5] text-app-muted">{ot.descripcion_problema}</p>
-
-            <ol className="mt-4 flex flex-col">
-              {ESTADOS.map((paso, idx) => {
-                const completado = pasoCompletado(ot.estado, paso.value)
-                const esActual = ot.estado === paso.value
-                return (
-                  <li key={paso.value} className="flex items-start gap-3">
-                    <div className="flex flex-col items-center">
-                      <span
-                        className="mt-1 flex size-[11px] shrink-0 rounded-full"
-                        style={
-                          esActual
-                            ? { background: 'var(--color-lime-500)', boxShadow: '0 0 0 4px rgba(143,214,46,.18)' }
-                            : completado
-                              ? { background: 'var(--color-lime-500)' }
-                              : { border: '1px solid var(--color-app-line)' }
-                        }
-                      />
-                      {idx < ESTADOS.length - 1 && (
-                        <span className="w-0.5 grow" style={{ minHeight: 20, background: completado ? 'var(--color-lime-500)' : 'var(--color-app-line)' }} />
-                      )}
-                    </div>
-                    <p
-                      className={
-                        esActual
-                          ? 'pb-4 text-[13.5px] font-semibold text-app-text'
-                          : completado
-                            ? 'pb-4 text-[13px] font-medium text-app-muted'
-                            : 'pb-4 text-[13px] text-app-faint'
-                      }
-                    >
-                      {paso.label}
-                    </p>
-                  </li>
-                )
-              })}
-            </ol>
-
-            <button
-              type="button"
-              onClick={() => descargarHistorial(ot.vehiculo.id)}
-              className="flex h-12 w-full items-center justify-center gap-2 rounded-xl text-sm font-medium text-cor"
-              style={{ border: '1px solid var(--color-app-line)' }}
-            >
-              <FilePdf size={18} />
-              Descargar historial clínico
-            </button>
-          </article>
+          <OtGarageCard key={ot.id} ot={ot} onDescargarHistorial={descargarHistorial} />
         ))}
       </div>
 
