@@ -62,10 +62,7 @@ export default function GaragePage() {
         </p>
       )}
 
-      <div
-        className="no-scrollbar -mx-[var(--pad-page)] flex gap-3 overflow-x-auto px-[var(--pad-page)] pb-1 [scroll-snap-type:x_mandatory] md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0"
-        style={{ scrollPaddingInline: 'var(--pad-page)' }}
-      >
+      <div className="flex flex-col gap-3">
         {ordenesActivas.map((ot) => (
           <OtGarageCard key={ot.id} ot={ot} onDescargarHistorial={descargarHistorial} />
         ))}

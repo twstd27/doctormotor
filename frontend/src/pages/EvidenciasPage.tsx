@@ -1,4 +1,4 @@
-import { ArrowsClockwise, Camera, CloudArrowUp, CloudSlash, Image, Video } from '@phosphor-icons/react'
+import { ArrowsClockwise, Camera, CloudArrowUp, CloudSlash, Image, MagnifyingGlassPlus, Video, X } from '@phosphor-icons/react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import AppShell from '../components/AppShell'
@@ -50,6 +50,7 @@ export default function EvidenciasPage() {
   const [enLinea, setEnLinea] = useState(navigator.onLine)
   const [sincronizando, setSincronizando] = useState(false)
   const [previews, setPreviews] = useState<Record<string, string>>({})
+  const [modal, setModal] = useState<{ url: string; nombre: string } | null>(null)
 
   const refrescar = useCallback(async () => {
     if (!esCliente) setItems(await evidenciasDeOt(otId))
@@ -106,6 +107,15 @@ export default function EvidenciasPage() {
       Object.values(nuevos).forEach((url) => URL.revokeObjectURL(url))
     }
   }, [items])
+
+  useEffect(() => {
+    if (!modal) return
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setModal(null)
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [modal])
 
   async function agregarArchivos(files: FileList | null) {
     if (!files) return
@@ -218,10 +228,13 @@ export default function EvidenciasPage() {
                 {item.imagenUrl ? (
                   <button
                     type="button"
-                    onClick={() => window.open(item.imagenUrl, '_blank')}
-                    className="aspect-square w-full overflow-hidden rounded-[11px] bg-app-surface-3"
+                    onClick={() => setModal({ url: item.imagenUrl as string, nombre: item.nombre })}
+                    className="relative aspect-square w-full overflow-hidden rounded-[11px] bg-app-surface-3"
                   >
                     {contenido}
+                    <span className="absolute right-1 bottom-1 flex size-5 items-center justify-center rounded-full bg-black/55 text-white">
+                      <MagnifyingGlassPlus size={12} weight="bold" />
+                    </span>
                   </button>
                 ) : (
                   <div className="flex aspect-square w-full items-center justify-center overflow-hidden rounded-[11px] bg-app-surface-3">
@@ -246,6 +259,25 @@ export default function EvidenciasPage() {
           </p>
         )}
       </section>
+
+      {modal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-6" onClick={() => setModal(null)}>
+          <button
+            type="button"
+            onClick={() => setModal(null)}
+            aria-label="Cerrar"
+            className="absolute top-4 right-4 flex size-10 items-center justify-center rounded-full bg-white/10 text-white"
+          >
+            <X size={20} weight="bold" />
+          </button>
+          <img
+            src={modal.url}
+            alt={modal.nombre}
+            onClick={(e) => e.stopPropagation()}
+            className="max-h-[88vh] max-w-full rounded-xl object-contain"
+          />
+        </div>
+      )}
     </AppShell>
   )
 }

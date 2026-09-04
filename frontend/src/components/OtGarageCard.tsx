@@ -14,8 +14,8 @@ export default function OtGarageCard({ ot, onDescargarHistorial }: OtGarageCardP
 
   return (
     <article
-      className="w-[88vw] shrink-0 rounded-[18px] bg-app-surface p-4 md:w-auto"
-      style={{ border: '1px solid var(--color-app-line)', boxShadow: 'var(--shadow-card)', scrollSnapAlign: 'start' }}
+      className="w-full rounded-[18px] bg-app-surface p-4"
+      style={{ border: '1px solid var(--color-app-line)', boxShadow: 'var(--shadow-card)' }}
     >
       <p className="font-mono text-[11px] tracking-[0.04em] text-app-faint">{ot.codigo}</p>
       <h2 className="mt-0.5 text-[19px] font-semibold tracking-[-0.02em]">
