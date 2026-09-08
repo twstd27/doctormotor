@@ -128,7 +128,7 @@ export default function PresupuestoPage() {
               <PlusCircle weight="fill" size={20} className="text-amb shrink-0" />
               <div>
                 <p className="text-sm font-semibold text-amb-txt">Adicionales encontrados durante el trabajo</p>
-                <p className="text-xs text-app-muted">Aprobá o rechazá cada uno por separado.</p>
+                <p className="text-xs text-app-muted">Aprueba o rechaza cada uno por separado.</p>
               </div>
             </div>
             <div className="flex flex-col gap-3 bg-app-surface p-4">

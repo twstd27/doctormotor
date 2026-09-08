@@ -46,7 +46,7 @@ class OrdenTrabajoForm
                     ->preload()
                     ->required()
                     ->disabled(fn (Get $get, string $operation) => $operation === 'edit' || blank($get('cliente_id')))
-                    ->helperText('Elegí primero el cliente.')
+                    ->helperText('Elige primero el cliente.')
                     ->createOptionForm([
                         TextInput::make('placa')->label('Placa')->required()->maxLength(15),
                         TextInput::make('marca')->label('Marca')->required()->maxLength(50),

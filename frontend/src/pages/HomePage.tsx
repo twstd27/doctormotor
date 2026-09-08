@@ -85,8 +85,8 @@ export default function HomePage() {
           <h2 className="relative mt-1 text-2xl font-semibold tracking-[-0.02em]">{user.nombre.split(' ')[0]}</h2>
           <p className="relative mt-2 max-w-[34ch] text-sm leading-[1.5] text-app-muted">
             {esCliente
-              ? 'Seguí el avance de tu vehículo y aprobá presupuestos sin llamar al taller.'
-              : 'Revisá el tablero de órdenes de trabajo y avanzá cada vehículo por su etapa.'}
+              ? 'Sigue el avance de tu vehículo y aprueba presupuestos sin llamar al taller.'
+              : 'Revisa el tablero de órdenes de trabajo y avanza cada vehículo por su etapa.'}
           </p>
           <Link
             to={esCliente ? '/garaje' : '/ordenes-trabajo'}

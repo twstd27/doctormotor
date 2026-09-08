@@ -37,7 +37,7 @@ export default function GaragePage() {
   const conPresupuestoPendiente = ordenesActivas.find((o) => o.presupuestos[0]?.estado === 'enviado')
 
   return (
-    <AppShell title="Mi garaje" subtitle="Seguí tu vehículo sin llamar al taller">
+    <AppShell title="Mi garaje" subtitle="Sigue tu vehículo sin llamar al taller">
       {conPresupuestoPendiente && (
         <Link
           to={`/presupuestos/${conPresupuestoPendiente.presupuestos[0].id}`}
@@ -46,9 +46,9 @@ export default function GaragePage() {
         >
           <Receipt weight="fill" size={24} className="text-amb shrink-0" />
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-amb-txt">Tenés un presupuesto para revisar</p>
+            <p className="text-sm font-semibold text-amb-txt">Tienes un presupuesto para revisar</p>
             <p className="truncate text-xs text-app-muted">
-              {conPresupuestoPendiente.codigo} · Bs {conPresupuestoPendiente.presupuestos[0].total} · el trabajo arranca cuando lo aprobés
+              {conPresupuestoPendiente.codigo} · Bs {conPresupuestoPendiente.presupuestos[0].total} · el trabajo arranca cuando lo apruebes
             </p>
           </div>
         </Link>
@@ -57,8 +57,8 @@ export default function GaragePage() {
       {ordenesActivas.length === 0 && (
         <p className="mb-4 rounded-2xl bg-app-surface p-4 text-sm text-app-muted" style={{ border: '1px solid var(--color-app-line)' }}>
           {vehiculos.length > 0
-            ? 'No tenés ningún auto en el taller en este momento.'
-            : 'Todavía no tenés vehículos registrados en el taller.'}
+            ? 'No tienes ningún auto en el taller en este momento.'
+            : 'Todavía no tienes vehículos registrados en el taller.'}
         </p>
       )}
 

@@ -114,11 +114,11 @@ export default function InspeccionPage() {
   }
 
   return (
-    <AppShell title="Inspección de ingreso" subtitle="Registrá el estado del vehículo" back={{ label: 'Tablero', to: '/ordenes-trabajo' }}>
+    <AppShell title="Inspección de ingreso" subtitle="Registra el estado del vehículo" back={{ label: 'Tablero', to: '/ordenes-trabajo' }}>
       <div className="grid gap-3.5 md:grid-cols-2" style={{ alignItems: 'start' }}>
         <section className="rounded-2xl bg-app-surface p-[18px]" style={{ border: '1px solid var(--color-app-line)' }}>
           <h2 className="text-[15px] font-semibold">Accesorios presentes</h2>
-          <p className="mt-0.5 text-[12.5px] text-app-muted">Marcá lo que el cliente trae con el vehículo.</p>
+          <p className="mt-0.5 text-[12.5px] text-app-muted">Marca lo que el cliente trae con el vehículo.</p>
           <div className="mt-3 flex flex-wrap gap-2">
             {ACCESORIOS.map(({ nombre, icon: Icon }) => {
               const activo = accesorios.includes(nombre)
@@ -173,7 +173,7 @@ export default function InspeccionPage() {
             {!tieneTrazo && (
               <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1.5 text-app-faint">
                 <Signature size={26} />
-                <span className="text-xs">Firma acá</span>
+                <span className="text-xs">Firma aquí</span>
               </div>
             )}
           </div>

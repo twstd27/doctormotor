@@ -81,7 +81,7 @@ export default function VehiculosPage() {
         })}
         {vehiculos.length === 0 && (
           <p className="col-span-full rounded-2xl bg-app-surface p-4 text-sm text-app-muted" style={{ border: '1px solid var(--color-app-line)' }}>
-            Todavía no tenés vehículos registrados.
+            Todavía no tienes vehículos registrados.
           </p>
         )}
       </div>

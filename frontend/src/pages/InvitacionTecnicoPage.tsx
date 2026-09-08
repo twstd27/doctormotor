@@ -60,7 +60,7 @@ export default function InvitacionTecnicoPage() {
             {invitacion && (
               <p className="max-w-[290px] text-[15px] leading-[1.5] text-app-muted">
                 Te invitaron como <strong className="text-app-text">{ROL_LABEL[invitacion.rol] ?? invitacion.rol}</strong>,{' '}
-                {invitacion.nombre}. Definí tu contraseña para activar la cuenta.
+                {invitacion.nombre}. Define tu contraseña para activar la cuenta.
               </p>
             )}
           </div>
@@ -71,7 +71,7 @@ export default function InvitacionTecnicoPage() {
         {!cargando && error && !invitacion && (
           <div className="w-full rounded-xl bg-cor-bg p-4 text-center" style={{ border: '1px solid var(--color-cor)' }}>
             <p className="text-sm text-cor-txt">{error}</p>
-            <p className="mt-2 text-xs text-app-muted">Pedile a quien te invitó que te mande un enlace nuevo.</p>
+            <p className="mt-2 text-xs text-app-muted">Pídele a quien te invitó que te mande un enlace nuevo.</p>
           </div>
         )}
 
@@ -103,7 +103,7 @@ export default function InvitacionTecnicoPage() {
                 type={pwVisible ? 'text' : 'password'}
                 required
                 minLength={8}
-                placeholder="Repetí la contraseña"
+                placeholder="Repite la contraseña"
                 value={confirmacion}
                 onChange={(e) => setConfirmacion(e.target.value)}
                 className="h-[52px] w-full rounded-xl bg-app-surface pr-3.5 pl-10 text-[15px] outline-none placeholder:text-app-faint focus-visible:border-lime-500"

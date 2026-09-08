@@ -89,7 +89,7 @@ export default function LoginPage() {
           <div className="flex flex-col items-center gap-2 text-center">
             <h1 className="text-[30px] leading-[1.1] font-semibold tracking-[-0.03em]">Doctor Motor</h1>
             <p className="max-w-[290px] text-[15px] leading-[1.5] text-app-muted">
-              Tu taller en el bolsillo. Seguí cada paso de tu vehículo.
+              Tu taller en el bolsillo. Sigue cada paso de tu vehículo.
             </p>
           </div>
         </div>
@@ -212,7 +212,7 @@ export default function LoginPage() {
             <span className="h-px flex-1" style={{ background: 'var(--color-app-line)' }} />
           </div>
           <button type="button" className="mx-auto h-11 text-[13px] font-semibold text-lime-txt">
-            Registrate
+            Regístrate
           </button>
 
           {error && <p className="text-center text-sm text-cor">{error}</p>}

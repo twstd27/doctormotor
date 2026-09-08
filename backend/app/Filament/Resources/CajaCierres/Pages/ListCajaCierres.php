@@ -18,7 +18,7 @@ class ListCajaCierres extends ListRecords
                 ->label('Abrir caja')
                 ->disabled(fn () => CajaCierre::where('cajero_id', auth()->id())->where('estado', 'abierta')->exists())
                 ->tooltip(fn () => CajaCierre::where('cajero_id', auth()->id())->where('estado', 'abierta')->exists()
-                    ? 'Ya tenés una caja abierta.'
+                    ? 'Ya tienes una caja abierta.'
                     : null),
         ];
     }

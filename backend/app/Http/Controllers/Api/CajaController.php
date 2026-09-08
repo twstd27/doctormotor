@@ -30,7 +30,7 @@ class CajaController extends Controller
             ->exists();
 
         if ($existente) {
-            return response()->json(['message' => 'Ya tenés una caja abierta.'], 422);
+            return response()->json(['message' => 'Ya tienes una caja abierta.'], 422);
         }
 
         $caja = CajaCierre::create([

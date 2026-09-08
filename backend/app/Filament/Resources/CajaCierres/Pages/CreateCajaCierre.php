@@ -20,7 +20,7 @@ class CreateCajaCierre extends CreateRecord
 
         if ($yaAbierta) {
             Notification::make()
-                ->title('Ya tenés una caja abierta')
+                ->title('Ya tienes una caja abierta')
                 ->danger()
                 ->send();
 
