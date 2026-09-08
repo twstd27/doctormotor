@@ -18,21 +18,15 @@
         <div class="flex flex-wrap items-end gap-3">
             <div style="flex: 1 1 150px; min-width: 150px;">
                 <label class="text-xs font-medium text-gray-400">Desde</label>
-                <input
-                    type="date"
-                    wire:model.live="desde"
-                    style="color-scheme: dark;"
-                    class="mt-1 w-full rounded-lg border-gray-700 bg-gray-800 text-sm text-white focus:border-primary-500 focus:ring-primary-500"
-                />
+                <x-filament::input.wrapper class="mt-1">
+                    <x-filament::input type="date" wire:model.live="desde" />
+                </x-filament::input.wrapper>
             </div>
             <div style="flex: 1 1 150px; min-width: 150px;">
                 <label class="text-xs font-medium text-gray-400">Hasta</label>
-                <input
-                    type="date"
-                    wire:model.live="hasta"
-                    style="color-scheme: dark;"
-                    class="mt-1 w-full rounded-lg border-gray-700 bg-gray-800 text-sm text-white focus:border-primary-500 focus:ring-primary-500"
-                />
+                <x-filament::input.wrapper class="mt-1">
+                    <x-filament::input type="date" wire:model.live="hasta" />
+                </x-filament::input.wrapper>
             </div>
 
             <div class="flex flex-wrap gap-2">
