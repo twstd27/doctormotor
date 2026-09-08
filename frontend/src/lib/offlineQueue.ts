@@ -81,13 +81,21 @@ export async function sincronizarCola(
         await marcarEstado(item.uuid, 'sincronizado')
         onProgreso?.(item.uuid, 'sincronizado')
       } else {
+        const cuerpo = await res.text().catch(() => '')
         await incrementarIntentos(item.uuid)
-        await marcarEstado(item.uuid, 'error', `HTTP ${res.status}`)
+        await marcarEstado(item.uuid, 'error', `HTTP ${res.status}${cuerpo ? ` — ${cuerpo.slice(0, 200)}` : ''}`)
         onProgreso?.(item.uuid, 'error')
       }
-    } catch {
-      // Sin conexión — se queda en la cola, se reintenta en el próximo ciclo.
+    } catch (e) {
+      // Sin conexión real — se queda en la cola tal cual, se reintenta solo.
+      // Si ya lleva varios intentos fallidos seguidos, se marca 'error' para que
+      // deje de verse como "recién puesto en cola" y se muestre el motivo.
       await incrementarIntentos(item.uuid)
+      if (item.intentos + 1 >= 3) {
+        const motivo = e instanceof Error ? e.message : String(e)
+        await marcarEstado(item.uuid, 'error', `Sin conexión al servidor — ${motivo}`)
+        onProgreso?.(item.uuid, 'error')
+      }
     }
   }
 }

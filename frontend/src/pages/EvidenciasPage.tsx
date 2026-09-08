@@ -16,6 +16,7 @@ interface ItemVista {
   tamano?: number
   subidoPor?: string
   imagenUrl?: string
+  errorDetalle?: string
   chip: { label: string; className: string }
 }
 
@@ -153,6 +154,7 @@ export default function EvidenciasPage() {
         tomadaAt: item.tomadaAt,
         tamano: item.archivo.size,
         imagenUrl: previews[item.uuid],
+        errorDetalle: item.estado === 'error' ? item.error : undefined,
         chip: chipLocal(item, sincronizando),
       })),
     [localesPendientes, previews, sincronizando],
@@ -260,8 +262,20 @@ export default function EvidenciasPage() {
                     {contenido}
                   </div>
                 )}
-                <span className={`self-start rounded-full px-1.5 py-0.5 text-[9.5px] font-medium ${item.chip.className}`}>{item.chip.label}</span>
+                {item.errorDetalle ? (
+                  <button
+                    type="button"
+                    onClick={() => sincronizar()}
+                    className="self-start rounded-full bg-cor-bg px-1.5 py-0.5 text-[9.5px] font-medium text-cor-txt underline"
+                    title={item.errorDetalle}
+                  >
+                    Reintentar ahora
+                  </button>
+                ) : (
+                  <span className={`self-start rounded-full px-1.5 py-0.5 text-[9.5px] font-medium ${item.chip.className}`}>{item.chip.label}</span>
+                )}
                 <p className="truncate text-[10.5px] text-app-faint">{item.subidoPor ?? tamano(item.tamano ?? 0)} · {hace(item.tomadaAt)}</p>
+                {item.errorDetalle && <p className="truncate text-[10px] text-cor" title={item.errorDetalle}>{item.errorDetalle}</p>}
               </div>
             )
           })}
