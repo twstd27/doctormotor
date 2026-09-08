@@ -21,4 +21,21 @@
     .fi-body-has-topbar .fi-sidebar-header {
         display: flex !important;
     }
+
+    /* El sidebar vive debajo del topbar por defecto (top:4rem) con position:sticky, que
+       no puede subir por delante de donde empieza su contenedor en el flujo normal (justo
+       debajo del topbar). Para que ocupe todo el alto de la vista hace falta sacarlo del
+       flujo (fixed) y subirlo por delante del topbar (z-index); el topbar se corre a la
+       derecha del ancho del sidebar para que no queden superpuestos. */
+    .fi-body-has-topbar .fi-sidebar {
+        position: fixed !important;
+        top: 0;
+        height: 100dvh;
+        z-index: 40;
+    }
+
+    .fi-body-has-topbar .fi-topbar-ctn,
+    .fi-body-has-topbar .fi-main-ctn {
+        margin-inline-start: var(--sidebar-width);
+    }
 }
