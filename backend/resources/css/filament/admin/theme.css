@@ -8,3 +8,17 @@
 .fi-topbar .fi-user-menu {
     display: none;
 }
+
+/* Filament repite la marca en fi-topbar-start además del sidebar, y en escritorio oculta
+   por defecto el header del sidebar (fi-body-has-topbar .fi-sidebar-header{display:none})
+   porque asume que la marca solo debe verse en el topbar. Queremos lo contrario: la marca
+   completa ("D" + Doctor Motor) vive solo en el sidebar, el topbar solo lleva la fecha. */
+.fi-topbar .fi-logo {
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    .fi-body-has-topbar .fi-sidebar-header {
+        display: flex !important;
+    }
+}
