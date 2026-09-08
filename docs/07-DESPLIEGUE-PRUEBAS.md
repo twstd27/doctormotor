@@ -144,6 +144,14 @@ repetir esto en otro droplet, usá estos pasos, no una versión anterior de este
   compartiendo dominio con el frontend) tenía un bug real de `try_files` que rompía tanto
   el panel de Filament como las rutas de React Router. La sección 7 de abajo ya tiene la
   versión corregida y probada — no volver al patrón de `alias`.
+- **La whitelist de rutas SPA (sección 7) se queda vieja cada vez que se agrega una ruta
+  nueva a React Router** — pasó con `/vehiculos` y `/invitacion/:token`: andaban perfecto
+  navegando con clic dentro de la app (React Router lo resuelve en el cliente), pero
+  daban 404 real de Laravel al abrirlas directo o recargar la página, porque Nginx no las
+  reconocía como ruta de cliente y caían al router de Laravel. Es fácil no notarlo porque
+  la navegación normal nunca lo dispara — hay que probar SIEMPRE con URL directa/recarga
+  cuando se agrega una ruta nueva al frontend. Regla: toda ruta nueva de `App.tsx` que no
+  sea `/`, `/api/*` ni `/admin/*` tiene que sumarse también a este regex.
 
 ## 5. Clonar y configurar el backend
 
@@ -251,7 +259,7 @@ server {
     }
 
     # PWA: rutas de cliente de React Router -> siempre index.html, el router decide
-    location ~ ^/(login|ordenes-trabajo|garaje|presupuestos|auth)(/.*)?$ {
+    location ~ ^/(login|ordenes-trabajo|garaje|presupuestos|auth|vehiculos|invitacion)(/.*)?$ {
         root /var/www/doctormotor/frontend/dist;
         try_files $uri /index.html =404;
     }
