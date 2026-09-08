@@ -9,6 +9,8 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class FinanzasHoyOverview extends StatsOverviewWidget
 {
+    protected static ?int $sort = 10;
+
     protected function getStats(): array
     {
         $hoy = now()->toDateString();

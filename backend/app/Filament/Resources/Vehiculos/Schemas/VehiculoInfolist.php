@@ -2,11 +2,12 @@
 
 namespace App\Filament\Resources\Vehiculos\Schemas;
 
-use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Str;
 
 class VehiculoInfolist
 {
@@ -14,34 +15,20 @@ class VehiculoInfolist
     {
         return $schema
             ->components([
-                Section::make('Vehículo')
-                    ->columns(3)
+                Section::make('Ficha del vehículo')
                     ->schema([
-                        TextEntry::make('cliente.nombre')->label('Cliente'),
-                        TextEntry::make('placa')->label('Placa'),
-                        TextEntry::make('marca')->label('Marca'),
-                        TextEntry::make('modelo')->label('Modelo'),
-                        TextEntry::make('anio')->label('Año'),
-                        TextEntry::make('color')->label('Color'),
-                        TextEntry::make('motor')->label('Motor')->placeholder('—'),
-                        TextEntry::make('kilometraje_actual')->label('Kilometraje')->suffix(' km'),
+                        View::make('filament.infolists.vehiculo-ficha')
+                            ->viewData(fn ($record) => ['vehiculo' => $record]),
                     ]),
-                Section::make('Fotos subidas (evidencias de sus órdenes de trabajo)')
+                Section::make('Evidencias fotográficas')
+                    ->description(fn ($record) => 'Subidas desde sus órdenes de trabajo · '.$record->fotos()->count().' '.Str::plural('foto', $record->fotos()->count()))
                     ->schema([
-                        RepeatableEntry::make('fotos')
-                            ->label('')
-                            ->schema([
-                                ImageEntry::make('url')
-                                    ->label('')
-                                    ->height(140)
-                                    ->extraImgAttributes(['class' => 'rounded-lg object-cover']),
-                                TextEntry::make('ordenTrabajo.codigo')->label('OT')->size('xs'),
-                                TextEntry::make('tomada_at')->label('Tomada')->dateTime('d/m/Y H:i')->size('xs'),
-                            ])
-                            ->columns(6)
-                            ->columnSpanFull(),
-                    ])
-                    ->visible(fn ($record) => $record->fotos()->exists()),
+                        View::make('filament.infolists.vehiculo-galeria')
+                            ->viewData(fn ($record) => [
+                                'fotos' => $record->fotos()->with('ordenTrabajo')->latest('tomada_at')->get(),
+                                'ordenActiva' => $record->ordenesTrabajo()->whereNotIn('estado', ['entregado', 'cancelado'])->latest('fecha_ingreso')->first(),
+                            ]),
+                    ]),
                 Section::make('Videos subidos')
                     ->schema([
                         RepeatableEntry::make('videos')

@@ -9,7 +9,7 @@ class OrdenesPorEstadoOverview extends Widget
 {
     protected string $view = 'filament.widgets.ordenes-por-estado-overview';
 
-    protected int | string | array $columnSpan = 'full';
+    protected static ?int $sort = 20;
 
     private const LABELS = [
         'recepcionado' => 'Recepcionado',
@@ -48,6 +48,7 @@ class OrdenesPorEstadoOverview extends Widget
 
         $filas = collect(self::LABELS)
             ->map(fn (string $label, string $estado) => [
+                'estado' => $estado,
                 'label' => $label,
                 'dotClass' => self::CLASES_DOT[self::COLORES[$estado]],
                 'total' => (int) ($conteos[$estado] ?? 0),
@@ -55,6 +56,10 @@ class OrdenesPorEstadoOverview extends Widget
             ->values()
             ->all();
 
-        return ['filas' => $filas];
+        $totalActivas = collect($filas)
+            ->where('estado', '!=', 'entregado')
+            ->sum('total');
+
+        return ['filas' => $filas, 'totalActivas' => $totalActivas];
     }
 }
