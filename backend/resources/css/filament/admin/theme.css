@@ -38,11 +38,4 @@
     .fi-body-has-topbar .fi-main-ctn {
         margin-inline-start: var(--sidebar-width);
     }
-
-    /* El sidebar es transparente y deja ver el fondo de la página; el topbar traía su
-       propio color sólido (más claro), así que se veían distintos. Se hace transparente
-       también para que ambos muestren el mismo fondo. */
-    .fi-body-has-topbar .fi-topbar {
-        background-color: transparent;
-    }
 }
