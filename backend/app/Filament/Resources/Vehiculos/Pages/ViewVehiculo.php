@@ -31,7 +31,7 @@ class ViewVehiculo extends ViewRecord
         $vehiculo = $this->getRecord();
         $totalEvidencias = $vehiculo->evidencias()->count();
 
-        return "{$vehiculo->cliente?->nombre} · {$totalEvidencias} ".Str::plural('evidencia', $totalEvidencias);
+        return "{$vehiculo->cliente?->nombre} · {$totalEvidencias} ".Str::plural('evidencia', $totalEvidencias).' en órdenes de trabajo';
     }
 
     protected function getHeaderActions(): array

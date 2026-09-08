@@ -2,3 +2,9 @@
 
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
+
+/* El saludo + botón de salir del topbar los renderiza filament.topbar.saludo-salir
+   (render hook TOPBAR_END); el dropdown de usuario por defecto de Filament queda oculto. */
+.fi-topbar .fi-user-menu {
+    display: none;
+}

@@ -7,6 +7,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 
 class VehiculoInfolist
@@ -21,7 +22,10 @@ class VehiculoInfolist
                             ->viewData(fn ($record) => ['vehiculo' => $record]),
                     ]),
                 Section::make('Evidencias fotográficas')
-                    ->description(fn ($record) => 'Subidas desde sus órdenes de trabajo · '.$record->fotos()->count().' '.Str::plural('foto', $record->fotos()->count()))
+                    ->description('Subidas desde sus órdenes de trabajo')
+                    ->afterHeader(fn ($record) => new HtmlString(
+                        '<span class="text-xs font-medium text-gray-500">'.$record->fotos()->count().' '.Str::plural('foto', $record->fotos()->count()).'</span>'
+                    ))
                     ->schema([
                         View::make('filament.infolists.vehiculo-galeria')
                             ->viewData(fn ($record) => [

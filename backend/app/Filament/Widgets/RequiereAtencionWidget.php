@@ -13,8 +13,7 @@ class RequiereAtencionWidget extends Widget
     protected static ?int $sort = 30;
 
     private const CLASES_TEXTO = [
-        'gray' => 'text-gray-500',
-        'info' => 'text-cyan-400',
+        'success' => 'text-lime-400',
         'warning' => 'text-amber-400',
         'danger' => 'text-red-400',
     ];
@@ -30,21 +29,21 @@ class RequiereAtencionWidget extends Widget
                 'total' => $stockBajo,
                 'label' => 'Alertas de stock',
                 'descripcion' => 'Productos bajo el mínimo',
-                'color' => $stockBajo > 0 ? 'danger' : 'gray',
+                'color' => 'danger',
                 'url' => route('filament.admin.resources.productos.index', ['tableFilters' => ['stock_bajo' => ['isActive' => true]]]),
             ],
             [
                 'total' => $esperandoAprobacion,
                 'label' => 'Esperando aprobación',
                 'descripcion' => 'Presupuestos pendientes del cliente',
-                'color' => $esperandoAprobacion > 0 ? 'warning' : 'gray',
+                'color' => 'warning',
                 'url' => route('filament.admin.resources.ordenes-trabajo.index', ['tableFilters' => ['estado' => ['value' => 'esperando_aprobacion']]]),
             ],
             [
                 'total' => $activas,
                 'label' => 'Órdenes activas',
                 'descripcion' => 'En todo el tablero',
-                'color' => 'info',
+                'color' => 'success',
                 'url' => route('filament.admin.resources.ordenes-trabajo.index'),
             ],
         ];

@@ -7,7 +7,7 @@
         ['label' => 'Año', 'value' => $vehiculo->anio],
         ['label' => 'Color', 'value' => $vehiculo->color],
         ['label' => 'Motor', 'value' => $vehiculo->motor ?: '—'],
-        ['label' => 'Kilometraje', 'value' => number_format($vehiculo->kilometraje_actual, 0, ',', '.').' km'],
+        ['label' => 'Kilometraje', 'value' => number_format($vehiculo->kilometraje_actual, 0, ',', ' ').' km'],
     ];
 @endphp
 
