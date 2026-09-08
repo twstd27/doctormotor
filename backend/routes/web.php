@@ -1,5 +1,6 @@
 <?php
 
+use App\Filament\Pages\InformeIngresosEgresos;
 use App\Models\Pago;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Route;
@@ -25,4 +26,19 @@ Route::middleware('auth')->prefix('admin-pdf')->group(function () {
             ->setPaper([0, 0, 226.77, 700], 'portrait')
             ->stream("ticket-{$pago->id}.pdf");
     })->name('admin-pdf.pagos.ticket');
+
+    Route::get('/informe-ingresos-egresos/csv', function (\Illuminate\Http\Request $request) {
+        $desde = $request->query('desde', now()->subMonth()->toDateString());
+        $hasta = $request->query('hasta', now()->toDateString());
+        $filas = InformeIngresosEgresos::desglosePara($desde, $hasta);
+
+        return response()->streamDownload(function () use ($filas) {
+            $out = fopen('php://output', 'w');
+            fputcsv($out, ['Fecha', 'Ingresos', 'Egresos', 'Resultado']);
+            foreach ($filas as $fila) {
+                fputcsv($out, [$fila['fecha'], $fila['ingresos'], $fila['egresos'], $fila['resultado']]);
+            }
+            fclose($out);
+        }, "ingresos-egresos_{$desde}_{$hasta}.csv");
+    })->name('informe-ingresos-egresos.csv');
 });
