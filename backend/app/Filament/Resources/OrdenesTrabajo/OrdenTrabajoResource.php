@@ -5,6 +5,7 @@ namespace App\Filament\Resources\OrdenesTrabajo;
 use App\Filament\Resources\OrdenesTrabajo\Pages\CreateOrdenTrabajo;
 use App\Filament\Resources\OrdenesTrabajo\Pages\EditOrdenTrabajo;
 use App\Filament\Resources\OrdenesTrabajo\Pages\ListOrdenesTrabajo;
+use App\Filament\Resources\OrdenesTrabajo\RelationManagers\CostosDirectosRelationManager;
 use App\Filament\Resources\OrdenesTrabajo\Schemas\OrdenTrabajoForm;
 use App\Filament\Resources\OrdenesTrabajo\Tables\OrdenesTrabajoTable;
 use App\Models\OrdenTrabajo;
@@ -46,7 +47,7 @@ class OrdenTrabajoResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            CostosDirectosRelationManager::class,
         ];
     }
 
