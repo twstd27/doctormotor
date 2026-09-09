@@ -62,13 +62,24 @@ class ClientesTable
                     ->disabled(fn (Cliente $record) => blank($record->telefono_whatsapp))
                     ->action(function (Cliente $record, WhatsAppService $whatsApp) {
                         if (! $record->user_id) {
-                            $user = User::create([
-                                'nombre' => $record->nombre,
-                                'email' => $record->correo,
-                                'telefono_whatsapp' => $record->telefono_whatsapp,
-                                'rol' => 'cliente',
-                                'activo' => true,
-                            ]);
+                            // Puede que ya exista una cuenta con este correo o WhatsApp (ej. el
+                            // cliente se autorregistró por Google antes de que el cajero cargara
+                            // su ficha) — vincular esa en vez de crear una duplicada, que choca
+                            // con la restricción unique y tira un error 500.
+                            $user = User::where('telefono_whatsapp', $record->telefono_whatsapp)
+                                ->when($record->correo, fn ($query) => $query->orWhere('email', $record->correo))
+                                ->first();
+
+                            if (! $user) {
+                                $user = User::create([
+                                    'nombre' => $record->nombre,
+                                    'email' => $record->correo,
+                                    'telefono_whatsapp' => $record->telefono_whatsapp,
+                                    'rol' => 'cliente',
+                                    'activo' => true,
+                                ]);
+                            }
+
                             $record->update(['user_id' => $user->id]);
                         }
 
