@@ -20,6 +20,11 @@ class NotificacionResource extends Resource
 
     protected static ?string $navigationLabel = 'Notificaciones';
 
+    // Sin esto, Filament arma la URL como /admin/notificaciones/notificacions (mezcla el
+    // namespace de la carpeta con su propio plural adivinado en inglés) — mismo bug de
+    // pluralización en español que ya se dio con OrdenTrabajo y Proveedor.
+    protected static ?string $slug = 'notificaciones';
+
     // Registro de auditoría de envíos (WhatsApp por ahora) — de solo lectura, se generan
     // desde WhatsAppService, no hay alta ni edición manual.
     protected static ?string $modelLabel = 'notificación';
