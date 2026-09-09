@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Cliente;
 use App\Models\User;
 use App\Services\WhatsAppService;
 use Illuminate\Auth\Events\PasswordReset;
@@ -182,6 +183,18 @@ class AuthController extends Controller
             ]);
         } elseif (! $user->google_id) {
             $user->update(['google_id' => $googleUser->getId()]);
+        }
+
+        // Autorregistro por Google: sin esto el cliente queda invisible en el panel — la
+        // ficha de Cliente (CI/NIT, WhatsApp, vehículos) es lo que lista ClientesTable, no
+        // User (UserResource::getEloquentQuery excluye rol=cliente a propósito). CI/NIT y
+        // WhatsApp quedan null hasta que el personal los complete.
+        if ($user->rol === 'cliente' && ! $user->cliente) {
+            Cliente::create([
+                'user_id' => $user->id,
+                'nombre' => $user->nombre,
+                'correo' => $user->email,
+            ]);
         }
 
         return $this->issueTokenResponse($user);

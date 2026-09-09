@@ -64,8 +64,8 @@ erDiagram
 | id | bigint PK | |
 | user_id | bigint FK → users, nullable | cuenta de portal, null si aún no se registró |
 | nombre | varchar(150) | |
-| ci_nit | varchar(20) | |
-| telefono_whatsapp | varchar(20) | |
+| ci_nit | varchar(20) nullable | null si el cliente se autorregistró (Google) y todavía no lo completó |
+| telefono_whatsapp | varchar(20) nullable | null si el cliente se autorregistró (Google) y todavía no lo completó |
 | correo | varchar(150) nullable | |
 | direccion | varchar(255) nullable | |
 | notas | text nullable | |
