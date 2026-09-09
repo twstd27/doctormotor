@@ -75,22 +75,39 @@ class ClientesTable
                         $token = Str::random(48);
                         Cache::put("whatsapp_login:{$token}", $record->user_id, now()->addDays(7));
 
+                        $parametros = [
+                            'nombre' => $record->nombre,
+                            'link' => config('services.frontend.url')."/auth/whatsapp/{$token}",
+                        ];
+
                         $whatsApp->enviarPlantilla(
                             telefono: $record->telefono_whatsapp,
                             plantilla: 'invitacion_cuenta',
-                            parametros: [
-                                'nombre' => $record->nombre,
-                                'link' => config('services.frontend.url')."/auth/whatsapp/{$token}",
-                            ],
+                            parametros: $parametros,
                             userId: $record->user_id,
                         );
 
+                        if ($whatsApp->configurado()) {
+                            Notification::make()
+                                ->title('Invitación enviada')
+                                ->body('Se mandó el enlace por WhatsApp.')
+                                ->success()
+                                ->send();
+
+                            return;
+                        }
+
                         Notification::make()
-                            ->title('Invitación enviada')
-                            ->body($whatsApp->configurado()
-                                ? 'Se mandó el enlace por WhatsApp.'
-                                : 'WhatsApp no está configurado todavía — el enlace quedó en el log de la aplicación.')
-                            ->success()
+                            ->title('WhatsApp no está configurado todavía')
+                            ->body('Abre el mensaje ya redactado y mándalo tú mismo desde tu WhatsApp.')
+                            ->warning()
+                            ->actions([
+                                Action::make('abrir')
+                                    ->label('Abrir en WhatsApp')
+                                    ->url($whatsApp->linkWaMe($record->telefono_whatsapp, 'invitacion_cuenta', $parametros))
+                                    ->openUrlInNewTab(),
+                            ])
+                            ->persistent()
                             ->send();
                     }),
                 EditAction::make(),

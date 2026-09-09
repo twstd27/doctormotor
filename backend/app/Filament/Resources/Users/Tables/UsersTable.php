@@ -74,19 +74,36 @@ class UsersTable
                         $token = Str::random(48);
                         Cache::put("invitacion_tecnico:{$token}", $record->id, now()->addDays(3));
 
+                        $parametros = ['link' => config('services.frontend.url')."/invitacion/{$token}"];
+
                         $whatsApp->enviarPlantilla(
                             telefono: $record->telefono_whatsapp,
                             plantilla: 'invitacion_tecnico',
-                            parametros: ['link' => config('services.frontend.url')."/invitacion/{$token}"],
+                            parametros: $parametros,
                             userId: $record->id,
                         );
 
+                        if ($whatsApp->configurado()) {
+                            Notification::make()
+                                ->title('Invitación enviada')
+                                ->body('Se mandó el enlace por WhatsApp.')
+                                ->success()
+                                ->send();
+
+                            return;
+                        }
+
                         Notification::make()
-                            ->title('Invitación enviada')
-                            ->body($whatsApp->configurado()
-                                ? 'Se mandó el enlace por WhatsApp.'
-                                : 'WhatsApp no está configurado todavía — el enlace quedó en el log de la aplicación.')
-                            ->success()
+                            ->title('WhatsApp no está configurado todavía')
+                            ->body('Abre el mensaje ya redactado y mándalo tú mismo desde tu WhatsApp.')
+                            ->warning()
+                            ->actions([
+                                Action::make('abrir')
+                                    ->label('Abrir en WhatsApp')
+                                    ->url($whatsApp->linkWaMe($record->telefono_whatsapp, 'invitacion_tecnico', $parametros))
+                                    ->openUrlInNewTab(),
+                            ])
+                            ->persistent()
                             ->send();
                     }),
                 EditAction::make(),
