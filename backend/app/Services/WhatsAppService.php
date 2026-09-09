@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Notificacion;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 /**
  * WhatsApp Business Cloud API (Meta). Requiere WHATSAPP_TOKEN y WHATSAPP_PHONE_NUMBER_ID
@@ -117,7 +118,7 @@ class WhatsAppService
                     'template' => [
                         'name' => $notificacion->plantilla,
                         'language' => ['code' => 'es'],
-                        'components' => $this->componentesDesdeParametros($notificacion->payload ?? []),
+                        'components' => $this->componentes($notificacion->payload ?? []),
                     ],
                 ]);
 
@@ -151,15 +152,37 @@ class WhatsAppService
         return filled(config('services.whatsapp.token')) && filled(config('services.whatsapp.phone_number_id'));
     }
 
-    private function componentesDesdeParametros(array $parametros): array
+    /**
+     * El "link" nunca va en el cuerpo del mensaje — se manda como parámetro del botón de
+     * URL dinámica de la plantilla (solo el token final, la URL base va fija en la config
+     * de la plantilla en Meta). El resto de los parámetros arma el cuerpo, en el mismo
+     * orden en que llegan — tiene que calzar con el orden de {{1}}, {{2}}... de la plantilla.
+     */
+    private function componentes(array $parametros): array
     {
-        if (empty($parametros)) {
-            return [];
+        $link = $parametros['link'] ?? null;
+        $parametrosCuerpo = collect($parametros)->except('link');
+
+        $componentes = [];
+
+        if ($parametrosCuerpo->isNotEmpty()) {
+            $componentes[] = [
+                'type' => 'body',
+                'parameters' => $parametrosCuerpo->values()->map(fn ($v) => ['type' => 'text', 'text' => (string) $v])->all(),
+            ];
         }
 
-        return [[
-            'type' => 'body',
-            'parameters' => collect($parametros)->values()->map(fn ($v) => ['type' => 'text', 'text' => (string) $v])->all(),
-        ]];
+        if ($link) {
+            $componentes[] = [
+                'type' => 'button',
+                'sub_type' => 'url',
+                'index' => '0',
+                'parameters' => [
+                    ['type' => 'text', 'text' => Str::afterLast($link, '/')],
+                ],
+            ];
+        }
+
+        return $componentes;
     }
 }
