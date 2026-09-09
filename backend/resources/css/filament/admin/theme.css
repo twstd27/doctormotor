@@ -37,10 +37,15 @@
            (.fi-topbar:where(.dark,.dark *){background-color:var(--gray-900)}) — se ven
            como dos superficies distintas. Se iguala el sidebar al color del topbar. */
         background-color: var(--gray-900);
+        border-right: 1px solid rgb(27, 39, 64);
     }
 
     .fi-body-has-topbar .fi-topbar-ctn,
     .fi-body-has-topbar .fi-main-ctn {
         margin-inline-start: var(--sidebar-width);
+    }
+
+    .fi-body-has-topbar .fi-topbar {
+        border-bottom: 1px solid rgb(27, 39, 64);
     }
 }
