@@ -99,7 +99,7 @@ class ClienteController extends Controller
 
         $this->whatsApp->enviarPlantilla(
             telefono: $cliente->telefono_whatsapp,
-            plantilla: 'invitacion_cuenta',
+            plantilla: 'invitacion_cuenta_cliente',
             parametros: [
                 'nombre' => $cliente->nombre,
                 'link' => config('services.frontend.url')."/auth/whatsapp/{$token}",

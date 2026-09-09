@@ -93,7 +93,7 @@ class ClientesTable
 
                         $whatsApp->enviarPlantilla(
                             telefono: $record->telefono_whatsapp,
-                            plantilla: 'invitacion_cuenta',
+                            plantilla: 'invitacion_cuenta_cliente',
                             parametros: $parametros,
                             userId: $record->user_id,
                         );
@@ -115,7 +115,7 @@ class ClientesTable
                             ->actions([
                                 Action::make('abrir')
                                     ->label('Abrir en WhatsApp')
-                                    ->url($whatsApp->linkWaMe($record->telefono_whatsapp, 'invitacion_cuenta', $parametros))
+                                    ->url($whatsApp->linkWaMe($record->telefono_whatsapp, 'invitacion_cuenta_cliente', $parametros))
                                     ->openUrlInNewTab(),
                             ])
                             ->persistent()

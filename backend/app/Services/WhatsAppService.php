@@ -27,7 +27,7 @@ class WhatsAppService
         // Meta no aprueba una plantilla si una variable queda al principio o al final del
         // cuerpo — por eso estas tres (antes terminaban justo en {link}) llevan una frase
         // corta después del enlace.
-        'invitacion_cuenta' => "Hola {nombre}, te invitamos a seguir el estado de tu vehículo en Doctor Motor. Ingresa a este enlace para crear tu cuenta: {link}. ¡Te esperamos!",
+        'invitacion_cuenta_cliente' => "Hola {nombre}, te invitamos a seguir el estado de tu vehículo en Doctor Motor. Ingresa a este enlace para crear tu cuenta: {link}. ¡Te esperamos!",
         'invitacion_tecnico' => "Hola, te invitamos a unirte al equipo de Doctor Motor. Define tu contraseña aquí: {link}. ¡Bienvenido al equipo!",
         'enlace_acceso' => "Tu enlace de acceso a Doctor Motor: {link}. Válido por tiempo limitado.",
         'ot_en_diagnostico' => "Tu {vehiculo} (OT {codigo_ot}) ya está en diagnóstico.",
