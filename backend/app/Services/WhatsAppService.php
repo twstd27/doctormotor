@@ -23,9 +23,12 @@ class WhatsAppService
      * @var array<string, \Closure(array<string, mixed>): string>
      */
     private const TEXTOS_PLANTILLA = [
-        'invitacion_cuenta' => "Hola {nombre}, te invitamos a seguir el estado de tu vehículo en Doctor Motor. Entra aquí: {link}",
-        'invitacion_tecnico' => "Hola, te invitamos a unirte al equipo de Doctor Motor. Define tu contraseña aquí: {link}",
-        'enlace_acceso' => "Tu enlace de acceso a Doctor Motor: {link}",
+        // Meta no aprueba una plantilla si una variable queda al principio o al final del
+        // cuerpo — por eso estas tres (antes terminaban justo en {link}) llevan una frase
+        // corta después del enlace.
+        'invitacion_cuenta' => "Hola {nombre}, te invitamos a seguir el estado de tu vehículo en Doctor Motor. Ingresa a este enlace para crear tu cuenta: {link}. ¡Te esperamos!",
+        'invitacion_tecnico' => "Hola, te invitamos a unirte al equipo de Doctor Motor. Define tu contraseña aquí: {link}. ¡Bienvenido al equipo!",
+        'enlace_acceso' => "Tu enlace de acceso a Doctor Motor: {link}. Válido por tiempo limitado.",
         'ot_en_diagnostico' => "Tu {vehiculo} (OT {codigo_ot}) ya está en diagnóstico.",
         'ot_esperando_aprobacion' => "Tenemos un presupuesto listo para tu {vehiculo} (OT {codigo_ot}). Revísalo en Doctor Motor.",
         'ot_en_reparacion' => "Tu {vehiculo} (OT {codigo_ot}) ya está en reparación.",
