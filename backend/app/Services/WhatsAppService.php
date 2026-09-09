@@ -48,9 +48,24 @@ class WhatsAppService
             $texto = str_replace('{'.$clave.'}', (string) $valor, $texto);
         }
 
-        $numero = preg_replace('/\D+/', '', $telefono);
+        return 'https://wa.me/'.$this->normalizarTelefono($telefono).'?text='.rawurlencode($texto);
+    }
 
-        return 'https://wa.me/'.$numero.'?text='.rawurlencode($texto);
+    /**
+     * WhatsApp exige el número completo en formato internacional (sin "+", sin "0" inicial).
+     * Los clientes/técnicos casi siempre registran solo el número local boliviano — se asume
+     * el código de país 591 salvo que ya lo hayan puesto explícito (con "+" adelante).
+     */
+    private function normalizarTelefono(string $telefono): string
+    {
+        $tieneCodigoExplicito = str_starts_with(trim($telefono), '+');
+        $digitos = preg_replace('/\D+/', '', $telefono);
+
+        if ($tieneCodigoExplicito || str_starts_with($digitos, '591')) {
+            return $digitos;
+        }
+
+        return '591'.$digitos;
     }
 
     public function enviarPlantilla(
@@ -94,7 +109,7 @@ class WhatsAppService
             $response = Http::withToken(config('services.whatsapp.token'))
                 ->post(config('services.whatsapp.api_url').'/messages', [
                     'messaging_product' => 'whatsapp',
-                    'to' => $notificacion->telefono_destino,
+                    'to' => $this->normalizarTelefono($notificacion->telefono_destino),
                     'type' => 'template',
                     'template' => [
                         'name' => $notificacion->plantilla,
@@ -106,9 +121,24 @@ class WhatsAppService
             if ($response->successful()) {
                 $notificacion->update(['estado' => 'enviado', 'enviado_at' => now()]);
             } else {
+                // El estado queda en la fila (visible en /admin/notificaciones), pero también
+                // se loguea: la primera vez que se probó esto en serio, el único rastro del
+                // rechazo de Meta era la fila en la base — nada en el log ni en la UI.
+                Log::warning('[whatsapp] Meta rechazó el envío', [
+                    'notificacion_id' => $notificacion->id,
+                    'telefono' => $notificacion->telefono_destino,
+                    'plantilla' => $notificacion->plantilla,
+                    'respuesta' => $response->json() ?? $response->body(),
+                ]);
+
                 $notificacion->update(['estado' => 'fallido', 'error' => $response->body()]);
             }
         } catch (\Throwable $e) {
+            Log::error('[whatsapp] Excepción al llamar a la API de Meta', [
+                'notificacion_id' => $notificacion->id,
+                'mensaje' => $e->getMessage(),
+            ]);
+
             $notificacion->update(['estado' => 'fallido', 'error' => $e->getMessage()]);
         }
     }
