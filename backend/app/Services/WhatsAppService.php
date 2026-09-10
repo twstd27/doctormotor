@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\Notificacion;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 /**
  * WhatsApp Business Cloud API (Meta). Requiere WHATSAPP_TOKEN y WHATSAPP_PHONE_NUMBER_ID
@@ -24,10 +23,9 @@ class WhatsAppService
      * @var array<string, \Closure(array<string, mixed>): string>
      */
     private const TEXTOS_PLANTILLA = [
-        // Meta no aprueba una plantilla si una variable queda al principio o al final del
-        // cuerpo — por eso estas tres (antes terminaban justo en {link}) llevan una frase
-        // corta después del enlace.
-        'invitacion_cuenta_cliente' => "Hola {nombre}, te invitamos a seguir el estado de tu vehículo en Doctor Motor. Ingresa a este enlace para crear tu cuenta: {link}. ¡Te esperamos!",
+        // Mismo texto exacto que la plantilla ya aprobada en Meta como Utilidad (ver
+        // WhatsApp Manager) — el link va en el cuerpo, sin botón.
+        'invitacion_cuenta_cliente' => "Hola {nombre}, tu cuenta de Doctor Motor ya está activa. Usa este enlace para ingresar y ver el estado de tu vehículo: {link}. Puedes volver a usarlo cuando quieras.",
         'invitacion_tecnico' => "Hola, te invitamos a unirte al equipo de Doctor Motor. Define tu contraseña aquí: {link}. ¡Bienvenido al equipo!",
         'enlace_acceso' => "Tu enlace de acceso a Doctor Motor: {link}. Válido por tiempo limitado.",
         'ot_en_diagnostico' => "Tu {vehiculo} (OT {codigo_ot}) ya está en diagnóstico.",
@@ -153,36 +151,20 @@ class WhatsAppService
     }
 
     /**
-     * El "link" nunca va en el cuerpo del mensaje — se manda como parámetro del botón de
-     * URL dinámica de la plantilla (solo el token final, la URL base va fija en la config
-     * de la plantilla en Meta). El resto de los parámetros arma el cuerpo, en el mismo
-     * orden en que llegan — tiene que calzar con el orden de {{1}}, {{2}}... de la plantilla.
+     * Todos los parámetros van al cuerpo, en el mismo orden en que llegan — tiene que
+     * calzar con el orden de {{1}}, {{2}}... de la plantilla ya aprobada en Meta. Ninguna
+     * de las plantillas en uso quedó con botón de URL dinámica (se intentó para
+     * invitacion_cuenta_cliente, pero Meta aprobó la versión con el link en el texto).
      */
     private function componentes(array $parametros): array
     {
-        $link = $parametros['link'] ?? null;
-        $parametrosCuerpo = collect($parametros)->except('link');
-
-        $componentes = [];
-
-        if ($parametrosCuerpo->isNotEmpty()) {
-            $componentes[] = [
-                'type' => 'body',
-                'parameters' => $parametrosCuerpo->values()->map(fn ($v) => ['type' => 'text', 'text' => (string) $v])->all(),
-            ];
+        if (empty($parametros)) {
+            return [];
         }
 
-        if ($link) {
-            $componentes[] = [
-                'type' => 'button',
-                'sub_type' => 'url',
-                'index' => '0',
-                'parameters' => [
-                    ['type' => 'text', 'text' => Str::afterLast($link, '/')],
-                ],
-            ];
-        }
-
-        return $componentes;
+        return [[
+            'type' => 'body',
+            'parameters' => collect($parametros)->values()->map(fn ($v) => ['type' => 'text', 'text' => (string) $v])->all(),
+        ]];
     }
 }
