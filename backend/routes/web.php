@@ -2,6 +2,7 @@
 
 use App\Filament\Pages\InformeIngresosEgresos;
 use App\Models\Pago;
+use App\Models\RepartoUtilidad;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Route;
 
@@ -41,4 +42,11 @@ Route::middleware('auth')->prefix('admin-pdf')->group(function () {
             fclose($out);
         }, "ingresos-egresos_{$desde}_{$hasta}.csv");
     })->name('informe-ingresos-egresos.csv');
+
+    Route::get('/reparto-utilidades/{reparto_utilidad}/comprobante', function (RepartoUtilidad $reparto_utilidad) {
+        $reparto_utilidad->load('detalle.socio', 'generadoPor');
+
+        return Pdf::loadView('pdf.reparto-utilidad', ['reparto' => $reparto_utilidad])
+            ->stream("reparto-{$reparto_utilidad->id}.pdf");
+    })->name('admin-pdf.reparto-utilidades.comprobante');
 });

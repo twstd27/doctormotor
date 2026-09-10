@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Resources\Socios\SocioResource;
 use App\Models\GastoEgreso;
 use App\Models\OrdenTrabajo;
 use App\Models\Pago;
@@ -9,6 +10,7 @@ use App\Models\ReglaReparto;
 use App\Models\RepartoUtilidad;
 use App\Models\Socio;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
@@ -46,6 +48,16 @@ class RepartoUtilidades extends Page
         return 'Porcentaje de cada socio sobre la utilidad neta, y generación del reparto por período.';
     }
 
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('anadirSocio')
+                ->label('Añadir socio')
+                ->color('gray')
+                ->url(fn () => SocioResource::getUrl('create')),
+        ];
+    }
+
     private function cargarReglas(): void
     {
         $vigentes = ReglaReparto::whereNull('vigente_hasta')->pluck('porcentaje', 'socio_id');
@@ -69,15 +81,7 @@ class RepartoUtilidades extends Page
 
     public function guardarReglas(): void
     {
-        $suma = $this->sumaPorcentajes();
-
-        if ($suma !== 100.0) {
-            Notification::make()
-                ->title('Los porcentajes deben sumar 100')
-                ->body("Ahora mismo suman {$suma}.")
-                ->danger()
-                ->send();
-
+        if ($this->sumaPorcentajes() !== 100.0) {
             return;
         }
 
@@ -94,6 +98,53 @@ class RepartoUtilidades extends Page
         });
 
         Notification::make()->title('Reglas de reparto actualizadas')->success()->send();
+    }
+
+    public function aplicarRango(string $tipo): void
+    {
+        match ($tipo) {
+            'hoy' => [$this->periodoInicio, $this->periodoFin] = [now()->toDateString(), now()->toDateString()],
+            '7dias' => [$this->periodoInicio, $this->periodoFin] = [now()->subDays(6)->toDateString(), now()->toDateString()],
+            'estemes' => [$this->periodoInicio, $this->periodoFin] = [now()->startOfMonth()->toDateString(), now()->toDateString()],
+            'ano' => [$this->periodoInicio, $this->periodoFin] = [now()->startOfYear()->toDateString(), now()->toDateString()],
+            default => null,
+        };
+    }
+
+    public function rangoActivo(): ?string
+    {
+        $hoy = now()->toDateString();
+
+        return match (true) {
+            $this->periodoInicio === $hoy && $this->periodoFin === $hoy => 'hoy',
+            $this->periodoInicio === now()->subDays(6)->toDateString() && $this->periodoFin === $hoy => '7dias',
+            $this->periodoInicio === now()->startOfMonth()->toDateString() && $this->periodoFin === $hoy => 'estemes',
+            $this->periodoInicio === now()->startOfYear()->toDateString() && $this->periodoFin === $hoy => 'ano',
+            default => null,
+        };
+    }
+
+    public function totalIngresos(): float
+    {
+        return (float) Pago::whereBetween('fecha', [$this->periodoInicio, $this->periodoFin.' 23:59:59'])->sum('monto');
+    }
+
+    public function totalCostosDirectos(): float
+    {
+        return (float) OrdenTrabajo::query()
+            ->join('costos_directos', 'costos_directos.orden_trabajo_id', '=', 'ordenes_trabajo.id')
+            ->whereBetween('costos_directos.created_at', [$this->periodoInicio, $this->periodoFin.' 23:59:59'])
+            ->sum('costos_directos.costo_total');
+    }
+
+    public function totalGastos(): float
+    {
+        return (float) GastoEgreso::whereBetween('fecha', [$this->periodoInicio, $this->periodoFin])->sum('monto');
+    }
+
+    public function utilidadPreview(): float
+    {
+        return $this->totalIngresos() - $this->totalCostosDirectos() - $this->totalGastos();
     }
 
     public function generarReparto(): void
@@ -115,15 +166,9 @@ class RepartoUtilidades extends Page
             return;
         }
 
-        $ingresos = (float) Pago::whereBetween('fecha', [$this->periodoInicio, $this->periodoFin.' 23:59:59'])->sum('monto');
-
-        $costosDirectos = (float) OrdenTrabajo::query()
-            ->join('costos_directos', 'costos_directos.orden_trabajo_id', '=', 'ordenes_trabajo.id')
-            ->whereBetween('costos_directos.created_at', [$this->periodoInicio, $this->periodoFin.' 23:59:59'])
-            ->sum('costos_directos.costo_total');
-
-        $gastos = (float) GastoEgreso::whereBetween('fecha', [$this->periodoInicio, $this->periodoFin])->sum('monto');
-
+        $ingresos = $this->totalIngresos();
+        $costosDirectos = $this->totalCostosDirectos();
+        $gastos = $this->totalGastos();
         $utilidadNeta = $ingresos - $costosDirectos - $gastos;
 
         DB::transaction(function () use ($ingresos, $costosDirectos, $gastos, $utilidadNeta, $reglas) {
@@ -154,10 +199,26 @@ class RepartoUtilidades extends Page
             ->send();
     }
 
+    public function anularReparto(int $repartoUtilidadId): void
+    {
+        RepartoUtilidad::findOrFail($repartoUtilidadId)->delete();
+
+        Notification::make()->title('Reparto anulado')->success()->send();
+    }
+
     public function repartos(): Collection
     {
         return RepartoUtilidad::with('detalle.socio:id,nombre', 'generadoPor:id,nombre')
-            ->orderByDesc('periodo_inicio')
+            ->orderByDesc('generado_at')
             ->get();
+    }
+
+    public static function iniciales(string $nombre): string
+    {
+        return collect(explode(' ', trim($nombre)))
+            ->filter()
+            ->take(2)
+            ->map(fn (string $palabra) => mb_strtoupper(mb_substr($palabra, 0, 1)))
+            ->implode('');
     }
 }
