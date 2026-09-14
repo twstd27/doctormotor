@@ -1,5 +1,6 @@
 import { X } from '@phosphor-icons/react'
 import type { ReactNode } from 'react'
+import { createPortal } from 'react-dom'
 
 interface BottomSheetProps {
   onClose: () => void
@@ -7,7 +8,7 @@ interface BottomSheetProps {
 }
 
 export default function BottomSheet({ onClose, children }: BottomSheetProps) {
-  return (
+  return createPortal(
     <div
       className="fixed inset-0 z-[60] flex items-end justify-center"
       style={{ background: 'rgba(6,8,10,.5)', backdropFilter: 'blur(2px)', animation: 'dmFade .22s ease' }}
@@ -36,6 +37,7 @@ export default function BottomSheet({ onClose, children }: BottomSheetProps) {
         </button>
         <div className="px-5 pt-1 pb-6">{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }

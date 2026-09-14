@@ -8,6 +8,7 @@ use App\Models\Producto;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ProductoController extends Controller
 {
@@ -32,7 +33,13 @@ class ProductoController extends Controller
             'stock_minimo' => ['nullable', 'numeric', 'min:0'],
             'precio_compra_promedio' => ['nullable', 'numeric', 'min:0'],
             'precio_venta' => ['nullable', 'numeric', 'min:0'],
+            'imagen' => ['nullable', 'image', 'max:8192'],
         ]);
+
+        if ($request->hasFile('imagen')) {
+            $data['imagen_url'] = Storage::disk('public')->url($request->file('imagen')->store('productos', 'public'));
+            unset($data['imagen']);
+        }
 
         $producto = Producto::create($data);
 

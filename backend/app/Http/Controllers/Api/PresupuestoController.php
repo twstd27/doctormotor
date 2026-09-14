@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\OrdenTrabajo;
 use App\Models\Presupuesto;
+use App\Services\OrdenTrabajoEstadoService;
 use App\Services\WhatsAppService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
@@ -14,7 +15,10 @@ use Illuminate\Support\Facades\DB;
 
 class PresupuestoController extends Controller
 {
-    public function __construct(private WhatsAppService $whatsApp) {}
+    public function __construct(
+        private WhatsAppService $whatsApp,
+        private OrdenTrabajoEstadoService $estadoService,
+    ) {}
 
     public function pdf(Presupuesto $presupuesto): Response
     {
@@ -150,6 +154,7 @@ class PresupuestoController extends Controller
         $data = $request->validate([
             'descripcion' => ['required', 'string', 'max:255'],
             'tipo' => ['required', 'in:repuesto,mano_obra,tercerizado'],
+            'producto_id' => ['nullable', 'exists:productos,id'],
             'cantidad' => ['required', 'numeric', 'min:0.01'],
             'precio_unitario' => ['required', 'numeric', 'min:0'],
         ]);
@@ -167,7 +172,7 @@ class PresupuestoController extends Controller
             'aprobado' => null,
         ]);
 
-        $ordenes_trabajo->update(['estado' => 'esperando_aprobacion']);
+        $this->estadoService->cambiarA($ordenes_trabajo, 'esperando_aprobacion', $request->user()->id, 'Adicional agregado al presupuesto');
 
         return response()->json(['data' => $item], 201);
     }

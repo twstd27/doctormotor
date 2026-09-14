@@ -2,28 +2,17 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Events\OrdenTrabajoActualizada;
 use App\Http\Controllers\Controller;
 use App\Models\OrdenTrabajo;
-use App\Services\WhatsAppService;
+use App\Services\OrdenTrabajoEstadoService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class OrdenTrabajoController extends Controller
 {
-    public function __construct(private WhatsAppService $whatsApp) {}
+    public function __construct(private OrdenTrabajoEstadoService $estadoService) {}
 
-    /**
-     * Plantilla de WhatsApp por cada estado del Kanban — solo se notifican los que
-     * realmente le importan al cliente, no cada micro-transición interna.
-     */
-    private const PLANTILLAS_POR_ESTADO = [
-        'en_diagnostico' => 'ot_en_diagnostico',
-        'esperando_aprobacion' => 'ot_esperando_aprobacion',
-        'en_reparacion' => 'ot_en_reparacion',
-        'listo_entrega' => 'ot_lista_entrega',
-    ];
     public function index(Request $request): JsonResponse
     {
         $ordenes = OrdenTrabajo::query()
@@ -94,25 +83,12 @@ class OrdenTrabajoController extends Controller
             'comentario' => ['nullable', 'string'],
         ]);
 
-        $estadoAnterior = $ordenes_trabajo->estado;
-
-        DB::transaction(function () use ($ordenes_trabajo, $data, $request, $estadoAnterior) {
-            $ordenes_trabajo->update([
-                'estado' => $data['estado'],
-                'fecha_entrega_real' => $data['estado'] === 'entregado' ? now() : $ordenes_trabajo->fecha_entrega_real,
-            ]);
-
-            $ordenes_trabajo->estadosHistorial()->create([
-                'estado_anterior' => $estadoAnterior,
-                'estado_nuevo' => $data['estado'],
-                'user_id' => $request->user()->id,
-                'comentario' => $data['comentario'] ?? null,
-            ]);
-        });
-
-        $ordenes_trabajo = $ordenes_trabajo->fresh();
-        broadcast(new OrdenTrabajoActualizada($ordenes_trabajo));
-        $this->notificarCambioEstado($ordenes_trabajo);
+        $ordenes_trabajo = $this->estadoService->cambiarA(
+            $ordenes_trabajo,
+            $data['estado'],
+            $request->user()->id,
+            $data['comentario'] ?? null,
+        );
 
         return response()->json(['data' => $ordenes_trabajo]);
     }
@@ -164,27 +140,6 @@ class OrdenTrabajoController extends Controller
             ->get();
 
         return response()->json(['data' => $ordenes]);
-    }
-
-    private function notificarCambioEstado(OrdenTrabajo $ordenTrabajo): void
-    {
-        $plantilla = self::PLANTILLAS_POR_ESTADO[$ordenTrabajo->estado] ?? null;
-        if (! $plantilla) {
-            return;
-        }
-
-        $ordenTrabajo->loadMissing('cliente', 'vehiculo');
-
-        $this->whatsApp->enviarPlantilla(
-            telefono: $ordenTrabajo->cliente->telefono_whatsapp,
-            plantilla: $plantilla,
-            parametros: [
-                'vehiculo' => "{$ordenTrabajo->vehiculo->marca} {$ordenTrabajo->vehiculo->modelo}",
-                'codigo_ot' => $ordenTrabajo->codigo,
-            ],
-            userId: $ordenTrabajo->cliente->user_id,
-            ordenTrabajoId: $ordenTrabajo->id,
-        );
     }
 
 }

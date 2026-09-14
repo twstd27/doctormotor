@@ -226,11 +226,8 @@ export default function KanbanPage() {
         <OtDetailSheet
           orden={seleccionada}
           onClose={() => setSeleccionada(null)}
-          avanzando={mutation.isPending}
-          onAvanzar={() => {
-            const siguiente = ESTADOS[ESTADOS.findIndex((e) => e.value === seleccionada.estado) + 1]
-            if (siguiente) mutation.mutate({ id: seleccionada.id, estado: siguiente.value })
-          }}
+          cambiando={mutation.isPending}
+          onCambiarEstado={(estado) => mutation.mutate({ id: seleccionada.id, estado })}
         />
       )}
     </AppShell>

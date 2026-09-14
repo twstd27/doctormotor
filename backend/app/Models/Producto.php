@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
-    'sku', 'nombre', 'categoria', 'unidad_medida', 'stock_actual', 'stock_minimo',
+    'sku', 'nombre', 'categoria', 'unidad_medida', 'imagen_url', 'stock_actual', 'stock_minimo',
     'precio_compra_promedio', 'precio_venta', 'activo',
 ])]
 class Producto extends Model

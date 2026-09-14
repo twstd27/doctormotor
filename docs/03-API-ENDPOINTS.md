@@ -94,7 +94,7 @@ Convenciones: paginación estándar Laravel (`?page=`), filtros vía query param
 | GET | `/presupuestos/{id}/pdf` | Descarga presupuesto en PDF | todos con acceso |
 | POST | `/presupuestos/{id}/items/{item_id}/responder` | Cliente aprueba/rechaza un ítem (incl. adicionales) | cliente (propio) |
 | POST | `/presupuestos/{id}/responder` | Cliente aprueba/rechaza el presupuesto completo | cliente (propio) |
-| POST | `/ordenes-trabajo/{id}/adicionales` | Técnico reporta un hallazgo/costo adicional durante diagnóstico | operador_tecnico |
+| POST | `/ordenes-trabajo/{id}/adicionales` | Técnico reporta un hallazgo/costo adicional durante diagnóstico (acepta `producto_id` opcional si es repuesto). Mueve la OT a `esperando_aprobacion` y notifica al cliente por WhatsApp (mismo mecanismo que `PATCH .../estado`) | operador_tecnico |
 
 ---
 
@@ -152,7 +152,7 @@ Convenciones: paginación estándar Laravel (`?page=`), filtros vía query param
 | Método | Endpoint | Descripción | Rol |
 |---|---|---|---|
 | GET | `/productos` | Kardex — listado con stock actual, filtro por stock bajo | super_admin, cajero, operador_tecnico |
-| POST | `/productos` | Alta de producto/insumo | super_admin |
+| POST | `/productos` | Alta de producto/insumo. Acepta `multipart/form-data` con `imagen` (opcional) para la foto del producto | super_admin, cajero, operador_tecnico |
 | GET | `/productos/{id}` | Detalle + movimientos recientes | super_admin, operador_tecnico |
 | PUT | `/productos/{id}` | Editar producto (incl. `stock_minimo`) | super_admin |
 | GET | `/productos/{id}/movimientos` | Kardex detallado de movimientos | super_admin |

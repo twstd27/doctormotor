@@ -282,6 +282,7 @@ Kardex de repuestos e insumos.
 | nombre | varchar(150) | |
 | categoria | varchar(80) nullable | ej. "Aceites", "Filtros" |
 | unidad_medida | varchar(20) | ej. "unidad", "litro" |
+| imagen_url | varchar(255) nullable | foto del producto, subida por cajero/operador_tecnico o admin |
 | stock_actual | decimal(10,2) default 0 | actualizado por trigger/observer en cada movimiento |
 | stock_minimo | decimal(10,2) default 0 | dispara alerta |
 | precio_compra_promedio | decimal(10,2) | |

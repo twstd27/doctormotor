@@ -41,3 +41,36 @@ export async function responderItem(presupuestoId: number, itemId: number, aprob
     body: JSON.stringify({ aprobado }),
   })
 }
+
+export interface NuevoPresupuestoItem {
+  tipo: 'repuesto' | 'mano_obra' | 'tercerizado'
+  producto_id?: number | null
+  descripcion: string
+  cantidad: number
+  precio_unitario: number
+}
+
+export async function listarPresupuestosDeOt(otId: number): Promise<Presupuesto[]> {
+  const res = await api<{ data: Presupuesto[] }>(`/ordenes-trabajo/${otId}/presupuestos`)
+  return res.data
+}
+
+export async function crearPresupuesto(otId: number, items: NuevoPresupuestoItem[], descuento = 0): Promise<Presupuesto> {
+  const res = await api<{ data: Presupuesto }>(`/ordenes-trabajo/${otId}/presupuestos`, {
+    method: 'POST',
+    body: JSON.stringify({ items, descuento }),
+  })
+  return res.data
+}
+
+export async function enviarPresupuesto(id: number): Promise<Presupuesto> {
+  const res = await api<{ data: Presupuesto }>(`/presupuestos/${id}/enviar`, { method: 'POST' })
+  return res.data
+}
+
+export async function agregarAdicional(otId: number, item: NuevoPresupuestoItem): Promise<void> {
+  await api(`/ordenes-trabajo/${otId}/adicionales`, {
+    method: 'POST',
+    body: JSON.stringify(item),
+  })
+}

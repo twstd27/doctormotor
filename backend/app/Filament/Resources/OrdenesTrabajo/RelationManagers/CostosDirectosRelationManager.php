@@ -9,6 +9,7 @@ use Filament\Actions\CreateAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\BadgeColumn;
@@ -40,6 +41,10 @@ class CostosDirectosRelationManager extends RelationManager
                     ->options(fn () => Producto::where('activo', true)->pluck('nombre', 'id'))
                     ->searchable()
                     ->preload()
+                    ->live()
+                    ->afterStateUpdated(function (?string $state, Set $set) {
+                        $set('costo_unitario', Producto::find($state)?->precio_venta);
+                    })
                     ->visible(fn (Get $get) => $get('tipo') === 'repuesto'),
                 Select::make('tecnico_id')
                     ->label('Técnico')
