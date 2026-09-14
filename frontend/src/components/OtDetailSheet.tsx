@@ -27,6 +27,8 @@ export default function OtDetailSheet({ orden, onClose, onCambiarEstado, cambian
   const tono = TONO_CLASES[TONO_ESTADO[orden.estado]]
   const estadoLabel = ESTADOS.find((e) => e.value === orden.estado)?.label ?? orden.estado
   const cerrada = orden.estado === 'entregado' || orden.estado === 'cancelado'
+  const puedeEditarInspeccion = orden.estado === 'recepcionado'
+  const muestraInspeccion = puedeEditarInspeccion || orden.inspeccion_exists
   const siguiente = cerrada ? null : siguienteEstado(orden.estado)
   const siguienteLabel = siguiente ? ESTADOS.find((e) => e.value === siguiente)?.label : null
   const otrosEstados = ESTADOS.filter((e) => e.value !== orden.estado)
@@ -66,7 +68,7 @@ export default function OtDetailSheet({ orden, onClose, onCambiarEstado, cambian
       </div>
 
       <div className="mt-4 flex flex-col gap-2">
-        {orden.estado === 'recepcionado' && (
+        {muestraInspeccion && (
           <button
             type="button"
             onClick={() => navigate(`/ordenes-trabajo/${orden.id}/inspeccion`)}
@@ -74,7 +76,9 @@ export default function OtDetailSheet({ orden, onClose, onCambiarEstado, cambian
             style={{ border: '1px solid var(--color-app-line)' }}
           >
             <Signature weight="fill" size={20} className="text-lime-500" />
-            <span className="flex-1 text-sm font-medium">Inspección de ingreso + firma</span>
+            <span className="flex-1 text-sm font-medium">
+              {puedeEditarInspeccion ? 'Inspección de ingreso + firma' : 'Ver inspección de ingreso'}
+            </span>
             <CaretRight size={16} className="text-app-faint" />
           </button>
         )}

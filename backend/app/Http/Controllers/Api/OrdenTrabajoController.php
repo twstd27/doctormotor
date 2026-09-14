@@ -19,6 +19,7 @@ class OrdenTrabajoController extends Controller
             ->when($request->string('estado')->toString(), fn ($q, $estado) => $q->where('estado', $estado))
             ->when($request->integer('tecnico_asignado_id'), fn ($q, $id) => $q->where('tecnico_asignado_id', $id))
             ->with(['vehiculo:id,placa,marca,modelo', 'cliente:id,nombre', 'tecnicoAsignado:id,nombre'])
+            ->withExists('inspeccion')
             ->orderByDesc('fecha_ingreso')
             ->paginate(min($request->integer('per_page', 30), 100));
 

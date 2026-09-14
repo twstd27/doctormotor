@@ -11,8 +11,8 @@ class InspeccionController extends Controller
 {
     public function store(Request $request, OrdenTrabajo $ordenes_trabajo): JsonResponse
     {
-        if ($ordenes_trabajo->estaCerrada()) {
-            return response()->json(['message' => 'Esta OT ya está entregada o cancelada, no se puede modificar la inspección.'], 422);
+        if ($ordenes_trabajo->estado !== 'recepcionado') {
+            return response()->json(['message' => 'La inspección solo se puede crear o editar mientras la OT está en estado "Recepcionado".'], 422);
         }
 
         $data = $request->validate([
@@ -28,8 +28,8 @@ class InspeccionController extends Controller
 
     public function update(Request $request, OrdenTrabajo $ordenes_trabajo): JsonResponse
     {
-        if ($ordenes_trabajo->estaCerrada()) {
-            return response()->json(['message' => 'Esta OT ya está entregada o cancelada, no se puede modificar la inspección.'], 422);
+        if ($ordenes_trabajo->estado !== 'recepcionado') {
+            return response()->json(['message' => 'La inspección solo se puede crear o editar mientras la OT está en estado "Recepcionado".'], 422);
         }
 
         $data = $request->validate([
@@ -54,8 +54,8 @@ class InspeccionController extends Controller
      */
     public function firma(Request $request, OrdenTrabajo $ordenes_trabajo): JsonResponse
     {
-        if ($ordenes_trabajo->estaCerrada()) {
-            return response()->json(['message' => 'Esta OT ya está entregada o cancelada, no se puede volver a firmar.'], 422);
+        if ($ordenes_trabajo->estado !== 'recepcionado') {
+            return response()->json(['message' => 'La firma solo se puede registrar o reemplazar mientras la OT está en estado "Recepcionado".'], 422);
         }
 
         $data = $request->validate([

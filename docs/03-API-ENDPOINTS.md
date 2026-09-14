@@ -52,7 +52,7 @@ Convenciones: paginación estándar Laravel (`?page=`), filtros vía query param
 
 | Método | Endpoint | Descripción | Rol |
 |---|---|---|---|
-| GET | `/ordenes-trabajo` | Listado/kanban (filtro por `estado`, `tecnico_asignado_id`, fecha) | super_admin, cajero, operador_tecnico |
+| GET | `/ordenes-trabajo` | Listado/kanban (filtro por `estado`, `tecnico_asignado_id`, fecha). Cada ítem trae `inspeccion_exists` (boolean) para saber si mostrar el acceso a la inspección sin pedir el detalle completo | super_admin, cajero, operador_tecnico |
 | POST | `/ordenes-trabajo` | Crear OT (recepción de vehículo) | super_admin, cajero, operador_tecnico |
 | GET | `/ordenes-trabajo/{id}` | Detalle completo de la OT | super_admin, cajero, operador_tecnico, cliente (propia) |
 | PUT | `/ordenes-trabajo/{id}` | Editar datos generales de la OT | super_admin, cajero, operador_tecnico |
@@ -67,9 +67,9 @@ Convenciones: paginación estándar Laravel (`?page=`), filtros vía query param
 
 | Método | Endpoint | Descripción | Rol |
 |---|---|---|---|
-| POST | `/ordenes-trabajo/{id}/inspeccion` | Crear/registrar inspección de recepción | super_admin, cajero, operador_tecnico |
-| PUT | `/ordenes-trabajo/{id}/inspeccion` | Editar inspección (antes de firma) | super_admin, cajero, operador_tecnico |
-| POST | `/ordenes-trabajo/{id}/inspeccion/firma` | Sube firma digital del cliente (imagen base64/canvas) | super_admin, cajero, operador_tecnico |
+| POST | `/ordenes-trabajo/{id}/inspeccion` | Crear/registrar inspección de recepción. Solo mientras la OT está en estado `recepcionado` (422 en cualquier otro estado) | super_admin, cajero, operador_tecnico |
+| PUT | `/ordenes-trabajo/{id}/inspeccion` | Editar inspección. Mismo límite: solo en `recepcionado` | super_admin, cajero, operador_tecnico |
+| POST | `/ordenes-trabajo/{id}/inspeccion/firma` | Sube firma digital del cliente (imagen base64/canvas). Mismo límite: solo en `recepcionado` — fuera de eso, la firma ya guardada es de solo lectura | super_admin, cajero, operador_tecnico |
 
 ### Evidencias (fotos/video, incluye flujo offline)
 

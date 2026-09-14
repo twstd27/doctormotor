@@ -1,4 +1,5 @@
 import { api } from './api'
+import type { Inspeccion } from './inspeccion'
 
 export type Estado =
   | 'recepcionado'
@@ -30,6 +31,7 @@ export interface OrdenTrabajo {
   vehiculo: { id: number; placa: string; marca: string; modelo: string }
   cliente: { id: number; nombre: string }
   tecnico_asignado: { id: number; nombre: string } | null
+  inspeccion_exists: boolean
 }
 
 export type Tono = 'neutro' | 'cya' | 'amb' | 'lima'
@@ -81,6 +83,15 @@ export async function evidenciasDeOtServidor(otId: number): Promise<EvidenciaSer
 
 export async function listarOrdenesTrabajo(): Promise<OrdenTrabajo[]> {
   const res = await api<PaginatedResponse<OrdenTrabajo>>('/ordenes-trabajo?estado=&per_page=100')
+  return res.data
+}
+
+export interface OrdenTrabajoDetalle extends Omit<OrdenTrabajo, 'inspeccion_exists'> {
+  inspeccion: Inspeccion | null
+}
+
+export async function obtenerOrdenTrabajo(id: number): Promise<OrdenTrabajoDetalle> {
+  const res = await api<{ data: OrdenTrabajoDetalle }>(`/ordenes-trabajo/${id}`)
   return res.data
 }
 
