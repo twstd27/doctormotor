@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CaretLeft, CaretRight, CarProfile, Tray } from '@phosphor-icons/react'
-import { useState } from 'react'
+import { useEffect, useRef } from 'react'
 import AppShell from '../components/AppShell'
 import OtDetailSheet from '../components/OtDetailSheet'
 import {
@@ -14,6 +14,7 @@ import {
   type OrdenTrabajo,
 } from '../lib/ordenesTrabajo'
 import { useAuthStore } from '../store/auth'
+import { useKanbanUiStore } from '../store/kanbanUi'
 import { useToastStore } from '../store/toast'
 
 function CardOt({ ot, compact, onClick }: { ot: OrdenTrabajo; compact?: boolean; onClick: () => void }) {
@@ -91,8 +92,10 @@ function Vacio({ compact }: { compact?: boolean }) {
 export default function KanbanPage() {
   const queryClient = useQueryClient()
   const showToast = useToastStore((s) => s.show)
-  const [seleccionada, setSeleccionada] = useState<OrdenTrabajo | null>(null)
-  const [activeStage, setActiveStage] = useState(0)
+  const activeStage = useKanbanUiStore((s) => s.activeStage)
+  const setActiveStage = useKanbanUiStore((s) => s.setActiveStage)
+  const otSeleccionadaId = useKanbanUiStore((s) => s.otSeleccionadaId)
+  const setOtSeleccionadaId = useKanbanUiStore((s) => s.setOtSeleccionadaId)
   const hasHydrated = useAuthStore((s) => s.hasHydrated)
 
   const { data: ordenes = [], isLoading } = useQuery({
@@ -102,11 +105,23 @@ export default function KanbanPage() {
     enabled: hasHydrated,
   })
 
+  const seleccionada = otSeleccionadaId ? (ordenes.find((o) => o.id === otSeleccionadaId) ?? null) : null
+
+  // Al volver de otra pantalla (ej. Inspección) con una OT ya abierta, salta a la columna
+  // donde está ahora — puede haber cambiado de estado mientras el usuario no miraba el tablero.
+  const yaSincronizado = useRef(false)
+  useEffect(() => {
+    if (yaSincronizado.current || !seleccionada) return
+    const idx = ESTADOS.findIndex((e) => e.value === seleccionada.estado)
+    if (idx !== -1) setActiveStage(idx)
+    yaSincronizado.current = true
+  }, [seleccionada, setActiveStage])
+
   const mutation = useMutation({
     mutationFn: ({ id, estado }: { id: number; estado: Estado }) => cambiarEstado(id, estado),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ['ordenes-trabajo'] })
-      setSeleccionada(null)
+      setOtSeleccionadaId(null)
       const label = ESTADOS.find((e) => e.value === variables.estado)?.label
       showToast(`Orden movida a "${label}"`)
     },
@@ -148,7 +163,7 @@ export default function KanbanPage() {
           <button
             type="button"
             disabled={activeStage === 0}
-            onClick={() => setActiveStage((s) => Math.max(0, s - 1))}
+            onClick={() => setActiveStage(Math.max(0, activeStage - 1))}
             className="flex size-11 items-center justify-center rounded-xl text-app-faint disabled:opacity-30"
           >
             <CaretLeft size={18} />
@@ -165,7 +180,7 @@ export default function KanbanPage() {
           <button
             type="button"
             disabled={activeStage === ESTADOS.length - 1}
-            onClick={() => setActiveStage((s) => Math.min(ESTADOS.length - 1, s + 1))}
+            onClick={() => setActiveStage(Math.min(ESTADOS.length - 1, activeStage + 1))}
             className="flex size-11 items-center justify-center rounded-xl text-app-faint disabled:opacity-30"
           >
             <CaretRight size={18} />
@@ -186,7 +201,7 @@ export default function KanbanPage() {
 
         <div className="mt-4 flex flex-col gap-2.5">
           {itemsActivos.map((ot) => (
-            <CardOt key={ot.id} ot={ot} onClick={() => setSeleccionada(ot)} />
+            <CardOt key={ot.id} ot={ot} onClick={() => setOtSeleccionadaId(ot.id)} />
           ))}
           {itemsActivos.length === 0 && <Vacio />}
         </div>
@@ -213,7 +228,7 @@ export default function KanbanPage() {
               </header>
               <div className="no-scrollbar flex flex-1 flex-col gap-2 overflow-y-auto">
                 {items.map((ot) => (
-                  <CardOt key={ot.id} ot={ot} compact onClick={() => setSeleccionada(ot)} />
+                  <CardOt key={ot.id} ot={ot} compact onClick={() => setOtSeleccionadaId(ot.id)} />
                 ))}
                 {items.length === 0 && <Vacio compact />}
               </div>
@@ -225,7 +240,7 @@ export default function KanbanPage() {
       {seleccionada && (
         <OtDetailSheet
           orden={seleccionada}
-          onClose={() => setSeleccionada(null)}
+          onClose={() => setOtSeleccionadaId(null)}
           cambiando={mutation.isPending}
           onCambiarEstado={(estado) => mutation.mutate({ id: seleccionada.id, estado })}
         />
