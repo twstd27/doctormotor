@@ -45,6 +45,14 @@ class CajaController extends Controller
 
     public function cierre(Request $request, CajaCierre $caja): JsonResponse
     {
+        if ($caja->cajero_id !== $request->user()->id && $request->user()->rol !== 'super_admin') {
+            return response()->json(['message' => 'Esta caja pertenece a otro cajero.'], 403);
+        }
+
+        if ($caja->estado !== 'abierta') {
+            return response()->json(['message' => 'Esta caja ya está cerrada.'], 422);
+        }
+
         $data = $request->validate([
             'monto_contado' => ['required', 'numeric', 'min:0'],
         ]);

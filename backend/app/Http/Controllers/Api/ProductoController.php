@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exceptions\StockInsuficienteException;
 use App\Http\Controllers\Controller;
 use App\Models\MovimientoInventario;
 use App\Models\Producto;
@@ -82,14 +83,18 @@ class ProductoController extends Controller
             'motivo' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $this->registrarMovimiento(
-            productoId: $producto->id,
-            tipo: 'ajuste',
-            cantidad: $data['cantidad'],
-            referenciaId: null,
-            referenciaTipo: null,
-            userId: $request->user()->id,
-        );
+        try {
+            $this->registrarMovimiento(
+                productoId: $producto->id,
+                tipo: 'ajuste',
+                cantidad: $data['cantidad'],
+                referenciaId: null,
+                referenciaTipo: null,
+                userId: $request->user()->id,
+            );
+        } catch (StockInsuficienteException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
 
         return response()->json(['data' => $producto->fresh()]);
     }
@@ -117,6 +122,12 @@ class ProductoController extends Controller
         int $userId,
     ): MovimientoInventario {
         return DB::transaction(function () use ($productoId, $tipo, $cantidad, $referenciaId, $referenciaTipo, $userId) {
+            $producto = Producto::where('id', $productoId)->lockForUpdate()->firstOrFail();
+
+            if ($producto->stock_actual + $cantidad < 0) {
+                throw new StockInsuficienteException($producto->nombre, (float) $producto->stock_actual, abs($cantidad));
+            }
+
             $movimiento = MovimientoInventario::create([
                 'producto_id' => $productoId,
                 'tipo' => $tipo,
@@ -127,7 +138,7 @@ class ProductoController extends Controller
                 'fecha' => now(),
             ]);
 
-            Producto::where('id', $productoId)->increment('stock_actual', $cantidad);
+            $producto->increment('stock_actual', $cantidad);
 
             return $movimiento;
         });

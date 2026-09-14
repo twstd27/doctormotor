@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\OrdenesTrabajo\Schemas;
 
+use App\Models\OrdenTrabajo;
 use App\Models\User;
 use App\Models\Vehiculo;
 use Filament\Forms\Components\DatePicker;
@@ -14,6 +15,15 @@ use Filament\Schemas\Schema;
 
 class OrdenTrabajoForm
 {
+    /**
+     * Una OT entregada o cancelada queda de solo lectura en el panel — el historial no
+     * debe alterarse una vez cerrado el trabajo (ver App\Models\OrdenTrabajo::estaCerrada).
+     */
+    private static function cerrada(?OrdenTrabajo $record): bool
+    {
+        return $record?->estaCerrada() ?? false;
+    }
+
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -62,24 +72,29 @@ class OrdenTrabajoForm
                 Textarea::make('descripcion_problema')
                     ->label('Descripción del problema')
                     ->required()
+                    ->disabled(fn (?OrdenTrabajo $record) => self::cerrada($record))
                     ->columnSpanFull(),
                 TextInput::make('kilometraje_ingreso')
                     ->label('Kilometraje de ingreso')
                     ->required()
                     ->numeric()
                     ->minValue(0)
-                    ->suffix('km'),
+                    ->suffix('km')
+                    ->disabled(fn (?OrdenTrabajo $record) => self::cerrada($record)),
                 Select::make('nivel_gasolina')
                     ->label('Nivel de gasolina')
                     ->options(['E' => 'Vacío', '1/4' => '1/4', '1/2' => '1/2', '3/4' => '3/4', 'F' => 'Lleno'])
-                    ->required(),
+                    ->required()
+                    ->disabled(fn (?OrdenTrabajo $record) => self::cerrada($record)),
                 Select::make('tecnico_asignado_id')
                     ->label('Técnico asignado')
                     ->options(fn () => User::where('rol', 'operador_tecnico')->pluck('nombre', 'id'))
                     ->searchable()
-                    ->helperText('Se puede asignar después desde el tablero.'),
+                    ->helperText('Se puede asignar después desde el tablero.')
+                    ->disabled(fn (?OrdenTrabajo $record) => self::cerrada($record)),
                 DatePicker::make('fecha_entrega_estimada')
-                    ->label('Entrega estimada'),
+                    ->label('Entrega estimada')
+                    ->disabled(fn (?OrdenTrabajo $record) => self::cerrada($record)),
             ]);
     }
 }

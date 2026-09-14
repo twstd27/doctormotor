@@ -37,6 +37,10 @@ class PresupuestoController extends Controller
 
     public function store(Request $request, OrdenTrabajo $ordenes_trabajo): JsonResponse
     {
+        if ($ordenes_trabajo->estaCerrada()) {
+            return response()->json(['message' => 'Esta OT ya está entregada o cancelada, no se le pueden crear más presupuestos.'], 422);
+        }
+
         $data = $request->validate([
             'items' => ['required', 'array', 'min:1'],
             'items.*.tipo' => ['required', 'in:repuesto,mano_obra,tercerizado'],
@@ -85,6 +89,10 @@ class PresupuestoController extends Controller
             return response()->json(['message' => 'Solo se puede editar un presupuesto en borrador.'], 422);
         }
 
+        if ($presupuesto->ordenTrabajo->estaCerrada()) {
+            return response()->json(['message' => 'Esta OT ya está entregada o cancelada, no se puede editar su presupuesto.'], 422);
+        }
+
         $data = $request->validate([
             'descuento' => ['nullable', 'numeric', 'min:0'],
         ]);
@@ -101,6 +109,14 @@ class PresupuestoController extends Controller
 
     public function enviar(Presupuesto $presupuesto): JsonResponse
     {
+        if ($presupuesto->ordenTrabajo->estaCerrada()) {
+            return response()->json(['message' => 'Esta OT ya está entregada o cancelada, no se puede enviar su presupuesto.'], 422);
+        }
+
+        if ($presupuesto->estado !== 'borrador') {
+            return response()->json(['message' => 'Este presupuesto ya fue enviado.'], 422);
+        }
+
         $presupuesto->update(['estado' => 'enviado']);
         $presupuesto->load('ordenTrabajo.cliente');
 
@@ -120,6 +136,10 @@ class PresupuestoController extends Controller
 
     public function responderItem(Request $request, Presupuesto $presupuesto, int $item): JsonResponse
     {
+        if ($presupuesto->estado === 'aprobado' || $presupuesto->estado === 'rechazado') {
+            return response()->json(['message' => 'Este presupuesto ya fue respondido.'], 422);
+        }
+
         $data = $request->validate(['aprobado' => ['required', 'boolean']]);
 
         $presupuestoItem = $presupuesto->items()->findOrFail($item);
@@ -130,6 +150,10 @@ class PresupuestoController extends Controller
 
     public function responder(Request $request, Presupuesto $presupuesto): JsonResponse
     {
+        if ($presupuesto->estado === 'aprobado' || $presupuesto->estado === 'rechazado') {
+            return response()->json(['message' => 'Este presupuesto ya fue respondido.'], 422);
+        }
+
         $data = $request->validate(['aprobado' => ['required', 'boolean']]);
 
         $presupuesto->update([
@@ -151,6 +175,10 @@ class PresupuestoController extends Controller
      */
     public function adicionales(Request $request, OrdenTrabajo $ordenes_trabajo): JsonResponse
     {
+        if ($ordenes_trabajo->estaCerrada()) {
+            return response()->json(['message' => 'Esta OT ya está entregada o cancelada, no se le pueden agregar más adicionales.'], 422);
+        }
+
         $data = $request->validate([
             'descripcion' => ['required', 'string', 'max:255'],
             'tipo' => ['required', 'in:repuesto,mano_obra,tercerizado'],
@@ -163,6 +191,10 @@ class PresupuestoController extends Controller
 
         if (! $presupuesto) {
             return response()->json(['message' => 'La OT todavía no tiene un presupuesto base.'], 422);
+        }
+
+        if ($presupuesto->estado === 'aprobado' || $presupuesto->estado === 'rechazado') {
+            return response()->json(['message' => 'El presupuesto vigente ya fue respondido, no se le pueden agregar más adicionales.'], 422);
         }
 
         $item = $presupuesto->items()->create([

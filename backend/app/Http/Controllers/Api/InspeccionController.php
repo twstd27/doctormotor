@@ -11,6 +11,10 @@ class InspeccionController extends Controller
 {
     public function store(Request $request, OrdenTrabajo $ordenes_trabajo): JsonResponse
     {
+        if ($ordenes_trabajo->estaCerrada()) {
+            return response()->json(['message' => 'Esta OT ya está entregada o cancelada, no se puede modificar la inspección.'], 422);
+        }
+
         $data = $request->validate([
             'accesorios' => ['nullable', 'array'],
             'rayones_previos' => ['nullable', 'array'],
@@ -24,6 +28,10 @@ class InspeccionController extends Controller
 
     public function update(Request $request, OrdenTrabajo $ordenes_trabajo): JsonResponse
     {
+        if ($ordenes_trabajo->estaCerrada()) {
+            return response()->json(['message' => 'Esta OT ya está entregada o cancelada, no se puede modificar la inspección.'], 422);
+        }
+
         $data = $request->validate([
             'accesorios' => ['nullable', 'array'],
             'rayones_previos' => ['nullable', 'array'],
@@ -46,6 +54,10 @@ class InspeccionController extends Controller
      */
     public function firma(Request $request, OrdenTrabajo $ordenes_trabajo): JsonResponse
     {
+        if ($ordenes_trabajo->estaCerrada()) {
+            return response()->json(['message' => 'Esta OT ya está entregada o cancelada, no se puede volver a firmar.'], 422);
+        }
+
         $data = $request->validate([
             'firma_base64' => ['required', 'string'],
         ]);

@@ -49,7 +49,8 @@ class CajaCierresTable
                     ->label('Cerrar caja')
                     ->icon('heroicon-o-lock-closed')
                     ->color('danger')
-                    ->visible(fn (CajaCierre $record) => $record->estado === 'abierta')
+                    ->visible(fn (CajaCierre $record) => $record->estado === 'abierta'
+                        && ($record->cajero_id === auth()->id() || auth()->user()->rol === 'super_admin'))
                     ->schema([
                         TextInput::make('monto_contado')
                             ->label('Monto contado en efectivo')

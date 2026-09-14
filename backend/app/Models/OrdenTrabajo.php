@@ -26,6 +26,17 @@ class OrdenTrabajo extends Model
         'control_calidad', 'listo_entrega', 'entregado', 'cancelado',
     ];
 
+    private const ESTADOS_CERRADOS = ['entregado', 'cancelado'];
+
+    /**
+     * Una OT entregada o cancelada es de solo lectura: no se le suman costos, presupuestos,
+     * evidencias ni cambios de datos — el historial de lo que ya pasó no debe alterarse.
+     */
+    public function estaCerrada(): bool
+    {
+        return in_array($this->estado, self::ESTADOS_CERRADOS, true);
+    }
+
     protected function casts(): array
     {
         return [

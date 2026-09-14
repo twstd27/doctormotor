@@ -61,6 +61,10 @@ class OrdenTrabajoController extends Controller
 
     public function update(Request $request, OrdenTrabajo $ordenes_trabajo): JsonResponse
     {
+        if ($ordenes_trabajo->estaCerrada()) {
+            return response()->json(['message' => 'Esta OT ya está entregada o cancelada, no se puede editar.'], 422);
+        }
+
         $data = $request->validate([
             'descripcion_problema' => ['sometimes', 'string'],
             'kilometraje_ingreso' => ['sometimes', 'integer', 'min:0'],
@@ -75,9 +79,14 @@ class OrdenTrabajoController extends Controller
 
     /**
      * Cambia el estado de la OT (drag & drop del Kanban) y dispara el evento en tiempo real.
+     * Una vez entregada o cancelada, la OT queda cerrada — ya no se puede mover a otro estado.
      */
     public function cambiarEstado(Request $request, OrdenTrabajo $ordenes_trabajo): JsonResponse
     {
+        if ($ordenes_trabajo->estaCerrada()) {
+            return response()->json(['message' => 'Esta OT ya está entregada o cancelada, no se puede cambiar su estado.'], 422);
+        }
+
         $data = $request->validate([
             'estado' => ['required', 'in:'.implode(',', OrdenTrabajo::ESTADOS)],
             'comentario' => ['nullable', 'string'],
@@ -95,6 +104,10 @@ class OrdenTrabajoController extends Controller
 
     public function asignarTecnico(Request $request, OrdenTrabajo $ordenes_trabajo): JsonResponse
     {
+        if ($ordenes_trabajo->estaCerrada()) {
+            return response()->json(['message' => 'Esta OT ya está entregada o cancelada, no se puede reasignar técnico.'], 422);
+        }
+
         $data = $request->validate([
             'tecnico_asignado_id' => ['required', 'exists:users,id'],
         ]);

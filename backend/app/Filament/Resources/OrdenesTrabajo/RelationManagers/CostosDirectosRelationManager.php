@@ -2,16 +2,19 @@
 
 namespace App\Filament\Resources\OrdenesTrabajo\RelationManagers;
 
+use App\Exceptions\StockInsuficienteException;
 use App\Http\Controllers\Api\ProductoController;
 use App\Models\Producto;
 use App\Models\User;
 use Filament\Actions\CreateAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
+use Filament\Support\Exceptions\Halt;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
@@ -129,25 +132,30 @@ class CostosDirectosRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make()
                     ->label('Registrar costo')
+                    ->visible(fn (self $livewire) => ! $livewire->getOwnerRecord()->estaCerrada())
                     ->using(function (array $data, self $livewire) {
                         $cantidad = $data['cantidad'] ?? 1;
                         $data['cantidad'] = $cantidad;
                         $data['costo_total'] = $cantidad * $data['costo_unitario'];
 
-                        $costo = $livewire->getOwnerRecord()->costosDirectos()->create($data);
-
                         if ($data['tipo'] === 'repuesto' && ! empty($data['producto_id'])) {
-                            app(ProductoController::class)->registrarMovimiento(
-                                productoId: $data['producto_id'],
-                                tipo: 'salida_ot',
-                                cantidad: -$cantidad,
-                                referenciaId: $livewire->getOwnerRecord()->id,
-                                referenciaTipo: 'orden_trabajo',
-                                userId: auth()->id(),
-                            );
+                            try {
+                                app(ProductoController::class)->registrarMovimiento(
+                                    productoId: $data['producto_id'],
+                                    tipo: 'salida_ot',
+                                    cantidad: -$cantidad,
+                                    referenciaId: $livewire->getOwnerRecord()->id,
+                                    referenciaTipo: 'orden_trabajo',
+                                    userId: auth()->id(),
+                                );
+                            } catch (StockInsuficienteException $e) {
+                                Notification::make()->title($e->getMessage())->danger()->send();
+
+                                throw new Halt();
+                            }
                         }
 
-                        return $costo;
+                        return $livewire->getOwnerRecord()->costosDirectos()->create($data);
                     }),
             ]);
     }

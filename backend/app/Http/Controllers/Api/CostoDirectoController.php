@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exceptions\StockInsuficienteException;
 use App\Http\Controllers\Controller;
 use App\Models\OrdenTrabajo;
 use Illuminate\Http\JsonResponse;
@@ -11,6 +12,10 @@ class CostoDirectoController extends Controller
 {
     public function store(Request $request, OrdenTrabajo $ordenes_trabajo): JsonResponse
     {
+        if ($ordenes_trabajo->estaCerrada()) {
+            return response()->json(['message' => 'Esta OT ya está entregada o cancelada, no se le pueden agregar más costos.'], 422);
+        }
+
         $data = $request->validate([
             'tipo' => ['required', 'in:repuesto,mano_obra,tercerizado'],
             'producto_id' => ['nullable', 'exists:productos,id'],
@@ -22,22 +27,26 @@ class CostoDirectoController extends Controller
 
         $cantidad = $data['cantidad'] ?? 1;
 
+        if ($data['tipo'] === 'repuesto' && ! empty($data['producto_id'])) {
+            try {
+                app(ProductoController::class)->registrarMovimiento(
+                    productoId: $data['producto_id'],
+                    tipo: 'salida_ot',
+                    cantidad: -$cantidad,
+                    referenciaId: $ordenes_trabajo->id,
+                    referenciaTipo: 'orden_trabajo',
+                    userId: $request->user()->id,
+                );
+            } catch (StockInsuficienteException $e) {
+                return response()->json(['message' => $e->getMessage()], 422);
+            }
+        }
+
         $costo = $ordenes_trabajo->costosDirectos()->create([
             ...$data,
             'cantidad' => $cantidad,
             'costo_total' => $cantidad * $data['costo_unitario'],
         ]);
-
-        if ($data['tipo'] === 'repuesto' && ! empty($data['producto_id'])) {
-            app(ProductoController::class)->registrarMovimiento(
-                productoId: $data['producto_id'],
-                tipo: 'salida_ot',
-                cantidad: -$cantidad,
-                referenciaId: $ordenes_trabajo->id,
-                referenciaTipo: 'orden_trabajo',
-                userId: $request->user()->id,
-            );
-        }
 
         return response()->json(['data' => $costo], 201);
     }
