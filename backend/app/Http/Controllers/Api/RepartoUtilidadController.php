@@ -36,10 +36,15 @@ class RepartoUtilidadController extends Controller
             return response()->json(['message' => 'No hay reglas de reparto configuradas.'], 422);
         }
 
-        $ingresos = Pago::whereBetween('fecha', [$data['periodo_inicio'], $data['periodo_fin']])->sum('monto');
+        // 'fecha'/'created_at' son timestamps con hora — el límite superior necesita
+        // ' 23:59:59' o excluye todo el día salvo lo registrado justo a medianoche
+        // (mismo ajuste que ya usa la página de Filament, ver RepartoUtilidades::totalIngresos).
+        $finDelDia = $data['periodo_fin'].' 23:59:59';
+
+        $ingresos = Pago::whereBetween('fecha', [$data['periodo_inicio'], $finDelDia])->sum('monto');
         $costosDirectos = OrdenTrabajo::query()
             ->join('costos_directos', 'costos_directos.orden_trabajo_id', '=', 'ordenes_trabajo.id')
-            ->whereBetween('costos_directos.created_at', [$data['periodo_inicio'], $data['periodo_fin']])
+            ->whereBetween('costos_directos.created_at', [$data['periodo_inicio'], $finDelDia])
             ->sum('costos_directos.costo_total');
         $gastos = GastoEgreso::whereBetween('fecha', [$data['periodo_inicio'], $data['periodo_fin']])->sum('monto');
 

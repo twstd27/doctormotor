@@ -63,9 +63,16 @@ return [
     | will be used by the PHP date and date-time functions. The timezone
     | is set to "UTC" by default as it is suitable for most use cases.
     |
+    | Doctor Motor opera solo en Bolivia (UTC-4, sin horario de verano) — se fija acá
+    | en vez de UTC porque todo `now()`/`isToday()`/`whereDate(...)` del negocio
+    | (Kanban, Kardex, caja, informes, reparto de utilidades) necesita alinearse con
+    | el día calendario real del taller, no con el de un servidor en otro huso horario.
+    | Sin esto, cualquier cosa registrada entre las 20:00 y medianoche hora Bolivia
+    | quedaba fechada "mañana" para el sistema.
+    |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'America/La_Paz',
 
     /*
     |--------------------------------------------------------------------------
