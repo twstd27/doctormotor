@@ -14,7 +14,10 @@ class OrdenTrabajoEstadoService
      */
     private const PLANTILLAS_POR_ESTADO = [
         'en_diagnostico' => 'ot_en_diagnostico',
-        'esperando_aprobacion' => 'ot_esperando_aprobacion',
+        // Nombre distinto de la plantilla original ("ot_esperando_aprobacion") porque esa
+        // quedó aprobada como Marketing en Meta y no se puede editar ni volver a categorizar
+        // in place — se creó esta con otro nombre y la redacción correcta como Utilidad.
+        'esperando_aprobacion' => 'ot_presupuesto_listo',
         'en_reparacion' => 'ot_en_reparacion',
         'listo_entrega' => 'ot_lista_entrega',
     ];

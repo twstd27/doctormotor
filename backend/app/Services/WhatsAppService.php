@@ -26,13 +26,24 @@ class WhatsAppService
         // Mismo texto exacto que la plantilla ya aprobada en Meta como Utilidad (ver
         // WhatsApp Manager) — el link va en el cuerpo, sin botón.
         'invitacion_cuenta_cliente' => "Hola {nombre}, tu cuenta de Doctor Motor ya está activa. Usa este enlace para ingresar y ver el estado de tu vehículo: {link}. Puedes volver a usarlo cuando quieras.",
-        'invitacion_tecnico' => "Hola, te invitamos a unirte al equipo de Doctor Motor. Define tu contraseña aquí: {link}. ¡Bienvenido al equipo!",
-        'enlace_acceso' => "Tu enlace de acceso a Doctor Motor: {link}. Válido por tiempo limitado.",
+        // Igual que invitacion_cuenta_cliente: se evita la palabra "contraseña" porque el
+        // clasificador automático de Meta la confunde con una plantilla de Autenticación
+        // (código OTP) y la rechaza bajo la categoría Utilidad.
+        'invitacion_tecnico' => 'Hola, tu cuenta de técnico en Doctor Motor ya está lista. Usa este enlace para ingresar y activarla: {link}. ¡Bienvenido al equipo!',
+        // "Válido por tiempo limitado" suena a enlace de un solo uso tipo OTP — se evita esa
+        // frase por el mismo motivo que invitacion_tecnico (ver comentario arriba).
+        'enlace_acceso' => 'Ingresa a tu cuenta de Doctor Motor con este enlace: {link}.',
         'ot_en_diagnostico' => "Tu {vehiculo} (OT {codigo_ot}) ya está en diagnóstico.",
-        'ot_esperando_aprobacion' => "Tenemos un presupuesto listo para tu {vehiculo} (OT {codigo_ot}). Revísalo en Doctor Motor.",
+        // Reemplaza a "ot_esperando_aprobacion" (quedó aprobada como Marketing en Meta y
+        // no se puede editar ni recategorizar in place) — plantilla nueva bajo otro nombre,
+        // reformulada como acción pendiente sobre una orden existente para que Meta la
+        // clasifique como Utilidad.
+        'ot_presupuesto_listo' => 'Tu presupuesto para la {codigo_ot} de tu {vehiculo} ya está listo. Apruébalo en Doctor Motor para continuar con la reparación.',
         'ot_en_reparacion' => "Tu {vehiculo} (OT {codigo_ot}) ya está en reparación.",
         'ot_lista_entrega' => "¡Tu {vehiculo} (OT {codigo_ot}) está listo para entrega!",
-        'presupuesto_enviado' => "Te enviamos el presupuesto de la OT {codigo_ot} por Bs {total}. Revísalo en Doctor Motor.",
+        // Sin "OT" literal antes de {codigo_ot}: el código ya viene con el prefijo
+        // ("OT-2026-0001"), ponerlo dos veces salía "de la OT OT-2026-0001".
+        'presupuesto_enviado' => 'Te enviamos el presupuesto de la {codigo_ot} por Bs {total}. Revísalo en Doctor Motor.',
     ];
 
     /**
