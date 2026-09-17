@@ -46,9 +46,15 @@ reales).
       certificado TLS (Let's Encrypt).
 - [ ] Levantar `php artisan reverb:start` como servicio persistente (systemd) para el
       WebSocket del Kanban en tiempo real.
-- [ ] Configurar un worker de colas persistente (`php artisan queue:work --daemon`, vía
-      systemd o Supervisor) — hoy las notificaciones de WhatsApp y otros jobs corren
-      sincrónicamente en local, en producción deberían ir por Redis + worker.
+- [ ] **Bloqueante, no opcional**: configurar un worker de colas persistente
+      (`php artisan queue:work --daemon`, vía systemd o Supervisor). `QUEUE_CONNECTION=redis`
+      ya está puesto, y sin un worker corriendo los jobs se quedan en Redis sin procesarse
+      nunca — no hay error visible, simplemente no pasa nada. Esto ya afecta dos cosas reales:
+      las notificaciones de la campanita de Filament (`Filament\Notifications\DatabaseNotification`,
+      ver `WebhookController::whatsapp` — avisa al cajero cuando un cliente responde por
+      WhatsApp) y el evento `OrdenTrabajoActualizada` que actualiza el Kanban en tiempo real
+      por Reverb. Los envíos de plantillas de WhatsApp en sí (`WhatsAppService::despachar`) no
+      están afectados — esos corren sincrónicos, no por cola.
 - [ ] Actualizar `GOOGLE_REDIRECT_URI` y el dominio configurado en Google Cloud / Meta Business
       Manager para que apunten al dominio real, no a `localhost`.
 - [ ] Configurar el webhook de WhatsApp (`/api/v1/webhooks/whatsapp`) en Meta Business Manager

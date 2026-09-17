@@ -67,6 +67,10 @@ class AdminPanelProvider extends PanelProvider
                 PanelsRenderHook::TOPBAR_END,
                 fn () => view('filament.topbar.saludo-salir'),
             )
+            // Campanita del topbar — usada para avisarle al cajero cuando un cliente
+            // responde por WhatsApp (ver WebhookController::whatsapp).
+            ->databaseNotifications()
+            ->databaseNotificationsPolling('30s')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')

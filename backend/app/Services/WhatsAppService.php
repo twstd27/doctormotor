@@ -68,8 +68,12 @@ class WhatsAppService
      * WhatsApp exige el número completo en formato internacional (sin "+", sin "0" inicial).
      * Los clientes/técnicos casi siempre registran solo el número local boliviano — se asume
      * el código de país 591 salvo que ya lo hayan puesto explícito (con "+" adelante).
+     *
+     * Pública porque WebhookController también la necesita para poder comparar el número
+     * que manda Meta (siempre en formato internacional) contra lo que haya guardado en
+     * `clientes.telefono_whatsapp` (que puede estar con o sin el código de país).
      */
-    private function normalizarTelefono(string $telefono): string
+    public function normalizarTelefono(string $telefono): string
     {
         $tieneCodigoExplicito = str_starts_with(trim($telefono), '+');
         $digitos = preg_replace('/\D+/', '', $telefono);
