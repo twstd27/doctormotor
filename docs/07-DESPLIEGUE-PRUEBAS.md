@@ -259,7 +259,12 @@ server {
     }
 
     # PWA: rutas de cliente de React Router -> siempre index.html, el router decide
-    location ~ ^/(login|ordenes-trabajo|garaje|presupuestos|auth|vehiculos|invitacion)(/.*)?$ {
+    #
+    # OJO: esta lista es manual, no un catch-all. Cada vez que se agregue una ruta nueva de
+    # nivel superior en frontend/src/App.tsx (ej. "privacidad", 2026-09-18, 404 en producción
+    # hasta que se sumó acá) hay que sumarla también en este regex — si no, cae en el bloque
+    # de Laravel de más abajo y da 404 porque esa ruta no existe en web.php.
+    location ~ ^/(login|ordenes-trabajo|garaje|presupuestos|auth|vehiculos|invitacion|privacidad)(/.*)?$ {
         root /var/www/doctormotor/frontend/dist;
         try_files $uri /index.html =404;
     }
