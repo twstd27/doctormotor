@@ -52,6 +52,12 @@ return [
         'phone_number_id' => env('WHATSAPP_PHONE_NUMBER_ID'),
         'api_url' => 'https://graph.facebook.com/v21.0/'.env('WHATSAPP_PHONE_NUMBER_ID'),
         'verify_token' => env('WHATSAPP_VERIFY_TOKEN'),
+        // App ID/Secret de Meta for Developers — solo se usan para el intercambio
+        // server-to-server del Embedded Signup (ver Filament\Pages\ConectarWhatsapp),
+        // no para el envío normal de plantillas (eso usa el token permanente de arriba).
+        'app_id' => env('META_APP_ID'),
+        'app_secret' => env('META_APP_SECRET'),
+        'embedded_signup_config_id' => env('WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID'),
     ],
 
 ];
