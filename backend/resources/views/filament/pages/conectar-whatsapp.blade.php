@@ -50,6 +50,11 @@
                     autoLogAppEvents: true,
                     xfbml: true,
                     version: 'v21.0',
+                    // Sin esto, Chrome intercepta el login con su propio flujo nativo de
+                    // FedCM (scope=openid, response_type=token, redirect_uri genérico a la
+                    // raíz del dominio) ignorando el config_id del Embedded Signup — por
+                    // eso salía "URL bloqueada" apuntando a una URL que nunca configuramos.
+                    fedCM: false,
                 });
             };
 
