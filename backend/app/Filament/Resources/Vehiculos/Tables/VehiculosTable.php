@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Vehiculos\Tables;
 
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -51,6 +52,12 @@ class VehiculosTable
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+                Action::make('imprimirQr')
+                    ->label('Imprimir QR')
+                    ->icon('heroicon-o-qr-code')
+                    ->color('gray')
+                    ->url(fn ($record) => route('admin-pdf.vehiculos.qr', $record))
+                    ->openUrlInNewTab(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

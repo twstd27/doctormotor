@@ -32,6 +32,9 @@ Route::prefix('v1/webhooks')->group(function () {
 
 Route::prefix('v1')->group(function () {
 
+    // Historial público por QR — sin auth, lo abre cualquiera que escanee el sticker del auto.
+    Route::get('/vehiculos/qr/{token}', [VehiculoController::class, 'historialPublico']);
+
     // Sección 0 — Autenticación
     Route::prefix('auth')->group(function () {
         Route::post('/login', [AuthController::class, 'login']);

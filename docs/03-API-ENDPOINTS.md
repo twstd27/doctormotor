@@ -45,6 +45,7 @@ Convenciones: paginación estándar Laravel (`?page=`), filtros vía query param
 | GET | `/vehiculos/{id}/historial` | Historial clínico automotriz (todas las OT) | super_admin, cajero, operador_tecnico, cliente (propio) |
 | GET | `/vehiculos/{id}/historial/pdf` | Descarga historial clínico en PDF | cliente (propio), super_admin, cajero |
 | GET | `/me/vehiculos` | "Mi garaje" — vehículos del cliente autenticado | cliente |
+| GET | `/vehiculos/qr/{token}` | Historial público resuelto por el QR pegado en el auto (sin montos ni datos del cliente) | público (por `qr_token`, no requiere sesión) |
 
 ---
 

@@ -83,6 +83,7 @@ erDiagram
 | color | varchar(30) | |
 | motor | varchar(50) nullable | |
 | kilometraje_actual | integer | |
+| qr_token | varchar(32) unique nullable | generado en `creating`, no es `fillable`; resuelve el historial público sin sesión |
 | deleted_at | timestamp nullable | |
 
 ---

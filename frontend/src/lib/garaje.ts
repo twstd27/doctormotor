@@ -27,6 +27,24 @@ export interface EstadoHistorial {
   created_at: string
 }
 
+export interface HistorialPublico {
+  vehiculo: { placa: string; marca: string; modelo: string; anio: number; color: string }
+  ordenes: {
+    codigo: string
+    estado: Estado
+    descripcion_problema: string
+    fecha_ingreso: string
+    fecha_entrega_real: string | null
+    kilometraje_ingreso: number
+    tecnico_asignado: string | null
+  }[]
+}
+
+export async function historialPublicoPorQr(qrToken: string): Promise<HistorialPublico> {
+  const res = await api<{ data: HistorialPublico }>(`/vehiculos/qr/${qrToken}`)
+  return res.data
+}
+
 export async function misVehiculos(): Promise<Vehiculo[]> {
   const res = await api<{ data: Vehiculo[] }>('/me/vehiculos')
   return res.data

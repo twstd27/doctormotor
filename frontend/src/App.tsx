@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom'
 import EvidenciasPage from './pages/EvidenciasPage'
 import GaragePage from './pages/GaragePage'
 import GoogleCallbackPage from './pages/GoogleCallbackPage'
+import HistorialPublicoPage from './pages/HistorialPublicoPage'
 import HomePage from './pages/HomePage'
 import InspeccionPage from './pages/InspeccionPage'
 import InvitacionTecnicoPage from './pages/InvitacionTecnicoPage'
@@ -27,6 +28,7 @@ function App() {
       <Route path="/auth/whatsapp/:token" element={<WhatsappVerifyPage />} />
       <Route path="/invitacion/:token" element={<InvitacionTecnicoPage />} />
       <Route path="/privacidad" element={<PrivacidadPage />} />
+      <Route path="/qr/:token" element={<HistorialPublicoPage />} />
     </Routes>
   )
 }

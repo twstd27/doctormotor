@@ -264,7 +264,7 @@ server {
     # nivel superior en frontend/src/App.tsx (ej. "privacidad", 2026-09-18, 404 en producción
     # hasta que se sumó acá) hay que sumarla también en este regex — si no, cae en el bloque
     # de Laravel de más abajo y da 404 porque esa ruta no existe en web.php.
-    location ~ ^/(login|ordenes-trabajo|garaje|presupuestos|auth|vehiculos|invitacion|privacidad)(/.*)?$ {
+    location ~ ^/(login|ordenes-trabajo|garaje|presupuestos|auth|vehiculos|invitacion|privacidad|qr)(/.*)?$ {
         root /var/www/doctormotor/frontend/dist;
         try_files $uri /index.html =404;
     }
