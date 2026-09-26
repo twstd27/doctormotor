@@ -6,6 +6,7 @@ use App\Models\RepartoUtilidad;
 use App\Models\Vehiculo;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Writer\SvgWriter;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -54,21 +55,19 @@ Route::middleware('auth')->prefix('admin-pdf')->group(function () {
 
     Route::get('/vehiculos/{vehiculo}/qr', function (Vehiculo $vehiculo) {
         $url = rtrim(config('services.frontend.url'), '/')."/qr/{$vehiculo->qr_token}";
-        $qrDataUri = (new Builder())->build(data: $url, size: 320, margin: 8)->getDataUri();
+        // SvgWriter en vez del PngWriter por defecto: este último usa GD, y el droplet de
+        // producción (compartido con otras apps) no lo tiene habilitado para PHP 8.3, lo que
+        // tira 500 "Unable to generate image: please check if the GD extension is enabled".
+        // El SVG no depende de GD, es más nítido para imprimir, y DomPDF lo renderiza directo
+        // como vectores (confirmado localmente: 879 operadores de dibujo en el content stream).
+        $qrDataUri = (new Builder())->build(writer: new SvgWriter(), data: $url, size: 320, margin: 8)->getDataUri();
 
-        // DomPDF trata las imágenes data:URI igual que las remotas para el chequeo de
-        // isRemoteEnabled (que por defecto está en false) — sin esto, el <img> del QR se
-        // descarta en silencio y el PDF sale sin la imagen. Seguro acá porque la data:URI
-        // la generamos nosotros mismos, no viene de input del usuario.
-        // OJO: setOption() (singular) — setOptions() en plural REEMPLAZA todo el objeto
-        // Options en vez de mezclar, y se lleva de encuentro fontDir/fontCache ya
-        // configurados, causando "Path cannot be empty" de php-font-lib al buscar la fuente.
-        // DomPDF necesita un directorio temporal escribible para volcar ahí la imagen del
-        // QR antes de embeberla. El default del paquete es sys_get_temp_dir(), pero bajo el
-        // SAPI "cli-server" (el que usa `php artisan serve` en Windows/Herd) esa función
-        // resuelve a C:\WINDOWS — no escribible — y el QR se pierde en silencio (dompdf cae
-        // al ícono de "imagen rota" sin lanzar error). Se fija explícito a un path propio de
-        // Laravel que sabemos que existe y es escribible, sin depender del entorno del SAPI.
+        // DomPDF necesita un directorio temporal escribible para volcar ahí el archivo del QR
+        // antes de parsearlo. El default del paquete es sys_get_temp_dir(), pero bajo el SAPI
+        // "cli-server" (el que usa `php artisan serve` en Windows/Herd) esa función resuelve a
+        // C:\WINDOWS — no escribible — y el QR se pierde en silencio (dompdf cae al ícono de
+        // "imagen rota" sin lanzar error). Se fija explícito a un path propio de Laravel que
+        // sabemos que existe y es escribible, sin depender del entorno del SAPI.
         return Pdf::setOption('tempDir', storage_path('framework/cache'))
             ->loadView('pdf.vehiculo-qr', ['vehiculo' => $vehiculo, 'qrDataUri' => $qrDataUri])
             ->setPaper([0, 0, 198.43, 255.12], 'portrait') // 70mm x 90mm
