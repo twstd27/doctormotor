@@ -34,6 +34,20 @@
         <tr><td>Método</td><td class="right">{{ strtoupper($pago->metodo) }}</td></tr>
     </table>
     <hr>
+    @if ($pago->detalle_tipo === 'detallado' && $pago->detalle_items)
+        <table>
+            @foreach ($pago->detalle_items as $item)
+                <tr><td colspan="2">{{ $item['descripcion'] }}</td></tr>
+                <tr><td>{{ $item['cantidad'] }} × Bs {{ number_format($item['precio_unitario'], 2) }}</td><td class="right">Bs {{ number_format($item['subtotal'], 2) }}</td></tr>
+            @endforeach
+        </table>
+        <hr>
+    @elseif ($pago->detalle_servicio)
+        <table>
+            <tr><td colspan="2">{{ $pago->detalle_servicio }}</td></tr>
+        </table>
+        <hr>
+    @endif
     <table>
         <tr class="total"><td>TOTAL</td><td class="right">Bs {{ number_format($pago->monto, 2) }}</td></tr>
     </table>

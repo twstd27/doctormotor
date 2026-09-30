@@ -435,15 +435,40 @@ export default function PresupuestoSheet({ otId, onClose, onEnviado }: Presupues
         <>
           <div className="mt-3 rounded-xl bg-app-surface-2 p-3.5" style={inputBorder}>
             <p className="text-[13px] font-medium">
-              Ya existe un presupuesto v{presupuestoExistente.version} —{' '}
+              Presupuesto v{presupuestoExistente.version} —{' '}
               <span className="text-app-muted">{presupuestoExistente.estado}</span>
             </p>
             <p className="mt-0.5 font-mono text-[15px] font-semibold">Bs {presupuestoExistente.total}</p>
-            <p className="mt-1.5 text-[12px] text-app-muted">
-              Si encontraste un problema nuevo durante el diagnóstico o la reparación, agrégalo como adicional para que el
-              cliente lo apruebe por separado.
-            </p>
           </div>
+
+          <div className="mt-2.5 flex flex-col gap-2">
+            {presupuestoExistente.items.map((item) => (
+              <div key={item.id} className="flex items-center gap-3 rounded-xl bg-app-surface-2 p-3" style={inputBorder}>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[13px] font-medium">{item.descripcion}</p>
+                  <p className="text-[11px] text-app-faint">
+                    {item.cantidad} × Bs {item.precio_unitario}
+                  </p>
+                </div>
+                <span
+                  className={`shrink-0 rounded-full px-2 py-0.5 text-[10.5px] font-medium ${
+                    item.aprobado === true
+                      ? 'bg-lime-500/15 text-lime-txt'
+                      : item.aprobado === false
+                        ? 'bg-cor-bg text-cor-txt'
+                        : 'bg-app-surface-3 text-app-muted'
+                  }`}
+                >
+                  {item.aprobado === true ? 'Aprobado' : item.aprobado === false ? 'Rechazado — no hacer' : 'Pendiente'}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-2.5 text-[12px] text-app-muted">
+            Si encontraste un problema nuevo durante el diagnóstico o la reparación, agrégalo como adicional para que el
+            cliente lo apruebe por separado.
+          </p>
           <button
             type="button"
             onClick={() => setPaso('item')}

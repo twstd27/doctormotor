@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\CajaCierre;
 use App\Models\Cliente;
+use App\Models\OrdenTrabajo;
 use App\Models\Pago;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
@@ -23,16 +24,32 @@ class PagoController extends Controller
             'tipo_documento' => ['nullable', 'in:recibo,factura'],
             'monto' => ['required', 'numeric', 'min:0.01'],
             'referencia_externa' => ['nullable', 'string', 'max:100'],
+            'detalle_tipo' => ['nullable', 'in:resumen,detallado'],
+            'detalle_servicio' => ['nullable', 'string'],
         ]);
+
+        $cajaAbierta = CajaCierre::abiertaDe($request->user()->id);
+
+        // El efectivo cobrado sin turno de caja abierto nunca se podría sumar en ningún
+        // cierre (ver CajaController::cierre, que suma $caja->pagos()) — quedaría cobrado
+        // pero invisible para el arqueo. Tarjeta y QR sí quedan trazados por fuera (banco/
+        // billetera), así que no dependen del turno físico.
+        if ($data['metodo'] === 'efectivo' && ! $cajaAbierta) {
+            return response()->json(['message' => 'Debes abrir tu turno de caja antes de registrar cobros en efectivo.'], 422);
+        }
+
+        $detalleTipo = $data['detalle_tipo'] ?? 'resumen';
+        $ordenTrabajo = ! empty($data['orden_trabajo_id']) ? OrdenTrabajo::find($data['orden_trabajo_id']) : null;
 
         $pago = Pago::create([
             ...$data,
             'cajero_id' => $request->user()->id,
-            // Vincula el pago al turno de caja abierto del cajero — sin esto, el cierre de
-            // caja nunca podría sumar el efectivo cobrado durante el turno (ver
-            // CajaController::cierre, que suma $caja->pagos()).
-            'caja_cierre_id' => CajaCierre::abiertaDe($request->user()->id)?->id,
+            'caja_cierre_id' => $cajaAbierta?->id,
             'fecha' => now(),
+            'detalle_tipo' => $detalleTipo,
+            'detalle_items' => $detalleTipo === 'detallado' && $ordenTrabajo
+                ? Pago::itemsAprobadosDe($ordenTrabajo)
+                : null,
         ]);
 
         return response()->json(['data' => $pago], 201);

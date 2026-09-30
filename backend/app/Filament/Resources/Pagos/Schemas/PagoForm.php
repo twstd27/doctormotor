@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Pagos\Schemas;
 
 use App\Models\OrdenTrabajo;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
@@ -72,6 +73,23 @@ class PagoForm
                     ->label('Referencia (QR / tarjeta)')
                     ->maxLength(100)
                     ->helperText('Número de operación o referencia del pago, si aplica.'),
+                Select::make('detalle_tipo')
+                    ->label('Detalle del recibo')
+                    ->options([
+                        'resumen' => 'Resumen (lo escribo yo)',
+                        'detallado' => 'Detallado (líneas del presupuesto aprobado)',
+                    ])
+                    ->default('resumen')
+                    ->live()
+                    ->required()
+                    ->helperText(fn (Get $get) => $get('detalle_tipo') === 'detallado' && blank($get('orden_trabajo_id'))
+                        ? 'Elegí una orden de trabajo arriba para poder armar el detalle desde su presupuesto.'
+                        : null),
+                Textarea::make('detalle_servicio')
+                    ->label('Detalle de servicio')
+                    ->placeholder('Ej: Cambio de aceite y filtro, revisión de frenos')
+                    ->visible(fn (Get $get) => $get('detalle_tipo') !== 'detallado')
+                    ->maxLength(500),
             ]);
     }
 }

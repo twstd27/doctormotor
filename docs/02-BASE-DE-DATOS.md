@@ -195,6 +195,9 @@ Ingresos: anticipos, pagos parciales/completos.
 | monto | decimal(10,2) | |
 | referencia_externa | varchar(100) nullable | nro de operación QR/tarjeta |
 | comprobante_url | varchar(255) nullable | recibo/factura PDF generado |
+| detalle_tipo | varchar default `resumen` | `resumen` (texto libre) o `detallado` (líneas del presupuesto) |
+| detalle_servicio | text nullable | texto libre del cajero, solo si detalle_tipo=resumen |
+| detalle_items | json nullable | snapshot de los ítems aprobados del presupuesto al momento de cobrar, solo si detalle_tipo=detallado — no cambia si el presupuesto cambia después |
 | fecha | timestamp | |
 
 ### `caja_cierres`

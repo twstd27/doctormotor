@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\OrdenTrabajo;
 use App\Models\Presupuesto;
 use App\Services\OrdenTrabajoEstadoService;
-use App\Services\WhatsAppService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,7 +15,6 @@ use Illuminate\Support\Facades\DB;
 class PresupuestoController extends Controller
 {
     public function __construct(
-        private WhatsAppService $whatsApp,
         private OrdenTrabajoEstadoService $estadoService,
     ) {}
 
@@ -107,7 +105,7 @@ class PresupuestoController extends Controller
         return response()->json(['data' => $presupuesto]);
     }
 
-    public function enviar(Presupuesto $presupuesto): JsonResponse
+    public function enviar(Request $request, Presupuesto $presupuesto): JsonResponse
     {
         if ($presupuesto->ordenTrabajo->estaCerrada()) {
             return response()->json(['message' => 'Esta OT ya está entregada o cancelada, no se puede enviar su presupuesto.'], 422);
@@ -120,16 +118,10 @@ class PresupuestoController extends Controller
         $presupuesto->update(['estado' => 'enviado']);
         $presupuesto->load('ordenTrabajo.cliente');
 
-        $this->whatsApp->enviarPlantilla(
-            telefono: $presupuesto->ordenTrabajo->cliente->telefono_whatsapp,
-            plantilla: 'presupuesto_enviado',
-            parametros: [
-                'codigo_ot' => $presupuesto->ordenTrabajo->codigo,
-                'total' => number_format($presupuesto->total, 2),
-            ],
-            userId: $presupuesto->ordenTrabajo->cliente->user_id,
-            ordenTrabajoId: $presupuesto->ordenTrabajo->id,
-        );
+        // Mover la OT a "esperando_aprobacion" ya dispara, desde OrdenTrabajoEstadoService, el
+        // aviso de WhatsApp al cliente (plantilla ot_presupuesto_listo) — no se manda otro acá
+        // para no duplicar el mensaje.
+        $this->estadoService->cambiarA($presupuesto->ordenTrabajo, 'esperando_aprobacion', $request->user()->id, 'Presupuesto enviado al cliente');
 
         return response()->json(['data' => $presupuesto]);
     }
@@ -164,6 +156,7 @@ class PresupuestoController extends Controller
 
         if ($data['aprobado']) {
             $presupuesto->items()->whereNull('aprobado')->update(['aprobado' => true]);
+            $this->estadoService->cambiarA($presupuesto->ordenTrabajo, 'en_reparacion', $request->user()->id, 'Presupuesto aprobado por el cliente');
         }
 
         return response()->json(['data' => $presupuesto->fresh(['items', 'ordenTrabajo.vehiculo'])]);

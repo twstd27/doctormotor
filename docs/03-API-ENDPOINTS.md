@@ -91,10 +91,10 @@ Convenciones: paginación estándar Laravel (`?page=`), filtros vía query param
 | POST | `/ordenes-trabajo/{id}/presupuestos` | Crear presupuesto (con items) | super_admin, cajero, operador_tecnico |
 | GET | `/presupuestos/{id}` | Detalle con items | según acceso |
 | PUT | `/presupuestos/{id}` | Editar mientras está en `borrador` | super_admin, cajero, operador_tecnico |
-| POST | `/presupuestos/{id}/enviar` | Marca como `enviado` y notifica al cliente (WhatsApp) | super_admin, cajero, operador_tecnico |
+| POST | `/presupuestos/{id}/enviar` | Marca como `enviado`, mueve la OT a `esperando_aprobacion` (automático) y notifica al cliente (WhatsApp) | super_admin, cajero, operador_tecnico |
 | GET | `/presupuestos/{id}/pdf` | Descarga presupuesto en PDF | todos con acceso |
-| POST | `/presupuestos/{id}/items/{item_id}/responder` | Cliente aprueba/rechaza un ítem (incl. adicionales) | cliente (propio) |
-| POST | `/presupuestos/{id}/responder` | Cliente aprueba/rechaza el presupuesto completo | cliente (propio) |
+| POST | `/presupuestos/{id}/items/{item_id}/responder` | Cliente aprueba/rechaza un ítem — cualquier ítem del presupuesto, no solo adicionales | cliente (propio) |
+| POST | `/presupuestos/{id}/responder` | Cliente confirma el presupuesto: aprueba lo que quedó pendiente y mueve la OT a `en_reparacion` (automático), o lo rechaza completo | cliente (propio) |
 | POST | `/ordenes-trabajo/{id}/adicionales` | Técnico reporta un hallazgo/costo adicional durante diagnóstico (acepta `producto_id` opcional si es repuesto). Mueve la OT a `esperando_aprobacion` y notifica al cliente por WhatsApp (mismo mecanismo que `PATCH .../estado`) | operador_tecnico |
 
 ---
@@ -106,7 +106,7 @@ Convenciones: paginación estándar Laravel (`?page=`), filtros vía query param
 | Método | Endpoint | Descripción | Rol |
 |---|---|---|---|
 | GET | `/pagos` | Listado de pagos (filtro por fecha, cliente, OT, método) | super_admin, cajero |
-| POST | `/pagos` | Registrar pago (anticipo/parcial/completo/abono) | cajero, super_admin |
+| POST | `/pagos` | Registrar pago (anticipo/parcial/completo/abono). En efectivo, exige turno de caja abierto del cajero (422 si no hay). Acepta `detalle_tipo` (`resumen`\|`detallado`) y `detalle_servicio` (texto libre) — si es `detallado`, arma `detalle_items` automáticamente desde los ítems aprobados del presupuesto de la OT | cajero, super_admin |
 | GET | `/pagos/{id}` | Detalle de pago | super_admin, cajero |
 | GET | `/pagos/{id}/recibo` | Descarga recibo/comprobante PDF | super_admin, cajero, cliente (propio) |
 | GET | `/clientes/{id}/cuenta` | Estado de cuenta del cliente (deuda, historial de pagos) | super_admin, cajero, cliente (propio) |
