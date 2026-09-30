@@ -2,13 +2,16 @@
 
 namespace App\Filament\Resources\Pagos\Schemas;
 
+use App\Models\Cliente;
 use App\Models\OrdenTrabajo;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Support\HtmlString;
 
 class PagoForm
 {
@@ -24,6 +27,31 @@ class PagoForm
                     ->live()
                     ->required()
                     ->afterStateUpdated(fn (Set $set) => $set('orden_trabajo_id', null)),
+                Placeholder::make('saldo_cliente')
+                    ->label('Estado de cuenta')
+                    ->content(function (Get $get) {
+                        $clienteId = $get('cliente_id');
+                        if (blank($clienteId)) {
+                            return 'Elegí un cliente para ver su saldo.';
+                        }
+
+                        $cliente = Cliente::find($clienteId);
+                        if (! $cliente) {
+                            return null;
+                        }
+
+                        $saldo = $cliente->saldoPendiente();
+
+                        if ($saldo > 0.009) {
+                            return new HtmlString("<span style=\"color: rgb(248 113 113)\">Debe Bs " . number_format($saldo, 2) . "</span>");
+                        }
+
+                        if ($saldo < -0.009) {
+                            return new HtmlString("<span style=\"color: rgb(163 230 53)\">A favor Bs " . number_format(abs($saldo), 2) . " (pagó de más / anticipo)</span>");
+                        }
+
+                        return new HtmlString('<span style="color: rgb(163 230 53)">Al día — sin saldo pendiente</span>');
+                    }),
                 Select::make('orden_trabajo_id')
                     ->label('Orden de trabajo')
                     ->options(

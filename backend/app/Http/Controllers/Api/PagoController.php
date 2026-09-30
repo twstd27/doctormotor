@@ -81,19 +81,21 @@ class PagoController extends Controller
     }
 
     /**
-     * Estado de cuenta del cliente: historial de pagos y saldo pendiente.
-     *
-     * El saldo real se termina de calcular en Fase 2 contra el total facturado por OT
-     * (costos_directos + presupuestos aprobados). Por ahora expone el historial de pagos.
+     * Estado de cuenta del cliente: historial de pagos y saldo pendiente (lo aprobado en
+     * presupuestos, de todas sus OTs, menos lo ya pagado).
      */
     public function cuenta(Cliente $cliente): JsonResponse
     {
         $pagos = $cliente->pagos()->orderByDesc('fecha')->get();
+        $totalFacturado = $cliente->totalFacturado();
+        $totalPagado = (float) $pagos->sum('monto');
 
         return response()->json([
             'data' => [
                 'cliente_id' => $cliente->id,
-                'total_pagado' => $pagos->sum('monto'),
+                'total_facturado' => $totalFacturado,
+                'total_pagado' => $totalPagado,
+                'saldo_pendiente' => $totalFacturado - $totalPagado,
                 'pagos' => $pagos,
             ],
         ]);
