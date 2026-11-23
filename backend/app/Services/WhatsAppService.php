@@ -31,8 +31,6 @@ class WhatsAppService
         // el clasificador automático de Meta las confunde con Autenticación (código OTP) o
         // con Marketing, y rechaza la plantilla bajo la categoría Utilidad.
         'invitacion_tecnico' => 'Hola, tu cuenta de técnico en Doctor Motor ya está lista. Usa este enlace para ingresar y activarla: {link}. ¡Bienvenido al equipo!',
-        // Pendiente de crear en el WABA nuevo (Meta no admite una variable al final del texto).
-        'enlace_acceso' => 'Ingresa a tu cuenta de Doctor Motor con este enlace: {link} y sigue el avance de tu vehículo.',
         'ot_en_diagnostico' => 'Tu {vehiculo} ({codigo_ot}) ya está en diagnóstico.',
         // Reemplaza a "ot_esperando_aprobacion" (quedó aprobada como Marketing en Meta y
         // no se puede editar ni recategorizar in place).

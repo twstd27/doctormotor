@@ -69,10 +69,15 @@ class AuthController extends Controller
 
         $this->whatsApp->enviarPlantilla(
             telefono: $user->telefono_whatsapp,
-            plantilla: 'enlace_acceso',
+            // Reusa la plantilla de invitación (ya aprobada como Utilidad): "enlace_acceso" la
+            // reclasificó Meta como Marketing, que cuesta más y puede frenar la entrega.
+            plantilla: 'invitacion_cuenta_cliente',
             // Apunta al FRONTEND (la SPA es la que hace el POST de canje), no a la API
             // directo — un enlace a una ruta POST-only no funciona al hacer clic.
-            parametros: ['link' => config('services.frontend.url')."/auth/whatsapp/{$token}"],
+            parametros: [
+                'nombre' => $user->nombre,
+                'link' => config('services.frontend.url')."/auth/whatsapp/{$token}",
+            ],
             userId: $user->id,
         );
 
