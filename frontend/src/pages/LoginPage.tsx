@@ -22,7 +22,6 @@ export default function LoginPage() {
 
   const [telefono, setTelefono] = useState('')
   const [enlaceEnviado, setEnlaceEnviado] = useState(false)
-  const [debugToken, setDebugToken] = useState<string | null>(null)
 
   async function handleGoogle() {
     setError(null)
@@ -57,12 +56,11 @@ export default function LoginPage() {
     setLoading(true)
     setError(null)
     try {
-      const res = await api<{ message: string; debug_token: string | null }>(
-        '/auth/login/whatsapp-link',
-        { method: 'POST', body: JSON.stringify({ telefono_whatsapp: telefono }) },
-      )
+      await api<{ message: string }>('/auth/login/whatsapp-link', {
+        method: 'POST',
+        body: JSON.stringify({ telefono_whatsapp: telefono }),
+      })
       setEnlaceEnviado(true)
-      setDebugToken(res.debug_token)
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'No se pudo enviar el enlace.')
     } finally {
@@ -118,15 +116,6 @@ export default function LoginPage() {
           ) : enlaceEnviado ? (
             <div className="flex flex-col items-center gap-3 rounded-xl bg-app-surface p-4 text-center" style={{ border: '1px solid var(--color-app-line)' }}>
               <p className="text-sm">Te enviamos un enlace de acceso por WhatsApp.</p>
-              {debugToken && (
-                <a
-                  href={`/auth/whatsapp/${debugToken}`}
-                  className="rounded-lg px-3 py-2 text-xs text-amb-txt"
-                  style={{ border: '1px solid var(--color-amb)', background: 'var(--color-amb-bg)' }}
-                >
-                  Modo local: abrir enlace de prueba
-                </a>
-              )}
             </div>
           ) : (
             <form onSubmit={handleWhatsappSubmit} className="flex flex-col gap-2 rounded-xl bg-app-surface p-3" style={{ border: '1px solid var(--color-app-line)' }}>

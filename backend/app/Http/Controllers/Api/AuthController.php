@@ -46,9 +46,10 @@ class AuthController extends Controller
      * Solicita un enlace mágico de acceso por WhatsApp.
      *
      * El envío pasa por WhatsAppService — con credenciales reales de Meta configuradas
-     * (WHATSAPP_TOKEN) manda el mensaje de verdad; sin ellas, cae a un log local. En
-     * entorno local, además se devuelve el token en la respuesta para poder probar el
-     * flujo completo sin depender de tener WhatsApp real conectado.
+     * (WHATSAPP_TOKEN) manda el mensaje de verdad; sin ellas, cae a un log local.
+     *
+     * El token nunca se devuelve en la respuesta: quien conozca el número de un usuario
+     * podría pedirlo y entrar a su cuenta sin tener su teléfono. En desarrollo se saca del log.
      */
     public function loginWhatsappLink(Request $request): JsonResponse
     {
@@ -81,10 +82,7 @@ class AuthController extends Controller
             userId: $user->id,
         );
 
-        return response()->json([
-            'message' => 'Enlace de acceso enviado por WhatsApp.',
-            'debug_token' => app()->environment('local') ? $token : null,
-        ]);
+        return response()->json(['message' => 'Enlace de acceso enviado por WhatsApp.']);
     }
 
     /**
