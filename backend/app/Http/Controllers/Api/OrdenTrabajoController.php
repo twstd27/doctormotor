@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\OrdenTrabajoActualizada;
 use App\Http\Controllers\Controller;
 use App\Models\OrdenTrabajo;
 use App\Services\OrdenTrabajoEstadoService;
