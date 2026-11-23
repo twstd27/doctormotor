@@ -91,35 +91,43 @@ class ClientesTable
                             'link' => config('services.frontend.url')."/auth/whatsapp/{$token}",
                         ];
 
-                        $whatsApp->enviarPlantilla(
+                        $notificacion = $whatsApp->enviarPlantilla(
                             telefono: $record->telefono_whatsapp,
                             plantilla: 'invitacion_cuenta_cliente',
                             parametros: $parametros,
                             userId: $record->user_id,
                         );
 
-                        if ($whatsApp->configurado()) {
+                        if ($whatsApp->configurado() && $notificacion->estado === 'enviado') {
                             Notification::make()
                                 ->title('Invitación enviada')
-                                ->body('Se mandó el enlace por WhatsApp.')
+                                ->body('Meta aceptó el mensaje y lo está entregando por WhatsApp.')
                                 ->success()
                                 ->send();
 
                             return;
                         }
 
-                        Notification::make()
-                            ->title('WhatsApp no está configurado todavía')
-                            ->body('Abre el mensaje ya redactado y mándalo tú mismo desde tu WhatsApp.')
-                            ->warning()
+                        // Con el token configurado pero el envío rechazado (token vencido,
+                        // plantilla sin aprobar, número inválido...) el cajero no debe quedarse
+                        // creyendo que salió: se avisa y se le deja el mensaje para mandarlo a mano.
+                        $rechazado = $whatsApp->configurado();
+
+                        $aviso = Notification::make()
+                            ->title($rechazado ? 'WhatsApp no pudo enviar la invitación' : 'WhatsApp no está configurado todavía')
+                            ->body($rechazado
+                                ? 'Meta rechazó el envío (el detalle está en Administración → Notificaciones). Abre el mensaje ya redactado y mándalo tú mismo.'
+                                : 'Abre el mensaje ya redactado y mándalo tú mismo desde tu WhatsApp.')
                             ->actions([
                                 Action::make('abrir')
                                     ->label('Abrir en WhatsApp')
                                     ->url($whatsApp->linkWaMe($record->telefono_whatsapp, 'invitacion_cuenta_cliente', $parametros))
                                     ->openUrlInNewTab(),
                             ])
-                            ->persistent()
-                            ->send();
+                            ->persistent();
+
+                        $rechazado ? $aviso->danger() : $aviso->warning();
+                        $aviso->send();
                     }),
                 EditAction::make(),
             ])

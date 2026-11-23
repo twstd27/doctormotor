@@ -76,35 +76,40 @@ class UsersTable
 
                         $parametros = ['link' => config('services.frontend.url')."/invitacion/{$token}"];
 
-                        $whatsApp->enviarPlantilla(
+                        $notificacion = $whatsApp->enviarPlantilla(
                             telefono: $record->telefono_whatsapp,
                             plantilla: 'invitacion_tecnico',
                             parametros: $parametros,
                             userId: $record->id,
                         );
 
-                        if ($whatsApp->configurado()) {
+                        if ($whatsApp->configurado() && $notificacion->estado === 'enviado') {
                             Notification::make()
                                 ->title('Invitación enviada')
-                                ->body('Se mandó el enlace por WhatsApp.')
+                                ->body('Meta aceptó el mensaje y lo está entregando por WhatsApp.')
                                 ->success()
                                 ->send();
 
                             return;
                         }
 
-                        Notification::make()
-                            ->title('WhatsApp no está configurado todavía')
-                            ->body('Abre el mensaje ya redactado y mándalo tú mismo desde tu WhatsApp.')
-                            ->warning()
+                        $rechazado = $whatsApp->configurado();
+
+                        $aviso = Notification::make()
+                            ->title($rechazado ? 'WhatsApp no pudo enviar la invitación' : 'WhatsApp no está configurado todavía')
+                            ->body($rechazado
+                                ? 'Meta rechazó el envío (el detalle está en Administración → Notificaciones). Abre el mensaje ya redactado y mándalo tú mismo.'
+                                : 'Abre el mensaje ya redactado y mándalo tú mismo desde tu WhatsApp.')
                             ->actions([
                                 Action::make('abrir')
                                     ->label('Abrir en WhatsApp')
                                     ->url($whatsApp->linkWaMe($record->telefono_whatsapp, 'invitacion_tecnico', $parametros))
                                     ->openUrlInNewTab(),
                             ])
-                            ->persistent()
-                            ->send();
+                            ->persistent();
+
+                        $rechazado ? $aviso->danger() : $aviso->warning();
+                        $aviso->send();
                     }),
                 EditAction::make(),
             ])

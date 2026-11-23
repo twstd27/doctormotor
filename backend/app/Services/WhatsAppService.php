@@ -23,24 +23,22 @@ class WhatsAppService
      * @var array<string, \Closure(array<string, mixed>): string>
      */
     private const TEXTOS_PLANTILLA = [
-        // Mismo texto exacto que la plantilla ya aprobada en Meta como Utilidad (ver
-        // WhatsApp Manager) — el link va en el cuerpo, sin botón.
-        'invitacion_cuenta_cliente' => "Hola {nombre}, tu cuenta de Doctor Motor ya está activa. Usa este enlace para ingresar y ver el estado de tu vehículo: {link}. Puedes volver a usarlo cuando quieras.",
-        // Igual que invitacion_cuenta_cliente: se evita la palabra "contraseña" porque el
-        // clasificador automático de Meta la confunde con una plantilla de Autenticación
-        // (código OTP) y la rechaza bajo la categoría Utilidad.
+        // Mismos textos que las plantillas aprobadas en Meta como Utilidad (WABA del número
+        // 74275155, WhatsApp Manager) — el link va en el cuerpo, sin botón. {codigo_ot} ya
+        // trae el prefijo "OT-", por eso no se antepone "OT" a mano.
+        'invitacion_cuenta_cliente' => 'Hola {nombre}, ya registramos tu cuenta en Doctor Motor. Ingresa aquí {link} para ver el estado de tu vehículo y tus órdenes de trabajo.',
+        // Se evita la palabra "contraseña" y las frases tipo "válido por tiempo limitado":
+        // el clasificador automático de Meta las confunde con Autenticación (código OTP) o
+        // con Marketing, y rechaza la plantilla bajo la categoría Utilidad.
         'invitacion_tecnico' => 'Hola, tu cuenta de técnico en Doctor Motor ya está lista. Usa este enlace para ingresar y activarla: {link}. ¡Bienvenido al equipo!',
-        // "Válido por tiempo limitado" suena a enlace de un solo uso tipo OTP — se evita esa
-        // frase por el mismo motivo que invitacion_tecnico (ver comentario arriba).
-        'enlace_acceso' => 'Ingresa a tu cuenta de Doctor Motor con este enlace: {link}.',
-        'ot_en_diagnostico' => "Tu {vehiculo} (OT {codigo_ot}) ya está en diagnóstico.",
+        // Pendiente de crear en el WABA nuevo (Meta no admite una variable al final del texto).
+        'enlace_acceso' => 'Ingresa a tu cuenta de Doctor Motor con este enlace: {link} y sigue el avance de tu vehículo.',
+        'ot_en_diagnostico' => 'Tu {vehiculo} ({codigo_ot}) ya está en diagnóstico.',
         // Reemplaza a "ot_esperando_aprobacion" (quedó aprobada como Marketing en Meta y
-        // no se puede editar ni recategorizar in place) — plantilla nueva bajo otro nombre,
-        // reformulada como acción pendiente sobre una orden existente para que Meta la
-        // clasifique como Utilidad.
-        'ot_presupuesto_listo' => 'Tu presupuesto para la {codigo_ot} de tu {vehiculo} ya está listo. Apruébalo en Doctor Motor para continuar con la reparación.',
-        'ot_en_reparacion' => "Tu {vehiculo} (OT {codigo_ot}) ya está en reparación.",
-        'ot_lista_entrega' => "¡Tu {vehiculo} (OT {codigo_ot}) está listo para entrega!",
+        // no se puede editar ni recategorizar in place).
+        'ot_presupuesto_listo' => 'Tu presupuesto para tu {vehiculo} ({codigo_ot}) ya está listo. Apruébalo en Doctor Motor para continuar con la reparación.',
+        'ot_en_reparacion' => 'Tu {vehiculo} ({codigo_ot}) ya está en reparación.',
+        'ot_lista_entrega' => '¡Tu {vehiculo} ({codigo_ot}) está listo para entrega!',
         // Sin "OT" literal antes de {codigo_ot}: el código ya viene con el prefijo
         // ("OT-2026-0001"), ponerlo dos veces salía "de la OT OT-2026-0001".
         'presupuesto_enviado' => 'Te enviamos el presupuesto de la {codigo_ot} por Bs {total}. Revísalo en Doctor Motor.',
