@@ -289,3 +289,16 @@ actualiza en pasos posteriores. Lo implementado en el paso 1 vive en
   ("Caja abierta · Bs X" o "Caja cerrada · Abrir"; el efectivo sale de
   `CajaCierre::efectivoEsperado()`), campana y menú de usuario.
 - **Avatares:** iniciales en SVG generado localmente; no se usa `ui-avatars.com`.
+
+## Rediseño de la PWA móvil (v2, noviembre 2026)
+
+La PWA es **solo móvil** (columna de hasta 520 px centrada) y oscura fija, con los mismos colores que el panel admin:
+lima `#C5F82A`, ámbar `#FFB547`, rojo `#FF8A7A`, azul `#6CB4FF`; superficies `#0B0D10` / `#0F1216` / `#14181D` / `#1A1F26`.
+Tipografías autoalojadas (`@fontsource`): Inter (texto), Archivo (títulos, clase `.dm-display`) y JetBrains Mono (placas, códigos y montos).
+
+- **Componentes** (en `frontend/src/index.css`): `.dm-card`, `.dm-lab`, `.dm-plate`, `.dm-prog` (progreso de 7 pasos), `.dm-btn` (`.p` lima / `.s` secundario / `.sm`), `.dm-sticky` (barra de acción fija) y `.dm-li` (fila de lista).
+- **Menú inferior**: técnico = Mi día · Tablero · Perfil; cliente = Inicio · Mis vehículos · Perfil. Las pantallas de detalle (orden, inspección, fotos, presupuesto, seguimiento) no llevan menú: llevan «‹ atrás» y, si corresponde, un botón fijo abajo.
+- **Técnico**: Mi día (`/`), Tablero agrupado por etapa (`/ordenes-trabajo`, solo sus órdenes asignadas), Orden como centro de trabajo (`/ordenes-trabajo/:id`, lista de tareas + botón fijo «pasar a la siguiente etapa»), Inspección, Fotos y videos.
+- **Cliente**: Inicio (`/`, vehículo en el taller + acción pendiente), Presupuesto con aprobación por trabajo (`/presupuestos/:id`), Seguimiento con línea de tiempo (`/seguimiento/:id`), Mis vehículos (`/vehiculos`, reemplaza a «Mi garaje»; `/garaje` redirige) e Historial público por QR (`/qr/:token`).
+- **Contacto con el taller**: los botones de WhatsApp / llamar aparecen solo si `VITE_TALLER_WHATSAPP` está definido en el `.env` del frontend (dígitos con código de país).
+- Fase 2 (no está en pantalla): clasificar el presupuesto en «Necesario / Recomendado», notas del técnico al cliente, etapas con fotos en «Fotos y videos».

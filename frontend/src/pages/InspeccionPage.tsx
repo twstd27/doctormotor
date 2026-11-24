@@ -2,6 +2,7 @@ import {
   FileText,
   FireExtinguisher,
   FirstAidKit,
+  Info,
   Key,
   Signature,
   Tire,
@@ -133,7 +134,7 @@ export default function InspeccionPage() {
       }
 
       showToast('Inspección guardada')
-      navigate('/ordenes-trabajo')
+      navigate(`/ordenes-trabajo/${otId}`)
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'No se pudo guardar la inspección.')
     } finally {
@@ -143,124 +144,144 @@ export default function InspeccionPage() {
 
   if (cargando) {
     return (
-      <AppShell title="Inspección de ingreso" subtitle="Registra el estado del vehículo" back={{ label: 'Tablero', to: '/ordenes-trabajo' }}>
+      <AppShell title="Inspección de ingreso" back={{ label: 'Orden', to: `/ordenes-trabajo/${otId}` }}>
         <p className="text-sm text-app-muted">Cargando…</p>
       </AppShell>
     )
   }
 
+  const cuenta = accesorios.length
+
   return (
     <AppShell
-      title={editable ? 'Inspección de ingreso' : 'Inspección de ingreso (solo lectura)'}
-      subtitle={editable ? 'Registra el estado del vehículo' : 'Esta OT ya no está en recepción — no se puede editar'}
-      back={{ label: 'Tablero', to: '/ordenes-trabajo' }}
+      title="Inspección de ingreso"
+      subtitle={ot ? `${ot.vehiculo.marca} ${ot.vehiculo.modelo} · ${ot.vehiculo.placa} · ${ot.codigo}` : undefined}
+      back={{ label: 'Orden', to: `/ordenes-trabajo/${otId}` }}
+      sticky={
+        editable ? (
+          <button type="button" disabled={guardando} onClick={handleGuardar} className="dm-btn p">
+            {guardando ? 'Guardando…' : 'Guardar inspección'}
+          </button>
+        ) : undefined
+      }
     >
-      <div className="grid gap-3.5 md:grid-cols-2" style={{ alignItems: 'start' }}>
-        <section className="rounded-2xl bg-app-surface p-[18px]" style={{ border: '1px solid var(--color-app-line)' }}>
-          <h2 className="text-[15px] font-semibold">Accesorios presentes</h2>
-          <p className="mt-0.5 text-[12.5px] text-app-muted">Marca lo que el cliente trae con el vehículo.</p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {ACCESORIOS.map(({ nombre, icon: Icon }) => {
-              const activo = accesorios.includes(nombre)
-              return (
-                <button
-                  key={nombre}
-                  type="button"
-                  disabled={!editable}
-                  onClick={() => toggleAccesorio(nombre)}
-                  className={
-                    activo
-                      ? 'flex h-11 items-center gap-1.5 rounded-full bg-lime-500/15 px-3.5 text-sm font-medium text-lime-txt disabled:opacity-80'
-                      : 'flex h-11 items-center gap-1.5 rounded-full bg-app-surface-2 px-3.5 text-sm text-app-muted disabled:opacity-50'
-                  }
-                  style={{ border: `1px solid ${activo ? 'var(--color-lime-500)' : 'var(--color-app-line)'}` }}
-                >
-                  <Icon size={16} weight={activo ? 'fill' : 'regular'} />
-                  {nombre}
-                </button>
-              )
-            })}
-          </div>
-          <p className="mt-3 text-xs text-app-faint">
-            {accesorios.length} de {ACCESORIOS.length} accesorios marcados
-          </p>
-        </section>
-
-        <section className="rounded-2xl bg-app-surface p-[18px]" style={{ border: '1px solid var(--color-app-line)' }}>
-          <h2 className="text-[15px] font-semibold">Observaciones y rayones previos</h2>
-          <textarea
-            value={observaciones}
-            onChange={(e) => setObservaciones(e.target.value)}
-            readOnly={!editable}
-            rows={4}
-            placeholder={editable ? 'Ej. rayón en puerta delantera derecha, paragolpes trasero con golpe leve…' : 'Sin observaciones.'}
-            className="mt-3 w-full resize-y rounded-xl bg-app-surface-2 p-3 text-sm leading-[1.5] outline-none placeholder:text-app-faint focus-visible:border-lime-500 read-only:opacity-70"
-            style={{ minHeight: 110, border: '1px solid var(--color-app-line)' }}
-          />
-        </section>
-
-        <section className="col-span-full rounded-2xl bg-app-surface p-[18px]" style={{ border: '1px solid var(--color-app-line)' }}>
-          <div className="flex items-center justify-between">
-            <h2 className="text-[15px] font-semibold">Firma del cliente</h2>
-            {mostrarCanvas && (
-              <button type="button" onClick={borrarFirma} className="flex h-10 items-center rounded-lg px-3 text-xs font-medium text-app-muted" style={{ border: '1px solid var(--color-app-line)' }}>
-                Borrar
-              </button>
-            )}
-            {editable && firmaExistente && !reFirmando && (
-              <button
-                type="button"
-                onClick={() => {
-                  setReFirmando(true)
-                  setTieneTrazo(false)
-                }}
-                className="flex h-10 items-center rounded-lg px-3 text-xs font-medium text-app-muted"
-                style={{ border: '1px solid var(--color-app-line)' }}
-              >
-                Volver a firmar
-              </button>
-            )}
-          </div>
-
-          {mostrarCanvas ? (
-            <div
-              className="relative mt-3 h-[190px] w-full overflow-hidden rounded-[14px] bg-app-surface-2"
-              style={{ border: '1px dashed var(--color-app-line)' }}
-            >
-              <canvas ref={canvasRef} className="absolute inset-0 size-full touch-none" />
-              <span className="pointer-events-none absolute inset-x-0" style={{ bottom: 38, borderTop: '1px solid var(--color-app-line)' }} />
-              {!tieneTrazo && (
-                <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1.5 text-app-faint">
-                  <Signature size={26} />
-                  <span className="text-xs">Firma aquí</span>
-                </div>
-              )}
-            </div>
-          ) : firmaExistente ? (
-            <div className="mt-3 flex h-[190px] w-full items-center justify-center overflow-hidden rounded-[14px] bg-white">
-              <img src={firmaExistente} alt="Firma del cliente" className="max-h-full max-w-full object-contain" />
-            </div>
-          ) : (
-            <div className="mt-3 flex h-[120px] w-full items-center justify-center rounded-[14px] bg-app-surface-2 text-sm text-app-faint" style={{ border: '1px dashed var(--color-app-line)' }}>
-              Sin firma registrada.
-            </div>
-          )}
-        </section>
-      </div>
-
-      {error && <p className="mt-3 text-sm text-cor">{error}</p>}
-
-      {editable && (
-        <button
-          type="button"
-          disabled={guardando}
-          onClick={handleGuardar}
-          className="mt-4 h-[52px] w-full rounded-xl bg-lime-500 text-[15px] font-semibold text-lime-ink disabled:opacity-60"
-          style={{ boxShadow: 'var(--shadow-cta-lime)' }}
-        >
-          {guardando ? 'Guardando…' : 'Guardar inspección'}
-        </button>
+      {!editable && (
+        <div className="flex items-center gap-2.5 rounded-xl bg-cya-bg px-3.5 py-3 text-[13px] leading-normal text-app-muted">
+          <Info size={18} className="shrink-0 text-cya" />
+          <span>Solo lectura: la orden ya salió de recepción y la inspección no se puede cambiar.</span>
+        </div>
       )}
+
+      <section className="dm-card flex flex-col gap-3">
+        <div className="flex items-baseline justify-between">
+          <h2 className="dm-display text-base font-semibold">Accesorios que trae</h2>
+          <span className="font-mono text-[13px]" style={{ color: cuenta === ACCESORIOS.length ? 'var(--color-lime-500)' : 'var(--color-amb)' }}>
+            {cuenta}/{ACCESORIOS.length}
+          </span>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          {ACCESORIOS.map(({ nombre }) => {
+            const activo = accesorios.includes(nombre)
+            return (
+              <button
+                key={nombre}
+                type="button"
+                role="checkbox"
+                aria-checked={activo}
+                disabled={!editable}
+                onClick={() => toggleAccesorio(nombre)}
+                className="flex h-14 items-center gap-2.5 rounded-xl px-3.5 text-left text-sm font-semibold"
+                style={{
+                  border: `1px solid ${activo ? 'rgba(197,248,42,.5)' : '#2A313A'}`,
+                  background: activo ? 'rgba(197,248,42,.07)' : 'var(--color-app-surface-2)',
+                  color: activo ? 'var(--color-app-text)' : '#C9D0D8',
+                }}
+              >
+                <span
+                  className="flex size-[22px] shrink-0 items-center justify-center rounded-md"
+                  style={activo ? { background: 'var(--color-lime-500)', color: '#0B0D10' } : { border: '2px solid #3A434E' }}
+                >
+                  {activo && (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20 6 9 17l-5-5" />
+                    </svg>
+                  )}
+                </span>
+                {nombre}
+              </button>
+            )
+          })}
+        </div>
+        {editable && cuenta < ACCESORIOS.length && (
+          <button
+            type="button"
+            onClick={() => setAccesorios(ACCESORIOS.map((a) => a.nombre))}
+            className="self-start text-sm font-semibold text-lime-500"
+          >
+            Marcar todos
+          </button>
+        )}
+      </section>
+
+      <section className="dm-card flex flex-col gap-3">
+        <h2 className="dm-display text-base font-semibold">Rayones y golpes previos</h2>
+        <textarea
+          value={observaciones}
+          onChange={(e) => setObservaciones(e.target.value)}
+          readOnly={!editable}
+          rows={3}
+          placeholder={editable ? 'Ej. rayón en puerta delantera derecha, parachoques trasero con golpe leve…' : 'Sin observaciones.'}
+          className="w-full resize-y rounded-xl bg-app-surface-2 p-3 text-[15px] leading-normal outline-none placeholder:text-app-faint focus-visible:border-lime-500"
+          style={{ minHeight: 96, border: '1px solid #2A313A' }}
+        />
+      </section>
+
+      <section className="dm-card flex flex-col gap-3">
+        <div className="flex items-center justify-between">
+          <h2 className="dm-display text-base font-semibold">Firma del cliente</h2>
+          {mostrarCanvas && (
+            <button type="button" onClick={borrarFirma} className="text-sm font-semibold text-app-muted">
+              Borrar
+            </button>
+          )}
+          {editable && firmaExistente && !reFirmando && (
+            <button
+              type="button"
+              onClick={() => {
+                setReFirmando(true)
+                setTieneTrazo(false)
+              }}
+              className="text-sm font-semibold text-app-muted"
+            >
+              Volver a firmar
+            </button>
+          )}
+        </div>
+
+        {mostrarCanvas ? (
+          <div className="relative h-[170px] w-full overflow-hidden rounded-xl bg-app-surface-2" style={{ border: '1px dashed #3A434E' }}>
+            <canvas ref={canvasRef} className="absolute inset-0 size-full touch-none" />
+            <span className="pointer-events-none absolute inset-x-0" style={{ bottom: 38, borderTop: '1px solid var(--color-app-line)' }} />
+            {!tieneTrazo && (
+              <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center gap-1.5 text-app-faint">
+                <Signature size={26} />
+                <span className="text-xs">Firma aquí</span>
+              </div>
+            )}
+          </div>
+        ) : firmaExistente ? (
+          <div className="flex h-[150px] w-full items-center justify-center overflow-hidden rounded-xl bg-[#F2F4EF]">
+            <img src={firmaExistente} alt="Firma del cliente" className="max-h-full max-w-full object-contain" />
+          </div>
+        ) : (
+          <div className="flex h-[110px] w-full items-center justify-center rounded-xl bg-app-surface-2 text-sm text-app-faint" style={{ border: '1px dashed #3A434E' }}>
+            Sin firma registrada.
+          </div>
+        )}
+        <p className="text-xs text-app-faint">El cliente firma con el dedo en el celular del técnico. Confirma accesorios y daños.</p>
+      </section>
+
+      {error && <p className="text-sm text-cor">{error}</p>}
     </AppShell>
   )
 }

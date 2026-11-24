@@ -1,15 +1,8 @@
-import { CaretLeft, CarProfile, Garage, House, SignOut, SquaresFour } from '@phosphor-icons/react'
-import { useState, type ReactNode } from 'react'
+import { CaretLeft, CarProfile, House, SquaresFour, UserCircle } from '@phosphor-icons/react'
+import type { ReactNode } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { useAuthStore, type AuthUser } from '../store/auth'
+import { useAuthStore } from '../store/auth'
 import Toast from './Toast'
-
-const ROL_LABEL: Record<string, string> = {
-  super_admin: 'Super admin',
-  cajero: 'Cajero',
-  operador_tecnico: 'Operador técnico',
-  cliente: 'Cliente',
-}
 
 interface NavItem {
   to: string
@@ -17,21 +10,21 @@ interface NavItem {
   icon: (weight: 'regular' | 'fill') => ReactNode
 }
 
-// Evidencias, Inspección y Presupuesto no son pantallas de destino genérico — siempre
-// pertenecen a una OT o presupuesto puntual, así que no van como ítem de navegación fijo
-// (se llega a ellas desde el detalle de la OT o el aviso en Mi garaje).
+// Las pantallas de una orden (inspección, fotos, presupuesto) no llevan menú inferior: son
+// pasos de trabajo con su propio botón de acción fijo abajo. Se llega a ellas desde la orden.
 const TECNICO_NAV: NavItem[] = [
-  { to: '/', label: 'Inicio', icon: (w) => <House weight={w} size={22} /> },
-  { to: '/ordenes-trabajo', label: 'Órdenes', icon: (w) => <SquaresFour weight={w} size={22} /> },
+  { to: '/', label: 'Mi día', icon: (w) => <House weight={w} size={22} /> },
+  { to: '/ordenes-trabajo', label: 'Tablero', icon: (w) => <SquaresFour weight={w} size={22} /> },
+  { to: '/perfil', label: 'Perfil', icon: (w) => <UserCircle weight={w} size={22} /> },
 ]
 
 const CLIENTE_NAV: NavItem[] = [
   { to: '/', label: 'Inicio', icon: (w) => <House weight={w} size={22} /> },
-  { to: '/garaje', label: 'Mi garaje', icon: (w) => <CarProfile weight={w} size={22} /> },
-  { to: '/vehiculos', label: 'Vehículos', icon: (w) => <Garage weight={w} size={22} /> },
+  { to: '/vehiculos', label: 'Mis vehículos', icon: (w) => <CarProfile weight={w} size={22} /> },
+  { to: '/perfil', label: 'Perfil', icon: (w) => <UserCircle weight={w} size={22} /> },
 ]
 
-function iniciales(nombre: string) {
+export function iniciales(nombre: string) {
   return nombre
     .split(' ')
     .filter(Boolean)
@@ -40,85 +33,18 @@ function iniciales(nombre: string) {
     .join('')
 }
 
-function UserMenu({ user }: { user: AuthUser }) {
-  const [abierto, setAbierto] = useState(false)
-  const clearAuth = useAuthStore((s) => s.clearAuth)
-  const navigate = useNavigate()
-
-  function salir() {
-    clearAuth()
-    navigate('/login')
-  }
-
-  return (
-    <div className="relative">
-      <button
-        type="button"
-        onClick={() => setAbierto((v) => !v)}
-        aria-label="Cuenta"
-        className="flex size-9 shrink-0 items-center justify-center rounded-full bg-app-surface-3 text-sm font-semibold"
-      >
-        {iniciales(user.nombre)}
-      </button>
-
-      {abierto && (
-        <>
-          <button type="button" aria-label="Cerrar menú" onClick={() => setAbierto(false)} className="fixed inset-0 z-40 cursor-default" />
-          <div
-            className="dm-in absolute top-[calc(100%+8px)] right-0 z-50 w-[220px] overflow-hidden rounded-2xl bg-app-surface"
-            style={{ border: '1px solid var(--color-app-line)', boxShadow: 'var(--shadow-card)' }}
-          >
-            <div className="px-4 py-3">
-              <p className="truncate text-sm font-semibold">{user.nombre}</p>
-              <p className="truncate text-xs text-app-muted">{ROL_LABEL[user.rol] ?? user.rol}</p>
-            </div>
-            <button
-              type="button"
-              onClick={salir}
-              className="flex w-full items-center gap-2.5 px-4 py-3 text-left text-sm font-medium text-app-text"
-              style={{ borderTop: '1px solid var(--color-app-line)' }}
-            >
-              <SignOut size={18} />
-              Cerrar sesión
-            </button>
-          </div>
-        </>
-      )}
-    </div>
-  )
-}
-
-function Nav({ items, layout }: { items: NavItem[]; layout: 'rail' | 'tabbar' }) {
+function TabBar({ items }: { items: NavItem[] }) {
   const location = useLocation()
-
-  if (layout === 'rail') {
-    return (
-      <nav className="flex flex-col gap-1 p-3">
-        {items.map((item) => {
-          const active = location.pathname === item.to
-          return (
-            <Link
-              key={item.label}
-              to={item.to}
-              className={
-                active
-                  ? 'flex items-center gap-3 rounded-xl bg-app-surface-2 px-3 py-2.5 text-sm font-medium text-lime-txt'
-                  : 'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-app-faint hover:text-app-muted'
-              }
-            >
-              {item.icon(active ? 'fill' : 'regular')}
-              {item.label}
-            </Link>
-          )
-        })}
-      </nav>
-    )
-  }
-
   return (
     <nav
-      className="no-scrollbar fixed inset-x-0 bottom-0 z-30 flex items-center justify-around bg-app-bg/90 backdrop-blur-[18px]"
-      style={{ borderTop: '1px solid var(--color-app-line-2)', padding: '8px 10px 22px' }}
+      aria-label="Navegación principal"
+      className="fixed inset-x-0 bottom-0 z-30 flex items-start"
+      style={{
+        height: 'calc(76px + env(safe-area-inset-bottom))',
+        paddingTop: 8,
+        background: 'var(--color-app-surface-2)',
+        borderTop: '1px solid var(--color-app-line-2)',
+      }}
     >
       {items.map((item) => {
         const active = location.pathname === item.to
@@ -126,14 +52,13 @@ function Nav({ items, layout }: { items: NavItem[]; layout: 'rail' | 'tabbar' })
           <Link
             key={item.label}
             to={item.to}
-            className={
-              active
-                ? 'flex min-w-[64px] flex-col items-center gap-1 py-1 text-lime-txt'
-                : 'flex min-w-[64px] flex-col items-center gap-1 py-1 text-app-faint'
-            }
+            aria-current={active ? 'page' : undefined}
+            className={`flex h-[52px] flex-1 flex-col items-center justify-center gap-1 text-[11px] font-semibold ${
+              active ? 'text-lime-500' : 'text-app-faint'
+            }`}
           >
             {item.icon(active ? 'fill' : 'regular')}
-            <span className="text-[10.5px] font-medium">{item.label}</span>
+            {item.label}
           </Link>
         )
       })}
@@ -143,62 +68,55 @@ function Nav({ items, layout }: { items: NavItem[]; layout: 'rail' | 'tabbar' })
 
 interface AppShellProps {
   title: string
-  subtitle?: string
+  subtitle?: ReactNode
   back?: { label: string; to: string }
   rightAction?: ReactNode
+  /** Botón(es) de acción fijos abajo; reemplazan al menú inferior. */
+  sticky?: ReactNode
   children: ReactNode
 }
 
-export default function AppShell({ title, subtitle, back, rightAction, children }: AppShellProps) {
+export default function AppShell({ title, subtitle, back, rightAction, sticky, children }: AppShellProps) {
   const user = useAuthStore((s) => s.user)
   const navigate = useNavigate()
-  const esTecnico = user?.rol !== 'cliente'
-  const items = esTecnico ? TECNICO_NAV : CLIENTE_NAV
+  const items = user?.rol === 'cliente' ? CLIENTE_NAV : TECNICO_NAV
+  const conMenu = !back && !sticky
 
   return (
-    <div className="min-h-svh bg-app-bg text-app-text md:flex">
-      <aside
-        className="sticky top-0 hidden h-svh w-[232px] shrink-0 md:block"
-        style={{ borderRight: '1px solid var(--color-app-line)' }}
-      >
-        <Nav items={items} layout="rail" />
-      </aside>
-
-      <div className="min-w-0 flex-1">
+    <div className="min-h-svh bg-app-bg text-app-text">
+      <div className="mx-auto min-h-svh max-w-[520px]">
         <header
-          className="sticky top-0 z-30 bg-app-bg/90 backdrop-blur-[18px]"
-          style={{ borderBottom: '1px solid var(--color-app-line-2)' }}
+          className="sticky top-0 z-20 bg-app-bg"
+          style={{ borderBottom: '1px solid var(--color-app-line-2)', paddingTop: 'env(safe-area-inset-top)' }}
         >
-          <div className="mx-auto flex h-12 max-w-[1180px] items-center justify-between px-[var(--pad-page)]">
-            {back ? (
+          {back && (
+            <div className="px-[18px] pt-1">
               <button
                 type="button"
                 onClick={() => navigate(back.to)}
-                className="flex items-center gap-1 text-sm font-medium text-lime-txt"
+                className="flex h-11 items-center gap-1 text-sm font-semibold text-lime-500"
               >
                 <CaretLeft weight="bold" size={18} />
                 {back.label}
               </button>
-            ) : (
-              <span />
-            )}
-            {rightAction}
-          </div>
-          <div className="mx-auto flex max-w-[1180px] items-center justify-between px-[var(--pad-page)] pb-4">
-            <div>
-              <h1 className="text-[27px] leading-[1.15] font-semibold tracking-[-0.03em]">{title}</h1>
-              {subtitle && <p className="mt-0.5 text-[13px] text-app-muted">{subtitle}</p>}
             </div>
-            {user && <UserMenu user={user} />}
+          )}
+          <div className={`flex items-center gap-3 px-[18px] pb-3.5 ${back ? 'pt-0' : 'pt-[18px]'}`}>
+            <div className="min-w-0 flex-1">
+              <h1 className={`dm-display leading-[1.15] font-bold ${back ? 'text-xl' : 'text-2xl'}`}>{title}</h1>
+              {subtitle && <div className="mt-0.5 text-[13px] text-app-faint">{subtitle}</div>}
+            </div>
+            {rightAction}
           </div>
         </header>
 
-        <main className="mx-auto max-w-[1180px] px-[var(--pad-page)] pt-4 pb-[110px] md:pb-10">{children}</main>
+        <main className="flex flex-col gap-3.5 px-[18px] pt-4" style={{ paddingBottom: sticky ? 150 : conMenu ? 110 : 32 }}>
+          {children}
+        </main>
       </div>
 
-      <div className="md:hidden">
-        <Nav items={items} layout="tabbar" />
-      </div>
+      {sticky && <div className="dm-sticky">{sticky}</div>}
+      {conMenu && <TabBar items={items} />}
       <Toast />
     </div>
   )

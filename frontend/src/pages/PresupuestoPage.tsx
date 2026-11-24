@@ -1,6 +1,6 @@
 import { CheckCircle, XCircle } from '@phosphor-icons/react'
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import AppShell from '../components/AppShell'
 import { ApiError } from '../lib/api'
 import {
@@ -8,7 +8,13 @@ import {
   responderItem,
   responderPresupuesto,
   type Presupuesto,
+  type PresupuestoItem,
 } from '../lib/presupuestos'
+import { hayContactoTaller, whatsappTaller } from '../lib/taller'
+
+function bs(n: number) {
+  return n.toLocaleString('es-BO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
 
 export default function PresupuestoPage() {
   const { id } = useParams<{ id: string }>()
@@ -17,6 +23,8 @@ export default function PresupuestoPage() {
   const [presupuesto, setPresupuesto] = useState<Presupuesto | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [enviando, setEnviando] = useState(false)
+  // Trabajos pendientes que el cliente decidió NO hacer (por defecto se aprueba todo).
+  const [quitados, setQuitados] = useState<Set<number>>(new Set())
 
   async function cargar() {
     try {
@@ -31,167 +39,191 @@ export default function PresupuestoPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [presupuestoId])
 
-  async function responderGeneral(aprobado: boolean) {
-    setEnviando(true)
-    setError(null)
-    try {
-      const actualizado = await responderPresupuesto(presupuestoId, aprobado)
-      setPresupuesto(actualizado)
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'No se pudo enviar tu respuesta.')
-    } finally {
-      setEnviando(false)
-    }
-  }
-
-  async function responderUnItem(itemId: number, aprobado: boolean) {
-    setEnviando(true)
-    setError(null)
-    try {
-      await responderItem(presupuestoId, itemId, aprobado)
-      await cargar()
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'No se pudo enviar tu respuesta.')
-    } finally {
-      setEnviando(false)
-    }
-  }
-
   if (error && !presupuesto) {
     return (
-      <main className="flex min-h-svh items-center justify-center bg-app-bg px-6 text-center text-app-text">
+      <AppShell title="Presupuesto" back={{ label: 'Inicio', to: '/' }}>
         <p className="text-sm text-cor">{error}</p>
-      </main>
+      </AppShell>
+    )
+  }
+  if (!presupuesto) {
+    return (
+      <AppShell title="Presupuesto" back={{ label: 'Inicio', to: '/' }}>
+        <p className="text-sm text-app-muted">Cargando…</p>
+      </AppShell>
     )
   }
 
-  if (!presupuesto) {
-    return <main className="flex min-h-svh items-center justify-center bg-app-bg text-app-muted">Cargando…</main>
+  const abierto = presupuesto.estado === 'enviado'
+  const items = presupuesto.items
+  const decididos = (i: PresupuestoItem) => i.aprobado !== null
+  const seApruebaItem = (i: PresupuestoItem) => (decididos(i) ? i.aprobado === true : !quitados.has(i.id))
+  const aprobados = items.filter(seApruebaItem)
+  const total = aprobados.reduce((acc, i) => acc + Number(i.subtotal), 0)
+
+  function alternar(i: PresupuestoItem) {
+    if (!abierto || decididos(i)) return
+    setQuitados((prev) => {
+      const sig = new Set(prev)
+      if (sig.has(i.id)) sig.delete(i.id)
+      else sig.add(i.id)
+      return sig
+    })
   }
 
-  // Todos los ítems (del presupuesto original o encontrados durante el trabajo) se aprueban
-  // o rechazan igual, uno por uno — "aprobar presupuesto" abajo es un atajo que aprueba de
-  // una todo lo que siga pendiente, no la única forma de responder.
-  const items = presupuesto.items
-  const rechazados = items.filter((i) => i.aprobado === false)
+  async function confirmar() {
+    if (!presupuesto) return
+    setEnviando(true)
+    setError(null)
+    try {
+      const pendientesQuitados = items.filter((i) => !decididos(i) && quitados.has(i.id))
+      const pendientesAprobados = items.filter((i) => !decididos(i) && !quitados.has(i.id))
+      if (pendientesAprobados.length === 0 && !items.some((i) => i.aprobado === true)) {
+        setPresupuesto(await responderPresupuesto(presupuestoId, false))
+      } else {
+        for (const item of pendientesQuitados) await responderItem(presupuestoId, item.id, false)
+        setPresupuesto(await responderPresupuesto(presupuestoId, true))
+      }
+      setQuitados(new Set())
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'No se pudo enviar tu respuesta.')
+      await cargar()
+    } finally {
+      setEnviando(false)
+    }
+  }
 
-  // El total mostrado es "lo que costaría si se aprueba todo lo pendiente" — excluye solo lo
-  // ya rechazado explícitamente. presupuesto.total no sirve solo: es el snapshot original y
-  // no incluye los ítems agregados después como adicionales.
-  const totalAprobar = items
-    .filter((i) => i.aprobado !== false)
-    .reduce((acc, i) => acc + Number(i.subtotal), 0)
+  const grupos = [
+    { nombre: 'Trabajos del presupuesto', items: items.filter((i) => !i.es_adicional) },
+    { nombre: 'Encontrados durante el trabajo', items: items.filter((i) => i.es_adicional) },
+  ].filter((g) => g.items.length > 0)
 
   return (
-    <AppShell title="Presupuesto" subtitle={presupuesto.orden_trabajo.codigo} back={{ label: 'Atrás', to: '/garaje' }}>
-      <div className="mx-auto flex max-w-[660px] flex-col gap-3.5">
-        {presupuesto.estado === 'aprobado' && (
-          <div className="flex items-center gap-3 rounded-2xl px-4 py-3.5 bg-lime-500/15">
-            <CheckCircle weight="fill" size={22} className="text-lime-500 shrink-0" />
-            <div>
-              <p className="text-sm font-semibold text-lime-txt">Presupuesto aprobado</p>
-              <p className="text-xs text-app-muted">El taller ya puede empezar</p>
+    <AppShell
+      title="Presupuesto"
+      back={{ label: 'Inicio', to: '/' }}
+      subtitle={
+        <span className="mt-1 flex items-center gap-2">
+          {presupuesto.orden_trabajo.vehiculo.marca} {presupuesto.orden_trabajo.vehiculo.modelo}
+          <span className="font-mono">{presupuesto.orden_trabajo.codigo}</span>
+        </span>
+      }
+      sticky={
+        abierto ? (
+          <>
+            <div className="flex items-baseline justify-between">
+              <span className="text-sm text-app-muted">Total a aprobar</span>
+              <span className="font-mono text-2xl font-bold text-lime-500">Bs {bs(total)}</span>
             </div>
+            <button type="button" className="dm-btn p" disabled={enviando} onClick={confirmar}>
+              {enviando
+                ? 'Enviando…'
+                : aprobados.length === 0
+                  ? 'No aprobar ninguno'
+                  : `Aprobar ${aprobados.length} ${aprobados.length === 1 ? 'trabajo' : 'trabajos'}`}
+            </button>
+            {hayContactoTaller && (
+              <a
+                href={whatsappTaller(`Hola, tengo dudas sobre el presupuesto de mi orden ${presupuesto.orden_trabajo.codigo}.`)}
+                target="_blank"
+                rel="noreferrer"
+                className="py-1 text-center text-[13px] font-semibold text-lime-500"
+              >
+                Tengo dudas · escribir al taller
+              </a>
+            )}
+          </>
+        ) : undefined
+      }
+    >
+      {presupuesto.estado === 'aprobado' && (
+        <div className="flex items-center gap-3 rounded-2xl bg-lime-500/15 px-4 py-3.5">
+          <CheckCircle weight="fill" size={22} className="shrink-0 text-lime-500" />
+          <div>
+            <p className="text-sm font-semibold text-lime-500">Presupuesto aprobado</p>
+            <p className="text-xs text-app-muted">El taller ya puede empezar</p>
           </div>
-        )}
-        {presupuesto.estado === 'rechazado' && (
-          <div className="flex items-center gap-3 rounded-2xl px-4 py-3.5 bg-cor-bg">
-            <XCircle weight="fill" size={22} className="text-cor shrink-0" />
-            <p className="text-sm font-semibold text-cor-txt">Rechazaste este presupuesto</p>
-          </div>
-        )}
+        </div>
+      )}
+      {presupuesto.estado === 'rechazado' && (
+        <div className="flex items-center gap-3 rounded-2xl bg-cor-bg px-4 py-3.5">
+          <XCircle weight="fill" size={22} className="shrink-0 text-cor" />
+          <p className="text-sm font-semibold text-cor">No aprobaste este presupuesto</p>
+        </div>
+      )}
 
-        <div className="rounded-[18px] bg-app-surface p-4" style={{ border: '1px solid var(--color-app-line)' }}>
-          <p className="font-mono text-[11px] tracking-[0.04em] text-app-faint">{presupuesto.orden_trabajo.codigo}</p>
-          <h1 className="mt-0.5 text-[19px] font-semibold tracking-[-0.02em]">
-            {presupuesto.orden_trabajo.vehiculo.marca} {presupuesto.orden_trabajo.vehiculo.modelo}
-          </h1>
+      {abierto && (
+        <p className="text-sm leading-normal text-app-muted">
+          Toca un trabajo para quitarlo o volver a agregarlo. Lo que no apruebes no se hace y queda anotado para otra visita.
+        </p>
+      )}
 
-          <div className="mt-3 flex flex-col gap-3">
-            {items.map((item) => (
-              <div key={item.id} className="flex items-center justify-between gap-3 py-2.5" style={{ borderTop: '1px solid var(--color-app-line-2)' }}>
-                <div className="min-w-0">
-                  <p className="text-[13.5px] font-medium">{item.descripcion}</p>
-                  <p className="text-[11.5px] text-app-faint">
-                    {item.cantidad} × Bs {item.precio_unitario}
-                    {item.es_adicional && ' · encontrado durante el trabajo'}
-                  </p>
-                </div>
-                <div className="flex shrink-0 items-center gap-2.5">
-                  <p className="font-mono text-[13.5px] whitespace-nowrap">Bs {item.subtotal}</p>
-                  {item.aprobado === null ? (
-                    <div className="flex shrink-0 gap-1.5">
-                      <button
-                        type="button"
-                        disabled={enviando}
-                        onClick={() => responderUnItem(item.id, true)}
-                        className="h-9 min-w-[72px] rounded-lg bg-lime-500 px-2.5 text-[11px] font-semibold text-lime-ink disabled:opacity-60"
-                      >
-                        Aprobar
-                      </button>
-                      <button
-                        type="button"
-                        disabled={enviando}
-                        onClick={() => responderUnItem(item.id, false)}
-                        className="h-9 min-w-[72px] rounded-lg px-2.5 text-[11px] text-app-muted disabled:opacity-60"
-                        style={{ border: '1px solid var(--color-app-line)' }}
-                      >
-                        Rechazar
-                      </button>
-                    </div>
-                  ) : (
-                    <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10.5px] font-medium ${item.aprobado ? 'bg-lime-500/15 text-lime-txt' : 'bg-cor-bg text-cor-txt'}`}>
-                      {item.aprobado ? 'Aprobado' : 'Rechazado'}
+      {grupos.map((g) => (
+        <div key={g.nombre} className="flex flex-col gap-2">
+          <span className="dm-lab">{g.nombre}</span>
+          <div className="dm-card" style={{ padding: '0 16px' }}>
+            {g.items.map((i) => {
+              const activo = seApruebaItem(i)
+              const bloqueado = !abierto || decididos(i)
+              return (
+                <button
+                  key={i.id}
+                  type="button"
+                  role="checkbox"
+                  aria-checked={activo}
+                  disabled={bloqueado}
+                  onClick={() => alternar(i)}
+                  className="dm-li w-full items-start text-left"
+                  style={{ minHeight: 64, opacity: activo ? 1 : 0.55 }}
+                >
+                  <span
+                    aria-hidden="true"
+                    className="mt-0.5 flex size-[22px] shrink-0 items-center justify-center rounded-md"
+                    style={
+                      activo
+                        ? { background: 'var(--color-lime-500)', color: 'var(--color-lime-ink)' }
+                        : { border: '2px solid #3A434E' }
+                    }
+                  >
+                    {activo && (
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 6 9 17l-5-5" />
+                      </svg>
+                    )}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[15px] font-semibold" style={{ textDecoration: activo ? undefined : 'line-through' }}>
+                      {i.descripcion}
                     </span>
-                  )}
-                </div>
-              </div>
-            ))}
+                    <span className="mt-0.5 block text-[12.5px] text-app-faint">
+                      {Number(i.cantidad)} × {bs(Number(i.precio_unitario))}
+                      {decididos(i) && (i.aprobado ? ' · aprobado' : ' · no aprobado')}
+                    </span>
+                  </span>
+                  <span className="font-mono text-[15px] font-semibold">{bs(Number(i.subtotal))}</span>
+                </button>
+              )
+            })}
           </div>
         </div>
+      ))}
 
-        {rechazados.length > 0 && (
-          <div className="rounded-[18px] bg-app-surface p-4" style={{ border: '1px solid var(--color-app-line)' }}>
-            <p className="text-xs text-app-muted">
-              Lo que rechaces queda registrado en la orden para que el técnico sepa que no debe hacerlo — podés pedirlo en otra visita.
-            </p>
-          </div>
-        )}
-
-        <div className="rounded-[18px] bg-app-surface p-4" style={{ border: '1px solid var(--color-app-line)' }}>
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-medium">Total a aprobar</p>
-            <p className="font-mono text-[26px] font-semibold tracking-[-0.02em] text-lime-500">
-              Bs {totalAprobar.toLocaleString('es-BO')}
-            </p>
-          </div>
+      <Link to={`/ordenes-trabajo/${presupuesto.orden_trabajo.id}/evidencias`} className="dm-card flex items-center gap-3" style={{ padding: '12px 14px' }}>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-semibold">Ver las fotos del diagnóstico</p>
+          <p className="text-[12.5px] text-app-faint">Lo que encontró el técnico en tu vehículo</p>
         </div>
+        <span className="text-app-faint">›</span>
+      </Link>
 
-        {presupuesto.estado === 'enviado' && (
-          <div className="flex gap-3">
-            <button
-              type="button"
-              disabled={enviando}
-              onClick={() => responderGeneral(true)}
-              className="h-[54px] flex-1 rounded-xl bg-lime-500 text-[15px] font-semibold text-lime-ink disabled:opacity-60"
-              style={{ boxShadow: 'var(--shadow-cta-lime)' }}
-            >
-              Confirmar
-            </button>
-            <button
-              type="button"
-              disabled={enviando}
-              onClick={() => responderGeneral(false)}
-              className="h-[50px] flex-1 rounded-xl text-[15px] font-medium disabled:opacity-60"
-              style={{ border: '1px solid var(--color-app-line)' }}
-            >
-              Rechazar todo
-            </button>
-          </div>
-        )}
+      {!abierto && presupuesto.estado !== 'borrador' && (
+        <div className="flex items-baseline justify-between px-1">
+          <span className="text-sm text-app-muted">Total aprobado</span>
+          <span className="font-mono text-xl font-bold text-lime-500">Bs {bs(total)}</span>
+        </div>
+      )}
 
-        {error && <p className="text-center text-sm text-cor">{error}</p>}
-      </div>
+      {error && <p className="text-center text-sm text-cor">{error}</p>}
     </AppShell>
   )
 }

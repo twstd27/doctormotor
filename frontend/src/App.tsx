@@ -1,6 +1,5 @@
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import EvidenciasPage from './pages/EvidenciasPage'
-import GaragePage from './pages/GaragePage'
 import GoogleCallbackPage from './pages/GoogleCallbackPage'
 import HistorialPublicoPage from './pages/HistorialPublicoPage'
 import HomePage from './pages/HomePage'
@@ -8,6 +7,9 @@ import InspeccionPage from './pages/InspeccionPage'
 import InvitacionTecnicoPage from './pages/InvitacionTecnicoPage'
 import KanbanPage from './pages/KanbanPage'
 import LoginPage from './pages/LoginPage'
+import OrdenPage from './pages/OrdenPage'
+import PerfilPage from './pages/PerfilPage'
+import SeguimientoPage from './pages/SeguimientoPage'
 import PresupuestoPage from './pages/PresupuestoPage'
 import PrivacidadPage from './pages/PrivacidadPage'
 import VehiculosPage from './pages/VehiculosPage'
@@ -21,7 +23,10 @@ function App() {
       <Route path="/ordenes-trabajo" element={<KanbanPage />} />
       <Route path="/ordenes-trabajo/:id/inspeccion" element={<InspeccionPage />} />
       <Route path="/ordenes-trabajo/:id/evidencias" element={<EvidenciasPage />} />
-      <Route path="/garaje" element={<GaragePage />} />
+      <Route path="/garaje" element={<Navigate to="/vehiculos" replace />} />
+      <Route path="/ordenes-trabajo/:id" element={<OrdenPage />} />
+      <Route path="/seguimiento/:id" element={<SeguimientoPage />} />
+      <Route path="/perfil" element={<PerfilPage />} />
       <Route path="/vehiculos" element={<VehiculosPage />} />
       <Route path="/presupuestos/:id" element={<PresupuestoPage />} />
       <Route path="/auth/google/callback" element={<GoogleCallbackPage />} />

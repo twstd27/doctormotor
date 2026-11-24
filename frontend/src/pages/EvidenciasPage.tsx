@@ -168,8 +168,8 @@ export default function EvidenciasPage() {
   return (
     <AppShell
       title="Fotos y videos"
-      subtitle="Evidencia del trabajo"
-      back={esCliente ? { label: 'Mi garaje', to: '/garaje' } : { label: 'Tablero', to: '/ordenes-trabajo' }}
+      subtitle={esCliente ? "Lo que hizo el taller en tu vehículo" : "Las ve el cliente en su app"}
+      back={esCliente ? { label: 'Atrás', to: '/' } : { label: 'Orden', to: `/ordenes-trabajo/${otId}` }}
     >
       {!esCliente && (
         <div
@@ -178,7 +178,7 @@ export default function EvidenciasPage() {
         >
           {enLinea ? <CloudArrowUp weight="fill" size={20} /> : <CloudSlash weight="fill" size={20} />}
           <p className="text-sm font-medium">
-            {enLinea ? 'Conectado — Las evidencias se suben al instante' : 'Sin conexión — Se guardan en el celular y se suben después'}
+            {enLinea ? 'En línea · se suben al instante' : 'Sin señal · se guardan y suben solas después'}
           </p>
           {sincronizando && <ArrowsClockwise size={18} className="ml-auto animate-spin opacity-60" />}
         </div>
@@ -195,20 +195,18 @@ export default function EvidenciasPage() {
           <button
             type="button"
             onClick={() => fotoRef.current?.click()}
-            className="mt-3.5 flex h-[140px] w-full flex-col items-center justify-center gap-1 rounded-[18px] bg-lime-500 text-lime-ink"
+            className="flex h-24 w-full flex-col items-center justify-center gap-1.5 rounded-[18px] bg-lime-500 text-lime-ink"
             style={{ boxShadow: 'var(--shadow-cta-lime-lg)' }}
           >
             <Camera weight="fill" size={34} />
             <span className="text-[17px] font-semibold">Tomar foto</span>
-            <span className="text-[12.5px] opacity-70">Se abre la cámara del celular</span>
-          </button>
+                      </button>
 
-          <div className="mt-2.5 grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-2 gap-2.5">
             <button
               type="button"
               onClick={() => videoRef.current?.click()}
-              className="flex h-12 items-center justify-center gap-2 rounded-xl text-sm font-medium"
-              style={{ border: '1px solid var(--color-app-line)' }}
+              className="dm-btn s sm"
             >
               <VideoCamera size={18} />
               Grabar video
@@ -216,8 +214,7 @@ export default function EvidenciasPage() {
             <button
               type="button"
               onClick={() => galeriaRef.current?.click()}
-              className="flex h-12 items-center justify-center gap-2 rounded-xl text-sm font-medium"
-              style={{ border: '1px solid var(--color-app-line)' }}
+              className="dm-btn s sm"
             >
               <ImagesSquare size={18} />
               Elegir de galería
@@ -226,16 +223,16 @@ export default function EvidenciasPage() {
         </>
       )}
 
-      <section className={`rounded-2xl bg-app-surface p-4 ${esCliente ? '' : 'mt-3.5'}`} style={{ border: '1px solid var(--color-app-line)' }}>
+      <section className="dm-card">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold">Evidencias de OT-{otId}</h2>
+          <h2 className="text-sm font-semibold">Fotos y videos</h2>
           <span className="text-[11.5px] text-app-faint">
             {itemsVista.length} {itemsVista.length === 1 ? 'archivo' : 'archivos'}
             {pendientes > 0 && ` · ${pendientes} pendiente${pendientes === 1 ? '' : 's'}`}
           </span>
         </div>
 
-        <div className="mt-3 grid grid-cols-3 gap-2.5 sm:grid-cols-4 md:grid-cols-6">
+        <div className="mt-3 grid grid-cols-3 gap-2">
           {itemsVista.map((item) => {
             const contenido = item.imagenUrl ? (
               <img src={item.imagenUrl} alt={item.nombre} className="size-full object-cover" />

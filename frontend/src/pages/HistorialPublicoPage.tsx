@@ -1,10 +1,17 @@
 import { useQuery } from '@tanstack/react-query'
-import { CalendarBlank, CarProfile, CheckCircle, Gauge, UserCircle, Wrench } from '@phosphor-icons/react'
+import { CarProfile, ShieldCheck } from '@phosphor-icons/react'
 import { useParams } from 'react-router-dom'
+import { Placa } from '../components/ui'
 import { ApiError } from '../lib/api'
 import { historialPublicoPorQr } from '../lib/garaje'
-import { ESTADOS, TONO_CLASES, TONO_ESTADO } from '../lib/ordenesTrabajo'
+import { ESTADOS } from '../lib/ordenesTrabajo'
+import { hayContactoTaller, whatsappTaller } from '../lib/taller'
 
+function fecha(iso: string) {
+  return new Date(iso).toLocaleDateString('es-BO', { day: '2-digit', month: '2-digit', year: '2-digit' })
+}
+
+/** Historial público del vehículo (QR pegado en el auto): sin datos del dueño ni precios. */
 export default function HistorialPublicoPage() {
   const { token } = useParams<{ token: string }>()
 
@@ -16,89 +23,92 @@ export default function HistorialPublicoPage() {
   })
 
   const noEncontrado = error instanceof ApiError && error.status === 404
+  const km = data?.ordenes.reduce((max, o) => Math.max(max, o.kilometraje_ingreso), 0) ?? 0
 
   return (
-    <div className="min-h-svh bg-app-bg px-5 py-10 text-app-text">
-      <div className="mx-auto max-w-[560px]">
-        <p className="font-mono text-[11px] tracking-[0.04em] text-app-faint">DOCTOR MOTOR · MUSTANG'S GARAGE</p>
-        <h1 className="mt-1 text-[24px] font-semibold tracking-[-0.02em]">Historial del vehículo</h1>
+    <div className="min-h-svh bg-app-bg text-app-text">
+      <div className="mx-auto max-w-[520px]">
+        <div className="px-5 pt-7 pb-[18px]" style={{ borderBottom: '1px solid var(--color-app-line-2)' }}>
+          <p className="font-mono text-[11px] tracking-[0.1em] text-app-faint uppercase">Doctor Motor · Mustang's Garage</p>
+          <h1 className="dm-display mt-2.5 text-[26px] leading-[1.15] font-bold">Historial del vehículo</h1>
+        </div>
 
-        {isLoading && <p className="mt-6 text-sm text-app-muted">Cargando…</p>}
+        <div className="flex flex-col gap-3.5 px-5 py-[18px]">
+          {isLoading && <p className="text-sm text-app-muted">Cargando…</p>}
 
-        {noEncontrado && (
-          <p className="mt-6 rounded-2xl bg-app-surface p-4 text-sm text-app-muted" style={{ border: '1px solid var(--color-app-line)' }}>
-            Este código QR no corresponde a ningún vehículo registrado.
-          </p>
-        )}
+          {noEncontrado && <p className="dm-card text-sm text-app-muted">Este código QR no corresponde a ningún vehículo registrado.</p>}
 
-        {error && !noEncontrado && (
-          <p className="mt-6 rounded-2xl bg-app-surface p-4 text-sm text-app-muted" style={{ border: '1px solid var(--color-app-line)' }}>
-            No se pudo cargar el historial. Intenta de nuevo en un momento.
-          </p>
-        )}
+          {error && !noEncontrado && (
+            <p className="dm-card text-sm text-app-muted">No se pudo cargar el historial. Intenta de nuevo en un momento.</p>
+          )}
 
-        {data && (
-          <>
-            <div className="mt-5 rounded-2xl bg-app-surface p-4" style={{ border: '1px solid var(--color-app-line)' }}>
-              <div className="flex items-center gap-3">
-                <div className="flex size-[46px] shrink-0 items-center justify-center rounded-[13px] bg-app-surface-3">
-                  <CarProfile size={23} className="text-app-faint" />
-                </div>
+          {data && (
+            <>
+              <div className="dm-card flex items-center gap-3.5">
+                <span className="flex size-14 shrink-0 items-center justify-center rounded-[14px] bg-app-surface-3">
+                  <CarProfile size={28} className="text-app-muted" />
+                </span>
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-base font-semibold tracking-[-0.02em]">
-                    {data.vehiculo.marca} {data.vehiculo.modelo} ({data.vehiculo.anio})
+                  <p className="dm-display text-lg font-bold">
+                    {data.vehiculo.marca} {data.vehiculo.modelo} {data.vehiculo.anio}
                   </p>
-                  <span className="mt-0.5 inline-block rounded bg-app-surface-3 px-1.5 py-0.5 font-mono text-[10.5px]">{data.vehiculo.placa}</span>
-                  <span className="ml-1.5 text-[12px] text-app-muted">{data.vehiculo.color}</span>
+                  <div className="mt-1.5 flex items-center gap-2">
+                    <Placa placa={data.vehiculo.placa} />
+                    <span className="text-[13px] text-app-faint">{data.vehiculo.color}</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="mt-6 flex flex-col gap-3">
-              {data.ordenes.map((ot) => {
-                const tono = TONO_CLASES[TONO_ESTADO[ot.estado]]
-                const label = ESTADOS.find((e) => e.value === ot.estado)?.label ?? ot.estado
-                return (
-                  <div key={ot.codigo} className="rounded-2xl bg-app-surface p-4" style={{ border: '1px solid var(--color-app-line)' }}>
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="font-mono text-[12px] text-app-faint">{ot.codigo}</p>
-                      <span className={`inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px] font-medium ${tono.bg} ${tono.fg} ${tono.border}`}>
-                        <span className={`size-1.5 rounded-full ${tono.dot}`} />
-                        {label}
-                      </span>
-                    </div>
-                    <p className="mt-2 text-sm">{ot.descripcion_problema}</p>
-                    <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-[12px] text-app-muted">
-                      <span className="inline-flex items-center gap-1">
-                        <CalendarBlank size={14} /> Ingreso: {new Date(ot.fecha_ingreso).toLocaleDateString('es-BO')}
-                      </span>
-                      {ot.fecha_entrega_real && (
-                        <span className="inline-flex items-center gap-1">
-                          <CheckCircle size={14} /> Entrega: {new Date(ot.fecha_entrega_real).toLocaleDateString('es-BO')}
-                        </span>
-                      )}
-                      <span className="inline-flex items-center gap-1">
-                        <Gauge size={14} /> {ot.kilometraje_ingreso.toLocaleString('es-BO')} km
-                      </span>
-                      {ot.tecnico_asignado && (
-                        <span className="inline-flex items-center gap-1">
-                          <UserCircle size={14} /> {ot.tecnico_asignado}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )
-              })}
+              <div className="grid grid-cols-2 gap-2.5">
+                <div className="dm-card" style={{ padding: 14 }}>
+                  <p className="text-xs text-app-faint">Servicios</p>
+                  <p className="mt-1 font-mono text-[22px] font-bold">{data.ordenes.length}</p>
+                </div>
+                <div className="dm-card" style={{ padding: 14 }}>
+                  <p className="text-xs text-app-faint">Último km</p>
+                  <p className="mt-1 font-mono text-[22px] font-bold">{km.toLocaleString('es-BO')}</p>
+                </div>
+              </div>
 
-              {data.ordenes.length === 0 && (
-                <p className="rounded-2xl bg-app-surface p-4 text-sm text-app-muted" style={{ border: '1px solid var(--color-app-line)' }}>
-                  <Wrench size={16} className="mr-1.5 inline-block text-app-faint" />
-                  Este vehículo todavía no tiene órdenes de trabajo registradas.
-                </p>
+              <div className="dm-card" style={{ padding: '4px 16px' }}>
+                {data.ordenes.map((ot) => {
+                  const enCurso = ot.estado !== 'entregado' && ot.estado !== 'cancelado'
+                  return (
+                    <div key={ot.codigo} className="dm-li items-start" style={{ padding: '16px 0' }}>
+                      <span className="w-[70px] shrink-0 pt-0.5 font-mono text-xs text-app-faint">
+                        {fecha(ot.fecha_entrega_real ?? ot.fecha_ingreso)}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold">{ot.descripcion_problema}</p>
+                        <p className="mt-0.5 text-[12.5px] text-app-faint">{ot.kilometraje_ingreso.toLocaleString('es-BO')} km</p>
+                        {enCurso && (
+                          <span className="mt-2 inline-flex h-6 items-center gap-1.5 rounded-full bg-lime-500/15 px-2.5 text-[11.5px] font-semibold text-lime-500">
+                            <span className="size-1.5 rounded-full bg-lime-500" />
+                            {ESTADOS.find((e) => e.value === ot.estado)?.label ?? ot.estado}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+                {data.ordenes.length === 0 && (
+                  <p className="py-4 text-sm text-app-muted">Este vehículo todavía no tiene servicios registrados.</p>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2.5 px-0.5 py-1 text-xs text-app-faint">
+                <ShieldCheck size={16} className="shrink-0 text-lime-500" />
+                Registros cargados por el taller al cerrar cada orden. No muestra datos del dueño ni precios.
+              </div>
+
+              {hayContactoTaller && (
+                <a href={whatsappTaller('Hola, vi el historial de un vehículo.')} className="dm-btn s sm" target="_blank" rel="noreferrer">
+                  Escribir al taller
+                </a>
               )}
-            </div>
-          </>
-        )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   )

@@ -8,40 +8,41 @@
      signifique siempre 900px (no el 768px por defecto de Tailwind). */
   --breakpoint-md: 900px;
 
-  --color-lime-50: #F4FCE4;   --color-lime-500: #8FD62E;
+  --color-lime-50: #F4FCE4;   --color-lime-500: #C5F82A;
   --color-lime-100: #E7F9C6;  --color-lime-600: #74B31F;
   --color-lime-200: #D0F395;  --color-lime-700: #588718;
   --color-lime-300: #B6EC5E;  --color-lime-800: #446618;
   --color-lime-400: #9FE03A;  --color-lime-900: #394F1A;
   --color-lime-950: #1D2B08;
 
-  --color-lime-ink: #10130A;
-  --color-lime-txt: #B6EC5E;
+  --color-lime-ink: #0B0D10;
+  --color-lime-txt: #C5F82A;
 
-  --color-amb: #E8B23A;
-  --color-amb-txt: #F0C55C;
-  --color-amb-bg: rgba(232,178,58,.12);
+  --color-amb: #FFB547;
+  --color-amb-txt: #FFB547;
+  --color-amb-bg: rgba(255,181,71,.12);
 
-  --color-cor: #E8654B;
-  --color-cor-txt: #F09A86;
-  --color-cor-bg: rgba(232,101,75,.12);
+  --color-cor: #FF8A7A;
+  --color-cor-txt: #FF8A7A;
+  --color-cor-bg: rgba(255,138,122,.12);
 
-  --color-cya: #4FA9C9;
-  --color-cya-txt: #8FCBE0;
-  --color-cya-bg: rgba(79,169,201,.12);
+  --color-cya: #6CB4FF;
+  --color-cya-txt: #6CB4FF;
+  --color-cya-bg: rgba(108,180,255,.12);
 
   --color-app-bg: #0B0D10;
-  --color-app-surface: #14171C;
-  --color-app-surface-2: #1B1F26;
-  --color-app-surface-3: #22272F;
-  --color-app-text: #E9EDF0;
-  --color-app-muted: rgba(233,237,240,.56);
-  --color-app-faint: rgba(233,237,240,.40);
-  --color-app-line: rgba(233,237,240,.10);
-  --color-app-line-2: rgba(233,237,240,.06);
+  --color-app-surface: #14181D;
+  --color-app-surface-2: #0F1216;
+  --color-app-surface-3: #1A1F26;
+  --color-app-text: #ECEEF1;
+  --color-app-muted: #9AA3AE;
+  --color-app-faint: #8B95A1;
+  --color-app-line: #222830;
+  --color-app-line-2: #1E232A;
 
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: ui-monospace, Menlo, monospace;
+  --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
+  --font-display: "Archivo", "Inter", ui-sans-serif, system-ui, sans-serif;
 
   --radius-card: 0.875rem;   /* 14px, uso genérico previo */
   --radius-pill: 99px;
@@ -53,8 +54,8 @@
   --radius-logo: 22px;
 
   --shadow-card: 0 1px 2px rgba(0,0,0,.4), 0 14px 34px -16px rgba(0,0,0,.6);
-  --shadow-cta-lime: 0 12px 26px -12px rgba(143,214,46,.8);
-  --shadow-cta-lime-lg: 0 16px 34px -16px rgba(143,214,46,.85);
+  --shadow-cta-lime: 0 12px 26px -12px rgba(197,248,42,.35);
+  --shadow-cta-lime-lg: 0 16px 34px -16px rgba(197,248,42,.4);
   --shadow-sheet: 0 -20px 50px -20px rgba(0,0,0,.5);
   --shadow-toast: 0 14px 34px -12px rgba(0,0,0,.6);
 
@@ -99,3 +100,22 @@ body {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* Componentes compartidos de la PWA móvil (HANDOFF v2, tokens/dm-m.css) */
+.dm-card { background: var(--color-app-surface); border: 1px solid var(--color-app-line); border-radius: 16px; padding: 16px; }
+.dm-lab { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--color-app-faint); }
+.dm-display { font-family: var(--font-display); letter-spacing: -0.01em; }
+.dm-plate { font-family: var(--font-mono); font-weight: 600; letter-spacing: .06em; background: #F2F4EF; color: #14181D; border-radius: 6px; padding: 2px 8px; border: 1px solid #C9CDC2; }
+.dm-prog { display: flex; gap: 4px; }
+.dm-prog span { flex: 1; height: 5px; border-radius: 3px; background: #262C34; }
+.dm-prog span.d { background: #7FA21C; }
+.dm-prog span.n { background: var(--color-lime-500); }
+.dm-btn { display: flex; align-items: center; justify-content: center; gap: 8px; height: 54px; width: 100%; border-radius: 14px; font-weight: 700; font-size: 16px; border: 1px solid transparent; cursor: pointer; text-decoration: none; }
+.dm-btn:disabled { opacity: .55; }
+.dm-btn.p { background: var(--color-lime-500); color: var(--color-lime-ink); }
+.dm-btn.s { background: #171B21; border-color: #2A313A; color: var(--color-app-text); }
+.dm-btn.sm { height: 44px; font-size: 14px; border-radius: 12px; }
+.dm-sticky { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; padding: 12px 18px calc(20px + env(safe-area-inset-bottom)); background: var(--color-app-surface-2); border-top: 1px solid var(--color-app-line-2); display: flex; flex-direction: column; gap: 8px; }
+.dm-sticky > * { max-width: 520px; width: 100%; margin-inline: auto; }
+.dm-li { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--color-app-line-2); }
+.dm-li:last-child { border-bottom: 0; }

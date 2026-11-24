@@ -8,6 +8,8 @@ export interface Vehiculo {
   modelo: string
   anio: number
   kilometraje_actual: number
+  color?: string | null
+  qr_token?: string | null
 }
 
 export interface OrdenTrabajoCliente {
