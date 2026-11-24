@@ -1,15 +1,35 @@
 <x-filament-widgets::widget>
-    <x-filament::section heading="Requiere atención">
-        <div class="divide-y divide-gray-800">
-            @foreach ($filas as $fila)
-                <a href="{{ $fila['url'] }}" class="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0 hover:bg-gray-800/40 -mx-2 px-2 rounded">
-                    <span class="w-10 shrink-0 text-xl font-bold tabular-nums {{ $fila['claseTexto'] }}">{{ $fila['total'] }}</span>
-                    <div class="min-w-0">
-                        <p class="text-sm font-medium text-white">{{ $fila['label'] }}</p>
-                        <p class="truncate text-xs text-gray-500">{{ $fila['descripcion'] }}</p>
+    <section class="dm-seccion" aria-labelledby="dm-atencion-t">
+        <h2 id="dm-atencion-t" class="dm-seccion-titulo">
+            Requiere tu atención
+            @if (count($tarjetas) > 0)
+                <span class="dm-contador dm-contador--ambar">{{ count($tarjetas) }}</span>
+            @endif
+        </h2>
+
+        @if (count($tarjetas) === 0)
+            <div class="dm-panel dm-atencion-vacia">
+                <span class="dm-dot dm-dot--lima" aria-hidden="true"></span>
+                Todo al día: no hay entregas vencidas, presupuestos sin respuesta ni stock bajo.
+            </div>
+        @else
+            <div class="dm-atencion">
+                @foreach ($tarjetas as $tarjeta)
+                    <div class="dm-atencion-tarjeta dm-atencion-tarjeta--{{ $tarjeta['color'] }}">
+                        <div class="dm-atencion-titulo">{{ $tarjeta['titulo'] }}</div>
+                        <div class="dm-atencion-texto">
+                            {{ $tarjeta['texto'] }}
+                            @if ($tarjeta['orden'])
+                                <x-dm.placa>{{ $tarjeta['orden']->vehiculo?->placa }}</x-dm.placa>
+                            @endif
+                        </div>
+                        @if ($tarjeta['mas'])
+                            <div class="dm-celda-sub">{{ $tarjeta['mas'] }}</div>
+                        @endif
+                        <a class="dm-atencion-accion" href="{{ $tarjeta['url'] }}" @if ($tarjeta['externa']) target="_blank" rel="noopener" @endif>{{ $tarjeta['accion'] }}</a>
                     </div>
-                </a>
-            @endforeach
-        </div>
-    </x-filament::section>
+                @endforeach
+            </div>
+        @endif
+    </section>
 </x-filament-widgets::widget>
