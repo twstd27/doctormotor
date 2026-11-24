@@ -761,6 +761,72 @@
     outline-offset: 2px;
 }
 
+/* Color del vehículo: círculos de color en vez de botones con texto. El elegido lleva aro lima.
+   Un color escrito a mano (que no está en la lista) se queda como botón normal. */
+.fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Blanco"] + .fi-btn,
+.fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Plata"] + .fi-btn,
+.fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Gris"] + .fi-btn,
+.fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Negro"] + .fi-btn,
+.fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Rojo"] + .fi-btn,
+.fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Azul"] + .fi-btn,
+.fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Verde"] + .fi-btn,
+.fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Beige"] + .fi-btn {
+    width: 2.125rem;
+    height: 2.125rem;
+    min-width: 0 !important;
+    padding: 0 !important;
+    border-radius: 9999px !important;
+    border: 2px solid var(--dm-surface-2) !important;
+    box-shadow: 0 0 0 1px var(--dm-border-strong) !important;
+    font-size: 0 !important;
+    color: transparent !important;
+    overflow: hidden;
+}
+
+.fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Blanco"] + .fi-btn {
+    background: #F2F2EE !important;
+}
+
+.fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Plata"] + .fi-btn {
+    background: #B8BEC6 !important;
+}
+
+.fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Gris"] + .fi-btn {
+    background: #6B7179 !important;
+}
+
+.fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Negro"] + .fi-btn {
+    background: #16181B !important;
+}
+
+.fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Rojo"] + .fi-btn {
+    background: #C8322E !important;
+}
+
+.fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Azul"] + .fi-btn {
+    background: #2D5BD0 !important;
+}
+
+.fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Verde"] + .fi-btn {
+    background: #2F7A4D !important;
+}
+
+.fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Beige"] + .fi-btn {
+    background: #CDB98F !important;
+}
+
+.fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Blanco"]:checked + .fi-btn,
+.fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Plata"]:checked + .fi-btn,
+.fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Gris"]:checked + .fi-btn,
+.fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Negro"]:checked + .fi-btn,
+.fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Rojo"]:checked + .fi-btn,
+.fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Azul"]:checked + .fi-btn,
+.fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Verde"]:checked + .fi-btn,
+.fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Beige"]:checked + .fi-btn {
+    box-shadow: 0 0 0 2px var(--dm-lima) !important;
+    border-color: var(--dm-surface-2) !important;
+}
+
 /* ── Registrar cobro ────────────────────────────────────────────────────── */
 .dm-input-monto {
     height: 4rem;
@@ -2212,4 +2278,42 @@
     .dm-tabla {
         min-width: 32rem;
     }
+}
+
+/* Paneles laterales y ventanas (alta de vehículo): título grande, pie con «Cancelar» a la
+   izquierda del botón principal, y el bloque «Dueño» como separador, no como tarjeta. */
+.fi-modal-heading {
+    font-family: var(--dm-font-display, inherit);
+    font-size: 1.375rem !important;
+    font-weight: 700 !important;
+    letter-spacing: -0.01em;
+}
+
+.fi-modal-footer-actions {
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+}
+
+.fi-modal-window .dm-dueno {
+    padding-top: 1.25rem;
+    border: 0 !important;
+    border-top: 1px solid var(--dm-border) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    --tw-ring-shadow: 0 0 #0000 !important;
+}
+
+.fi-modal-window .dm-dueno > .fi-section-header,
+.fi-modal-window .dm-dueno .fi-section-header {
+    padding: 0 0 0.75rem !important;
+    border: 0 !important;
+}
+
+.fi-modal-window .dm-dueno .fi-section-content {
+    padding: 0 !important;
+}
+
+.fi-modal-window .dm-dueno .fi-section-content-ctn {
+    border: 0 !important;
 }

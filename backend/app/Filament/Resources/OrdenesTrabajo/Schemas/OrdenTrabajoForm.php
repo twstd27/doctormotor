@@ -2,12 +2,16 @@
 
 namespace App\Filament\Resources\OrdenesTrabajo\Schemas;
 
+use App\Filament\Resources\Clientes\Actions\InvitarPorWhatsapp;
+use App\Filament\Resources\Vehiculos\Schemas\VehiculoCampos;
 use App\Models\Cliente;
 use App\Models\OrdenTrabajo;
 use App\Models\User;
 use App\Models\Vehiculo;
+use App\Services\WhatsAppService;
 use App\Support\EstadoOrden;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
@@ -23,6 +27,7 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Width;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\HtmlString;
 
@@ -256,51 +261,64 @@ class OrdenTrabajoForm
             ->label('Vehículo nuevo')
             ->icon('heroicon-o-plus')
             ->color('gray')
-            ->modalHeading('Registrar vehículo nuevo')
-            ->modalDescription('Si el dueño ya es cliente, elígelo; si no, completa sus datos.')
-            ->modalSubmitActionLabel('Registrar vehículo')
+            ->modalHeading('Vehículo nuevo')
+            ->modalDescription('La placa no está registrada. Completa lo básico y sigue con la recepción.')
+            ->modalSubmitActionLabel('Registrar y continuar recepción')
+            ->modalCancelActionLabel('Cancelar')
+            ->modalWidth(Width::ExtraLarge)
             ->slideOver()
-            ->fillForm(fn (Get $get) => ['placa' => strtoupper(trim((string) $get('placa_busqueda')))])
+            ->fillForm(fn (Get $get) => [
+                'placa' => strtoupper(trim((string) $get('placa_busqueda'))),
+                'tipo_dueno' => 'nuevo',
+            ])
             ->schema([
-                Section::make('Vehículo')->schema([
-                    TextInput::make('placa')->label('Placa')->required()->maxLength(15)
-                        ->extraInputAttributes(['class' => 'dm-input-mono']),
-                    Grid::make(2)->schema([
-                        TextInput::make('marca')->label('Marca')->required()->maxLength(50),
-                        TextInput::make('modelo')->label('Modelo')->required()->maxLength(50),
-                        TextInput::make('anio')->label('Año')->required()->numeric()->minValue(1950)->maxValue(2100),
-                        TextInput::make('color')->label('Color')->required()->maxLength(30),
-                        TextInput::make('motor')->label('Motor')->maxLength(50),
-                        TextInput::make('kilometraje_actual')->label('Kilometraje actual')->required()->numeric()->minValue(0)->suffix('km'),
+                ...VehiculoCampos::componentes(),
+
+                Section::make('Dueño')
+                    ->extraAttributes(['class' => 'dm-dueno'])
+                    ->schema([
+                        ToggleButtons::make('tipo_dueno')
+                            ->hiddenLabel()
+                            ->options(['existente' => 'Cliente existente', 'nuevo' => 'Cliente nuevo'])
+                            ->inline()
+                            ->live()
+                            ->required(),
+
+                        Select::make('cliente_existente')
+                            ->label('Buscar cliente')
+                            ->searchable()
+                            ->visible(fn (Get $get) => $get('tipo_dueno') === 'existente')
+                            ->required(fn (Get $get) => $get('tipo_dueno') === 'existente')
+                            ->getSearchResultsUsing(fn (string $search) => Cliente::query()
+                                ->where(fn ($q) => $q
+                                    ->where('nombre', 'ilike', "%{$search}%")
+                                    ->orWhere('ci_nit', 'ilike', "%{$search}%")
+                                    ->orWhere('telefono_whatsapp', 'ilike', "%{$search}%"))
+                                ->limit(20)
+                                ->pluck('nombre', 'id'))
+                            ->getOptionLabelUsing(fn ($value) => Cliente::find($value)?->nombre)
+                            ->placeholder('Nombre, CI o WhatsApp'),
+
+                        Grid::make(['default' => 1, 'sm' => 2])
+                            ->visible(fn (Get $get) => $get('tipo_dueno') === 'nuevo')
+                            ->schema([
+                                TextInput::make('nombre')->label('Nombre completo')
+                                    ->columnSpanFull()
+                                    ->required(fn (Get $get) => $get('tipo_dueno') === 'nuevo')->maxLength(150),
+                                TextInput::make('ci_nit')->label('CI / NIT')
+                                    ->extraInputAttributes(['class' => 'dm-input-mono'])
+                                    ->required(fn (Get $get) => $get('tipo_dueno') === 'nuevo')->maxLength(20),
+                                TextInput::make('telefono_whatsapp')->label('WhatsApp')->tel()
+                                    ->prefix('+591')
+                                    ->extraInputAttributes(['class' => 'dm-input-mono'])
+                                    ->required(fn (Get $get) => $get('tipo_dueno') === 'nuevo')->maxLength(20),
+                                TextInput::make('correo')->label('Correo')->email()->maxLength(150)
+                                    ->columnSpanFull()->placeholder('Opcional'),
+                                Checkbox::make('invitar')
+                                    ->label('Invitar al portal por WhatsApp para que siga su vehículo')
+                                    ->columnSpanFull(),
+                            ]),
                     ]),
-                ]),
-                Section::make('Dueño')->schema([
-                    Select::make('cliente_existente')
-                        ->label('Cliente existente')
-                        ->searchable()
-                        ->live()
-                        ->getSearchResultsUsing(fn (string $search) => Cliente::query()
-                            ->where(fn ($q) => $q
-                                ->where('nombre', 'ilike', "%{$search}%")
-                                ->orWhere('ci_nit', 'ilike', "%{$search}%")
-                                ->orWhere('telefono_whatsapp', 'ilike', "%{$search}%"))
-                            ->limit(20)
-                            ->pluck('nombre', 'id'))
-                        ->getOptionLabelUsing(fn ($value) => Cliente::find($value)?->nombre)
-                        ->placeholder('Buscar por nombre, CI o WhatsApp')
-                        ->helperText('Déjalo vacío para registrar un cliente nuevo.'),
-                    Fieldset::make('Cliente nuevo')
-                        ->visible(fn (Get $get) => blank($get('cliente_existente')))
-                        ->schema([
-                            TextInput::make('nombre')->label('Nombre completo')
-                                ->required(fn (Get $get) => blank($get('cliente_existente')))->maxLength(150),
-                            TextInput::make('ci_nit')->label('CI / NIT')
-                                ->required(fn (Get $get) => blank($get('cliente_existente')))->maxLength(20),
-                            TextInput::make('telefono_whatsapp')->label('WhatsApp')->tel()
-                                ->required(fn (Get $get) => blank($get('cliente_existente')))->maxLength(20),
-                            TextInput::make('correo')->label('Correo')->email()->maxLength(150),
-                        ]),
-                ]),
             ])
             ->action(function (array $data, Set $set) {
                 $placa = strtoupper(trim($data['placa']));
@@ -311,16 +329,19 @@ class OrdenTrabajoForm
                     return;
                 }
 
-                $vehiculo = DB::transaction(function () use ($data, $placa) {
-                    $clienteId = $data['cliente_existente'] ?? null;
+                $clienteNuevo = null;
+
+                $vehiculo = DB::transaction(function () use ($data, $placa, &$clienteNuevo) {
+                    $clienteId = ($data['tipo_dueno'] ?? 'nuevo') === 'existente' ? ($data['cliente_existente'] ?? null) : null;
 
                     if (blank($clienteId)) {
-                        $clienteId = Cliente::create([
+                        $clienteNuevo = Cliente::create([
                             'nombre' => $data['nombre'],
                             'ci_nit' => $data['ci_nit'],
                             'telefono_whatsapp' => $data['telefono_whatsapp'],
                             'correo' => $data['correo'] ?? null,
-                        ])->id;
+                        ]);
+                        $clienteId = $clienteNuevo->id;
                     }
 
                     return Vehiculo::create([
@@ -334,6 +355,10 @@ class OrdenTrabajoForm
                         'kilometraje_actual' => $data['kilometraje_actual'],
                     ]);
                 });
+
+                if ($clienteNuevo && ! empty($data['invitar'])) {
+                    InvitarPorWhatsapp::enviar($clienteNuevo, app(WhatsAppService::class));
+                }
 
                 $set('placa_busqueda', $vehiculo->placa);
                 $set('vehiculo_id', $vehiculo->id);

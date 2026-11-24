@@ -3,8 +3,9 @@
 namespace App\Filament\Resources\Vehiculos\Schemas;
 
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Support\HtmlString;
 
 class VehiculoForm
 {
@@ -12,43 +13,23 @@ class VehiculoForm
     {
         return $schema
             ->components([
-                Select::make('cliente_id')
-                    ->label('Cliente')
-                    ->relationship('cliente', 'nombre')
-                    ->searchable()
-                    ->preload()
-                    ->required(),
-                TextInput::make('placa')
-                    ->label('Placa')
-                    ->required()
-                    ->maxLength(15),
-                TextInput::make('marca')
-                    ->label('Marca')
-                    ->required()
-                    ->maxLength(50),
-                TextInput::make('modelo')
-                    ->label('Modelo')
-                    ->required()
-                    ->maxLength(50),
-                TextInput::make('anio')
-                    ->label('Año')
-                    ->required()
-                    ->numeric()
-                    ->minValue(1950)
-                    ->maxValue(2100),
-                TextInput::make('color')
-                    ->label('Color')
-                    ->required()
-                    ->maxLength(30),
-                TextInput::make('motor')
-                    ->label('Motor')
-                    ->maxLength(50),
-                TextInput::make('kilometraje_actual')
-                    ->label('Kilometraje actual')
-                    ->required()
-                    ->numeric()
-                    ->minValue(0)
-                    ->suffix('km'),
+                Section::make()
+                    ->heading(new HtmlString('<span class="dm-num">1</span>Vehículo'))
+                    ->description('Lo básico para reconocerlo en el taller.')
+                    ->schema(VehiculoCampos::componentes()),
+
+                Section::make()
+                    ->heading(new HtmlString('<span class="dm-num">2</span>Dueño'))
+                    ->description('Si el dueño todavía no es cliente, regístralo primero desde Clientes.')
+                    ->schema([
+                        Select::make('cliente_id')
+                            ->label('Cliente')
+                            ->relationship('cliente', 'nombre')
+                            ->searchable()
+                            ->preload()
+                            ->placeholder('Buscar por nombre')
+                            ->required(),
+                    ]),
             ]);
     }
 }

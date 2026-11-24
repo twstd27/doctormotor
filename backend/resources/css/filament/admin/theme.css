@@ -9,6 +9,7 @@
 @import '@fontsource/jetbrains-mono/700.css';
 
 @import './componentes.css';
+@import './login.css';
 
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';

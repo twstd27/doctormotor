@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Auth\EditarPerfil;
+use App\Filament\Pages\Auth\Login;
 use App\Support\AvatarIniciales;
 use Filament\Actions\Action;
 use Filament\FontProviders\LocalFontProvider;
@@ -32,7 +33,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->viteTheme('resources/css/filament/admin/theme.css')
-            ->login()
+            ->login(Login::class)
             ->profile(EditarPerfil::class, isSimple: false)
             ->darkMode(isForced: true)
             ->defaultAvatarProvider(AvatarIniciales::class)

@@ -1,0 +1,453 @@
+/* ── Login «arranque de motor» (LOGIN.md del diseño) ────────────────────── */
+.dm-login {
+    display: flex;
+    flex-wrap: wrap;
+    min-height: 100vh;
+    background: var(--dm-bg);
+    color: var(--dm-text);
+}
+
+/* Mitad izquierda: cuadrícula de plano técnico */
+.dm-login-marca {
+    position: relative;
+    display: flex;
+    flex: 1 1 620px;
+    min-width: 0;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 2.5rem 3.5rem;
+    border-right: 1px solid #1a1f26;
+    background-color: var(--dm-bg);
+    background-image:
+        linear-gradient(rgba(197, 248, 42, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(197, 248, 42, 0.045) 1px, transparent 1px),
+        linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+}
+
+.dm-login-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.dm-login-logo-icono {
+    display: flex;
+    width: 2.5rem;
+    height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.6875rem;
+    background: var(--dm-lima);
+}
+
+.dm-login-logo-nombre {
+    font-family: var(--dm-font-titulo);
+    font-size: 1.1875rem;
+    font-weight: 700;
+}
+
+.dm-login-logo-etiqueta {
+    margin-left: auto;
+    font-family: var(--dm-font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    color: #6f7883;
+}
+
+.dm-login-centro {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 3.5rem;
+    padding: 2rem 0;
+}
+
+.dm-login-reloj {
+    position: relative;
+    flex: none;
+}
+
+.dm-login-reloj-brillo {
+    position: absolute;
+    inset: 60px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(197, 248, 42, 0.1), transparent 70%);
+}
+
+.dm-login-tacometro {
+    display: block;
+    width: clamp(300px, 42vh, 440px);
+    height: clamp(300px, 42vh, 440px);
+    overflow: visible;
+}
+
+.dm-login-reloj-lectura {
+    position: absolute;
+    right: 0;
+    bottom: 14.5%;
+    left: 0;
+    text-align: center;
+}
+
+.dm-login-reloj-cifra {
+    font-family: var(--dm-font-mono);
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.dm-login-reloj-estado {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-top: 0.125rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--dm-lima);
+}
+
+.dm-login-reloj-estado span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--dm-lima);
+}
+
+.dm-login-texto {
+    max-width: 26rem;
+}
+
+.dm-login-texto h1 {
+    margin: 0;
+    font-family: var(--dm-font-titulo);
+    font-size: 3.25rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.02em;
+}
+
+.dm-login-texto h1 span {
+    color: var(--dm-lima);
+}
+
+.dm-login-lema {
+    margin: 1.25rem 0 0;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: #9aa3ae;
+}
+
+.dm-login-flujo {
+    display: flex;
+    align-items: center;
+    margin: 1.75rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.dm-login-flujo li {
+    display: flex;
+    align-items: center;
+}
+
+.dm-login-flujo li span {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.dm-login-flujo li i {
+    width: 28px;
+    height: 2px;
+    background: var(--dm-border-strong);
+}
+
+.dm-login-flujo .dm-login-flujo-fin {
+    width: 14px;
+    height: 14px;
+    background: var(--dm-lima);
+    box-shadow: 0 0 0 5px rgba(197, 248, 42, 0.18);
+}
+
+.dm-login-flujo-nota {
+    margin-top: 0.625rem;
+    font-family: var(--dm-font-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    color: #6f7883;
+}
+
+.dm-login-placas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 0.75rem;
+    color: #6f7883;
+}
+
+.dm-login-placas > span:last-child {
+    margin-left: 0.25rem;
+}
+
+/* Mitad derecha: formulario */
+.dm-login-panel {
+    display: flex;
+    flex: 1 1 460px;
+    max-width: 640px;
+    min-width: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    background: #0e1114;
+}
+
+.dm-login-form {
+    display: flex;
+    width: 100%;
+    max-width: 25rem;
+    flex-direction: column;
+    gap: 1.375rem;
+}
+
+.dm-login-eyebrow {
+    font-family: var(--dm-font-mono);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: var(--dm-lima);
+}
+
+.dm-login-form h2 {
+    margin: 0.625rem 0 0;
+    font-family: var(--dm-font-titulo);
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.dm-login-form h2 + p {
+    margin: 0.5rem 0 0;
+    font-size: 0.875rem;
+    color: #9aa3ae;
+}
+
+/* El formulario de Filament, con la medida del diseño (campos de 52 px, botón de 56 px). */
+.dm-login-campos .fi-sc,
+.dm-login-campos .fi-fo-field {
+    row-gap: 1.375rem;
+}
+
+.dm-login-campos .fi-input-wrp {
+    border-radius: 0.75rem;
+}
+
+.dm-login-campos .fi-input {
+    height: 3.25rem;
+}
+
+.dm-login-campos .fi-fo-field-label-content {
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.dm-login-campos .fi-fo-checkbox .fi-fo-field-label-content {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--dm-text-2);
+}
+
+.dm-login-campos .fi-ac {
+    display: block;
+}
+
+.dm-login-go {
+    position: relative;
+    width: 100%;
+    height: 3.5rem;
+    overflow: hidden;
+    justify-content: center;
+    border-radius: 0.875rem !important;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+}
+
+.dm-login-go::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+    transform: translateX(-120%);
+    transition: transform 0.6s;
+}
+
+.dm-login-go:hover::after {
+    transform: translateX(120%);
+}
+
+.dm-login-app {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    border: 1px solid var(--dm-border);
+    border-radius: 0.75rem;
+    background: var(--dm-surface);
+    font-size: 0.8125rem;
+    line-height: 1.4;
+    color: #9aa3ae;
+}
+
+.dm-login-app svg {
+    flex: none;
+}
+
+.dm-login-app a {
+    font-weight: 600;
+    color: var(--dm-lima);
+}
+
+.dm-login-pie {
+    font-size: 0.75rem;
+    text-align: center;
+    color: #6f7883;
+}
+
+/* La aguja y la entrada de los textos (solo si la persona no pidió menos movimiento). */
+.needle {
+    transform-box: view-box;
+    transform-origin: 200px 200px;
+    transform: rotate(-104.6deg);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .needle {
+        animation: dm-rev 2.6s cubic-bezier(0.35, 0.75, 0.2, 1) 0.5s both, dm-idle 1.8s ease-in-out 3.1s infinite;
+    }
+
+    .dm-rise {
+        animation: dm-rise 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    }
+
+    .dm-rise.dm-d1 {
+        animation-delay: 0.15s;
+    }
+
+    .dm-rise.dm-d2 {
+        animation-delay: 0.3s;
+    }
+
+    .dm-rise.dm-d3 {
+        animation-delay: 0.45s;
+    }
+}
+
+@keyframes dm-rev {
+    0% { transform: rotate(-135deg); }
+    42% { transform: rotate(101deg); }
+    100% { transform: rotate(-104.6deg); }
+}
+
+@keyframes dm-idle {
+    0%, 100% { transform: rotate(-104.6deg); }
+    50% { transform: rotate(-102.2deg); }
+}
+
+@keyframes dm-rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: none; }
+}
+
+/* Celular: tacómetro chico arriba junto al titular, formulario como hoja inferior. */
+@media (max-width: 767px) {
+    .dm-login {
+        flex-direction: column;
+        flex-wrap: nowrap;
+    }
+
+    .dm-login-marca {
+        flex: 1 1 auto;
+        padding: 1.375rem 1.375rem 0;
+        border-right: 0;
+    }
+
+    .dm-login-logo-etiqueta,
+    .dm-login-lema,
+    .dm-login-flujo,
+    .dm-login-flujo-nota,
+    .dm-login-placas,
+    .dm-login-reloj-lectura,
+    .dm-login-app {
+        display: none;
+    }
+
+    .dm-login-centro {
+        flex: none;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        gap: 0.25rem;
+        padding: 0.625rem 0.875rem 0 0;
+    }
+
+    .dm-login-reloj {
+        width: 170px;
+        height: 170px;
+    }
+
+    .dm-login-reloj-brillo {
+        inset: 26px;
+    }
+
+    .dm-login-tacometro {
+        width: 170px;
+        height: 170px;
+    }
+
+    .dm-login-texto h1 {
+        font-size: 1.625rem;
+        line-height: 1.04;
+    }
+
+    .dm-login-panel {
+        flex: none;
+        align-items: flex-end;
+        max-width: none;
+        margin-top: auto;
+        padding: 1.625rem 1.375rem 1.75rem;
+        border-top: 1px solid #1e232a;
+        border-radius: 1.5rem 1.5rem 0 0;
+    }
+
+    .dm-login-form {
+        max-width: none;
+        gap: 1rem;
+    }
+
+    .dm-login-form h2 {
+        margin-top: 0;
+        font-size: 1.5rem;
+    }
+
+    .dm-login-eyebrow,
+    .dm-login-form h2 + p {
+        display: none;
+    }
+
+    .dm-login-campos .fi-input-wrp {
+        border-radius: 0.875rem;
+    }
+
+    .dm-login-campos .fi-input {
+        height: 3.375rem;
+        font-size: 1rem;
+    }
+
+    .dm-login-go {
+        height: 3.625rem;
+        border-radius: 1rem !important;
+    }
+}
