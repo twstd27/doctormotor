@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Concerns\SoloSuperAdmin;
 use App\Models\GastoEgreso;
 use App\Models\Pago;
 use BackedEnum;
@@ -12,6 +13,8 @@ use Illuminate\Support\Carbon;
 
 class InformeIngresosEgresos extends Page
 {
+    use SoloSuperAdmin;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBar;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Finanzas';

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Concerns\SoloSuperAdmin;
 use App\Filament\Resources\Socios\SocioResource;
 use App\Models\GastoEgreso;
 use App\Models\OrdenTrabajo;
@@ -19,6 +20,8 @@ use Illuminate\Support\Facades\DB;
 
 class RepartoUtilidades extends Page
 {
+    use SoloSuperAdmin;
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Finanzas';

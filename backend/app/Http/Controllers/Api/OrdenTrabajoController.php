@@ -19,6 +19,8 @@ class OrdenTrabajoController extends Controller
         $ordenes = OrdenTrabajo::query()
             ->when($request->string('estado')->toString(), fn ($q, $estado) => $q->where('estado', $estado))
             ->when($request->integer('tecnico_asignado_id'), fn ($q, $id) => $q->where('tecnico_asignado_id', $id))
+            // Un técnico solo ve las órdenes que tiene asignadas.
+            ->when($request->user()->rol === 'operador_tecnico', fn ($q) => $q->where('tecnico_asignado_id', $request->user()->id))
             ->with(['vehiculo:id,placa,marca,modelo', 'cliente:id,nombre', 'tecnicoAsignado:id,nombre'])
             ->withExists('inspeccion')
             ->orderByDesc('fecha_ingreso')

@@ -12,6 +12,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class CajaCierreResource extends Resource
 {
@@ -35,6 +36,15 @@ class CajaCierreResource extends Resource
     public static function table(Table $table): Table
     {
         return CajaCierresTable::configure($table);
+    }
+
+    // Cada cajero ve solo sus propios turnos; el arqueo de los demás lo ve el super_admin.
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = auth()->user();
+
+        return $user?->rol === 'super_admin' ? $query : $query->where('cajero_id', $user?->id);
     }
 
     public static function getRelations(): array

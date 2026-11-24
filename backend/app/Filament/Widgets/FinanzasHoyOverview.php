@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Concerns\SoloSuperAdminWidget;
 use App\Models\GastoEgreso;
 use App\Models\Pago;
 use Filament\Widgets\StatsOverviewWidget;
@@ -9,6 +10,8 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class FinanzasHoyOverview extends StatsOverviewWidget
 {
+    use SoloSuperAdminWidget;
+
     protected static ?int $sort = 10;
 
     protected function getStats(): array

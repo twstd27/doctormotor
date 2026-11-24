@@ -1,9 +1,27 @@
 # API REST — Endpoints
 
 Base URL: `/api/v1`. Autenticación: **Bearer token** (Laravel Sanctum). Autorización por rol
-(`super_admin`, `cajero`, `operador_tecnico`, `cliente`) vía middleware/policies — la columna
-"Rol" indica quién puede llamar el endpoint (además de `super_admin`, que tiene acceso total
-salvo que se indique lo contrario).
+(`super_admin`, `cajero`, `operador_tecnico`, `cliente`) — la columna "Rol" indica quién puede
+llamar el endpoint (además de `super_admin`, que tiene acceso total salvo que se indique lo
+contrario).
+
+**Cómo se aplica (backend):** cada ruta lleva el middleware `rol:a,b` (limita por rol; el
+`super_admin` siempre pasa y el rol se evalúa **antes** de resolver el registro de la URL, así un
+rol sin permiso recibe siempre `403` y no puede distinguir qué IDs existen) y, cuando el endpoint
+apunta a un registro puntual, `can:...` con una regla de pertenencia (ver `AppServiceProvider`).
+Un rol o registro no permitido responde `403 { "message": "No tienes permiso para realizar esta acción." }`.
+
+Resumen por rol:
+
+- **cajero** — staff del mostrador: clientes, vehículos, OTs (crear, editar, asignar técnico,
+  cambiar estado), pagos, **su propia** caja, compras/proveedores y alertas de stock. **No** ve
+  reportes, gastos, socios, reparto de utilidades, márgenes ni el log de notificaciones.
+- **operador_tecnico** — solo las órdenes **asignadas a él**: ve su detalle, cambia estado, registra
+  inspección, evidencias, presupuestos/adicionales y costos directos. No crea OTs ni clientes, no
+  ve pagos ni finanzas.
+- **cliente** — solo lo suyo (su cuenta, sus vehículos, sus OTs, presupuestos y recibos) y responde
+  a los presupuestos de sus OTs.
+- **super_admin** — todo.
 
 Convenciones: paginación estándar Laravel (`?page=`), filtros vía query params, respuestas
 `{ data, meta }` para listados y `{ data }` para recursos individuales, errores en formato
@@ -31,18 +49,18 @@ Convenciones: paginación estándar Laravel (`?page=`), filtros vía query param
 
 | Método | Endpoint | Descripción | Rol |
 |---|---|---|---|
-| GET | `/clientes` | Listado con búsqueda/filtro (nombre, CI, teléfono) | super_admin, cajero, operador_tecnico |
-| POST | `/clientes` | Alta de cliente | super_admin, cajero, operador_tecnico |
-| GET | `/clientes/{id}` | Detalle de cliente + vehículos | super_admin, cajero, operador_tecnico |
+| GET | `/clientes` | Listado con búsqueda/filtro (nombre, CI, teléfono) | super_admin, cajero |
+| POST | `/clientes` | Alta de cliente | super_admin, cajero |
+| GET | `/clientes/{id}` | Detalle de cliente + vehículos | super_admin, cajero |
 | PUT | `/clientes/{id}` | Editar datos del cliente | super_admin, cajero |
 | DELETE | `/clientes/{id}` | Baja lógica | super_admin |
 | POST | `/clientes/{id}/invitar` | Envía enlace de creación de cuenta (WhatsApp) | super_admin, cajero |
-| GET | `/clientes/{id}/vehiculos` | Vehículos del cliente | super_admin, cajero, operador_tecnico, cliente (propio) |
-| POST | `/clientes/{id}/vehiculos` | Registrar vehículo (garaje digital) | super_admin, cajero, operador_tecnico |
-| GET | `/vehiculos/{id}` | Detalle de vehículo | según pertenencia |
-| PUT | `/vehiculos/{id}` | Editar vehículo | super_admin, cajero, operador_tecnico |
+| GET | `/clientes/{id}/vehiculos` | Vehículos del cliente | super_admin, cajero, cliente (propio) |
+| POST | `/clientes/{id}/vehiculos` | Registrar vehículo (garaje digital) | super_admin, cajero |
+| GET | `/vehiculos/{id}` | Detalle de vehículo | super_admin, cajero, operador_tecnico (solo si tiene una OT asignada de ese vehículo), cliente (propio) |
+| PUT | `/vehiculos/{id}` | Editar vehículo | super_admin, cajero |
 | DELETE | `/vehiculos/{id}` | Baja lógica | super_admin |
-| GET | `/vehiculos/{id}/historial` | Historial clínico automotriz (todas las OT) | super_admin, cajero, operador_tecnico, cliente (propio) |
+| GET | `/vehiculos/{id}/historial` | Historial clínico automotriz (todas las OT) | super_admin, cajero, operador_tecnico (con OT asignada de ese vehículo), cliente (propio) |
 | GET | `/vehiculos/{id}/historial/pdf` | Descarga historial clínico en PDF | cliente (propio), super_admin, cajero |
 | GET | `/me/vehiculos` | "Mi garaje" — vehículos del cliente autenticado | cliente |
 | GET | `/vehiculos/qr/{token}` | Historial público resuelto por el QR pegado en el auto (sin montos ni datos del cliente) | público (por `qr_token`, no requiere sesión) |
@@ -53,13 +71,13 @@ Convenciones: paginación estándar Laravel (`?page=`), filtros vía query param
 
 | Método | Endpoint | Descripción | Rol |
 |---|---|---|---|
-| GET | `/ordenes-trabajo` | Listado/kanban (filtro por `estado`, `tecnico_asignado_id`, fecha). Cada ítem trae `inspeccion_exists` (boolean) para saber si mostrar el acceso a la inspección sin pedir el detalle completo | super_admin, cajero, operador_tecnico |
-| POST | `/ordenes-trabajo` | Crear OT (recepción de vehículo) | super_admin, cajero, operador_tecnico |
-| GET | `/ordenes-trabajo/{id}` | Detalle completo de la OT | super_admin, cajero, operador_tecnico, cliente (propia) |
-| PUT | `/ordenes-trabajo/{id}` | Editar datos generales de la OT | super_admin, cajero, operador_tecnico |
-| PATCH | `/ordenes-trabajo/{id}/estado` | Cambiar estado (drag&drop del Kanban), dispara notificación WhatsApp | super_admin, operador_tecnico |
-| POST | `/ordenes-trabajo/{id}/asignar-tecnico` | Asignar/reasignar mecánico | super_admin, operador_tecnico |
-| GET | `/ordenes-trabajo/{id}/historial-estados` | Timeline de cambios de estado | todos los roles con acceso a la OT |
+| GET | `/ordenes-trabajo` | Listado/kanban (filtro por `estado`, `tecnico_asignado_id`, fecha). Cada ítem trae `inspeccion_exists` (boolean) para saber si mostrar el acceso a la inspección sin pedir el detalle completo. El técnico recibe **solo sus OTs asignadas** | super_admin, cajero, operador_tecnico (solo las suyas) |
+| POST | `/ordenes-trabajo` | Crear OT (recepción de vehículo) | super_admin, cajero |
+| GET | `/ordenes-trabajo/{id}` | Detalle completo de la OT | super_admin, cajero, operador_tecnico (asignada a él), cliente (propia) |
+| PUT | `/ordenes-trabajo/{id}` | Editar datos generales de la OT | super_admin, cajero |
+| PATCH | `/ordenes-trabajo/{id}/estado` | Cambiar estado (drag&drop del Kanban), dispara notificación WhatsApp | super_admin, cajero, operador_tecnico (asignada a él) |
+| POST | `/ordenes-trabajo/{id}/asignar-tecnico` | Asignar/reasignar mecánico | super_admin, cajero |
+| GET | `/ordenes-trabajo/{id}/historial-estados` | Timeline de cambios de estado | super_admin, cajero, operador_tecnico (asignada a él), cliente (propia) |
 | GET | `/ordenes-trabajo/{id}/pdf` | Genera PDF de la orden de trabajo | super_admin, cajero |
 | GET | `/ordenes-trabajo/mias` | OTs asignadas al técnico autenticado | operador_tecnico |
 | GET | `/me/ordenes-trabajo` | OTs del cliente autenticado (para portal/línea de tiempo) | cliente |
@@ -68,17 +86,17 @@ Convenciones: paginación estándar Laravel (`?page=`), filtros vía query param
 
 | Método | Endpoint | Descripción | Rol |
 |---|---|---|---|
-| POST | `/ordenes-trabajo/{id}/inspeccion` | Crear/registrar inspección de recepción. Solo mientras la OT está en estado `recepcionado` (422 en cualquier otro estado) | super_admin, cajero, operador_tecnico |
-| PUT | `/ordenes-trabajo/{id}/inspeccion` | Editar inspección. Mismo límite: solo en `recepcionado` | super_admin, cajero, operador_tecnico |
-| POST | `/ordenes-trabajo/{id}/inspeccion/firma` | Sube firma digital del cliente (imagen base64/canvas). Mismo límite: solo en `recepcionado` — fuera de eso, la firma ya guardada es de solo lectura | super_admin, cajero, operador_tecnico |
+| POST | `/ordenes-trabajo/{id}/inspeccion` | Crear/registrar inspección de recepción. Solo mientras la OT está en estado `recepcionado` (422 en cualquier otro estado) | super_admin, cajero, operador_tecnico (asignada a él) |
+| PUT | `/ordenes-trabajo/{id}/inspeccion` | Editar inspección. Mismo límite: solo en `recepcionado` | super_admin, cajero, operador_tecnico (asignada a él) |
+| POST | `/ordenes-trabajo/{id}/inspeccion/firma` | Sube firma digital del cliente (imagen base64/canvas). Mismo límite: solo en `recepcionado` — fuera de eso, la firma ya guardada es de solo lectura | super_admin, cajero, operador_tecnico (asignada a él) |
 
 ### Evidencias (fotos/video, incluye flujo offline)
 
 | Método | Endpoint | Descripción | Rol |
 |---|---|---|---|
-| GET | `/ordenes-trabajo/{id}/evidencias` | Listado de evidencias | según acceso a la OT |
-| POST | `/ordenes-trabajo/{id}/evidencias` | Subir evidencia; body incluye `uuid_cliente` para idempotencia | operador_tecnico, super_admin, cajero |
-| POST | `/evidencias/sync-batch` | Sincroniza un lote de evidencias tomadas offline (upsert por `uuid_cliente`) | operador_tecnico |
+| GET | `/ordenes-trabajo/{id}/evidencias` | Listado de evidencias | super_admin, cajero, operador_tecnico (asignada a él), cliente (propia) |
+| POST | `/ordenes-trabajo/{id}/evidencias` | Subir evidencia; body incluye `uuid_cliente` para idempotencia | super_admin, cajero, operador_tecnico (asignada a él) |
+| POST | `/evidencias/sync-batch` | Sincroniza un lote de evidencias tomadas offline (upsert por `uuid_cliente`). Las evidencias de OTs que el técnico no tiene asignadas se rechazan por ítem, igual que las de OTs cerradas | operador_tecnico, super_admin |
 | DELETE | `/evidencias/{id}` | Elimina evidencia | super_admin |
 
 ---
@@ -87,15 +105,15 @@ Convenciones: paginación estándar Laravel (`?page=`), filtros vía query param
 
 | Método | Endpoint | Descripción | Rol |
 |---|---|---|---|
-| GET | `/ordenes-trabajo/{id}/presupuestos` | Listado de versiones de presupuesto | super_admin, cajero, operador_tecnico, cliente (propio) |
-| POST | `/ordenes-trabajo/{id}/presupuestos` | Crear presupuesto (con items) | super_admin, cajero, operador_tecnico |
-| GET | `/presupuestos/{id}` | Detalle con items | según acceso |
-| PUT | `/presupuestos/{id}` | Editar mientras está en `borrador` | super_admin, cajero, operador_tecnico |
-| POST | `/presupuestos/{id}/enviar` | Marca como `enviado`, mueve la OT a `esperando_aprobacion` (automático) y notifica al cliente (WhatsApp) | super_admin, cajero, operador_tecnico |
-| GET | `/presupuestos/{id}/pdf` | Descarga presupuesto en PDF | todos con acceso |
-| POST | `/presupuestos/{id}/items/{item_id}/responder` | Cliente aprueba/rechaza un ítem — cualquier ítem del presupuesto, no solo adicionales | cliente (propio) |
-| POST | `/presupuestos/{id}/responder` | Cliente confirma el presupuesto: aprueba lo que quedó pendiente y mueve la OT a `en_reparacion` (automático), o lo rechaza completo | cliente (propio) |
-| POST | `/ordenes-trabajo/{id}/adicionales` | Técnico reporta un hallazgo/costo adicional durante diagnóstico (acepta `producto_id` opcional si es repuesto). Mueve la OT a `esperando_aprobacion` y notifica al cliente por WhatsApp (mismo mecanismo que `PATCH .../estado`) | operador_tecnico |
+| GET | `/ordenes-trabajo/{id}/presupuestos` | Listado de versiones de presupuesto | super_admin, cajero, operador_tecnico (asignada a él), cliente (propio) |
+| POST | `/ordenes-trabajo/{id}/presupuestos` | Crear presupuesto (con items) | super_admin, cajero, operador_tecnico (asignada a él) |
+| GET | `/presupuestos/{id}` | Detalle con items | super_admin, cajero, operador_tecnico (OT asignada a él), cliente (propio) |
+| PUT | `/presupuestos/{id}` | Editar mientras está en `borrador` | super_admin, cajero, operador_tecnico (OT asignada a él) |
+| POST | `/presupuestos/{id}/enviar` | Marca como `enviado`, mueve la OT a `esperando_aprobacion` (automático) y notifica al cliente (WhatsApp) | super_admin, cajero, operador_tecnico (OT asignada a él) |
+| GET | `/presupuestos/{id}/pdf` | Descarga presupuesto en PDF | super_admin, cajero, operador_tecnico (OT asignada a él), cliente (propio) |
+| POST | `/presupuestos/{id}/items/{item_id}/responder` | Cliente aprueba/rechaza un ítem — cualquier ítem del presupuesto, no solo adicionales | cliente (propio), super_admin |
+| POST | `/presupuestos/{id}/responder` | Cliente confirma el presupuesto: aprueba lo que quedó pendiente y mueve la OT a `en_reparacion` (automático), o lo rechaza completo | cliente (propio), super_admin |
+| POST | `/ordenes-trabajo/{id}/adicionales` | Técnico reporta un hallazgo/costo adicional durante diagnóstico (acepta `producto_id` opcional si es repuesto). Mueve la OT a `esperando_aprobacion` y notifica al cliente por WhatsApp (mismo mecanismo que `PATCH .../estado`) | operador_tecnico (asignada a él), cajero, super_admin |
 
 ---
 
@@ -115,16 +133,16 @@ Convenciones: paginación estándar Laravel (`?page=`), filtros vía query param
 
 | Método | Endpoint | Descripción | Rol |
 |---|---|---|---|
-| GET | `/caja/actual` | Estado de la caja abierta del cajero autenticado | cajero |
-| POST | `/caja/apertura` | Abre caja del día con monto inicial | cajero |
-| POST | `/caja/{id}/cierre` | Cierra caja, registra monto contado y diferencia | cajero |
+| GET | `/caja/actual` | Estado de la caja abierta del cajero autenticado | cajero, super_admin |
+| POST | `/caja/apertura` | Abre caja del día con monto inicial | cajero, super_admin |
+| POST | `/caja/{id}/cierre` | Cierra caja, registra monto contado y diferencia | cajero, super_admin |
 | GET | `/caja/cierres` | Historial de cierres (auditoría) | super_admin |
 
 ### Costos, gastos y reportes
 
 | Método | Endpoint | Descripción | Rol |
 |---|---|---|---|
-| POST | `/ordenes-trabajo/{id}/costos-directos` | Registrar costo directo (repuesto/mano de obra/tercerizado) imputado a la OT | operador_tecnico, super_admin |
+| POST | `/ordenes-trabajo/{id}/costos-directos` | Registrar costo directo (repuesto/mano de obra/tercerizado) imputado a la OT | super_admin, cajero, operador_tecnico (asignada a él) |
 | GET | `/ordenes-trabajo/{id}/margen` | Margen neto calculado (ingresos vs. costos directos) de la OT | super_admin |
 | GET | `/gastos-egresos` | Listado de gastos (filtro categoría/fecha) | super_admin |
 | POST | `/gastos-egresos` | Registrar gasto fijo/variable | super_admin |
@@ -154,18 +172,18 @@ Convenciones: paginación estándar Laravel (`?page=`), filtros vía query param
 |---|---|---|---|
 | GET | `/productos` | Kardex — listado con stock actual, filtro por stock bajo | super_admin, cajero, operador_tecnico |
 | POST | `/productos` | Alta de producto/insumo. Acepta `multipart/form-data` con `imagen` (opcional) para la foto del producto | super_admin, cajero, operador_tecnico |
-| GET | `/productos/{id}` | Detalle + movimientos recientes | super_admin, operador_tecnico |
+| GET | `/productos/{id}` | Detalle + movimientos recientes | super_admin, cajero, operador_tecnico |
 | PUT | `/productos/{id}` | Editar producto (incl. `stock_minimo`) | super_admin |
 | GET | `/productos/{id}/movimientos` | Kardex detallado de movimientos | super_admin |
 | POST | `/productos/{id}/ajuste` | Ajuste manual de stock (inventario físico) | super_admin |
-| GET | `/productos/alertas-stock` | Productos por debajo de `stock_minimo` | super_admin |
-| GET | `/proveedores` | Listado de proveedores | super_admin |
-| POST | `/proveedores` | Alta de proveedor | super_admin |
-| GET | `/proveedores/{id}` | Detalle + historial de compras | super_admin |
-| PUT | `/proveedores/{id}` | Editar proveedor | super_admin |
-| GET | `/compras` | Listado de compras | super_admin |
-| POST | `/compras` | Registrar compra (genera movimientos de entrada de stock) | super_admin |
-| GET | `/compras/{id}` | Detalle con items | super_admin |
+| GET | `/productos/alertas-stock` | Productos por debajo de `stock_minimo` | super_admin, cajero |
+| GET | `/proveedores` | Listado de proveedores | super_admin, cajero |
+| POST | `/proveedores` | Alta de proveedor | super_admin, cajero |
+| GET | `/proveedores/{id}` | Detalle + historial de compras | super_admin, cajero |
+| PUT | `/proveedores/{id}` | Editar proveedor | super_admin, cajero |
+| GET | `/compras` | Listado de compras | super_admin, cajero |
+| POST | `/compras` | Registrar compra (genera movimientos de entrada de stock) | super_admin, cajero |
+| GET | `/compras/{id}` | Detalle con items | super_admin, cajero |
 | GET | `/cuentas-por-pagar` | Listado de cuentas por pagar a proveedores | super_admin |
 | POST | `/cuentas-por-pagar/{id}/pagos` | Registrar pago parcial/total a proveedor | super_admin |
 

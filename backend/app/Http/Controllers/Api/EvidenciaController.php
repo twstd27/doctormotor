@@ -7,6 +7,7 @@ use App\Models\Evidencia;
 use App\Models\OrdenTrabajo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 class EvidenciaController extends Controller
@@ -48,17 +49,21 @@ class EvidenciaController extends Controller
         ]);
 
         $otIds = collect($data['evidencias'])->pluck('orden_trabajo_id')->unique();
-        $otsCerradas = OrdenTrabajo::whereIn('id', $otIds)->get()->filter(fn ($ot) => $ot->estaCerrada())->pluck('id')->all();
+        $ots = OrdenTrabajo::whereIn('id', $otIds)->get();
+        $otsCerradas = $ots->filter(fn ($ot) => $ot->estaCerrada())->pluck('id')->all();
+        // Un técnico solo puede subir evidencias a las órdenes que tiene asignadas.
+        $otsSinPermiso = $ots->reject(fn ($ot) => Gate::forUser($request->user())->allows('gestionar-orden-trabajo', $ot))->pluck('id')->all();
 
         $rechazados = [];
         $resultado = collect($data['evidencias'])
-            ->reject(function (array $item) use ($otsCerradas, &$rechazados) {
-                $cerrada = in_array($item['orden_trabajo_id'], $otsCerradas, true);
-                if ($cerrada) {
+            ->reject(function (array $item) use ($otsCerradas, $otsSinPermiso, &$rechazados) {
+                $bloqueada = in_array($item['orden_trabajo_id'], $otsCerradas, true)
+                    || in_array($item['orden_trabajo_id'], $otsSinPermiso, true);
+                if ($bloqueada) {
                     $rechazados[] = $item['uuid_cliente'];
                 }
 
-                return $cerrada;
+                return $bloqueada;
             })
             ->map(function (array $item) use ($request) {
                 return Evidencia::updateOrCreate(

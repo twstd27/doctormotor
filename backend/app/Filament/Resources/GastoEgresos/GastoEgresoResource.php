@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\GastoEgresos;
 
+use App\Filament\Concerns\SoloSuperAdmin;
 use App\Filament\Resources\GastoEgresos\Pages\CreateGastoEgreso;
 use App\Filament\Resources\GastoEgresos\Pages\EditGastoEgreso;
 use App\Filament\Resources\GastoEgresos\Pages\ListGastoEgresos;
@@ -16,6 +17,8 @@ use Filament\Tables\Table;
 
 class GastoEgresoResource extends Resource
 {
+    use SoloSuperAdmin;
+
     protected static ?string $model = GastoEgreso::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
