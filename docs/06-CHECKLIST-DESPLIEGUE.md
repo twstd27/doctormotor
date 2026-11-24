@@ -8,7 +8,7 @@ reales).
 
 ## 1. Credenciales y accesos pendientes
 
-- [ ] SSH al droplet de DigitalOcean (región São Paulo, ya contratado — ver
+- [ ] SSH al droplet de DigitalOcean (región Nueva York nyc1, ya contratado — ver
       `01-ARQUITECTURA.md`).
 - [ ] Credenciales reales de **Google Cloud** (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`) — el
       login con Google ya está implementado (`AuthController::googleCallback`), solo falta esto

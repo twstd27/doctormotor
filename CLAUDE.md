@@ -49,7 +49,7 @@ app/
   diferencia del panel Filament, que es oscuro fijo sin toggle.
 - **Notificaciones**: WhatsApp Business Cloud API (Meta).
 - **Almacenamiento**: DigitalOcean Spaces (S3-compatible) para fotos/video de evidencia.
-- **Hosting**: DigitalOcean, región São Paulo.
+- **Hosting**: DigitalOcean, región Nueva York (nyc1).
 
 ## Convenciones
 

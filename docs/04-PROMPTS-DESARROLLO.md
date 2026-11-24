@@ -122,7 +122,7 @@ Arrancá la Fase 4 (cierre) del proyecto Doctor Motor.
 - Pruebas de los flujos críticos: recepción → Kanban → aprobación de presupuesto → cobro → cierre
   de caja → reparto de utilidades; y el flujo de inventario (compra → stock → consumo en OT →
   alerta de stock mínimo).
-- Preparar despliegue a producción en el droplet de DigitalOcean (región São Paulo) según
+- Preparar despliegue a producción en el droplet de DigitalOcean (región Nueva York, nyc1) según
   docs/01-ARQUITECTURA.md: variables de entorno, migraciones en producción, build de la PWA,
   configuración de DigitalOcean Spaces para medios.
 - Checklist de capacitación para el taller: qué necesita saber cada rol (Super Admin, Cajero,

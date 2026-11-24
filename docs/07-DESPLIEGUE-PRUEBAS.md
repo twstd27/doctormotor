@@ -1,6 +1,6 @@
 # Plan de despliegue al droplet de DigitalOcean (para pruebas)
 
-Objetivo: dejar el sistema corriendo en el droplet ya contratado (São Paulo, ver
+Objetivo: dejar el sistema corriendo en el droplet ya contratado (Nueva York nyc1, ver
 `01-ARQUITECTURA.md`) para que el equipo lo pruebe desde afuera de esta máquina — no es
 todavía el despliegue de producción final descrito en `06-CHECKLIST-DESPLIEGUE.md` (ese
 sigue pendiente: credenciales reales de Google/Meta/Spaces, dominio, TLS, supervisores de
