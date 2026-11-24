@@ -6,8 +6,8 @@ use App\Models\CuentaPorPagar;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
@@ -19,41 +19,48 @@ class CuentasPorPagarTable
             ->columns([
                 TextColumn::make('proveedor.nombre')
                     ->label('Proveedor')
+                    ->weight('semibold')
+                    ->description(fn (CuentaPorPagar $record) => $record->compra?->numero_factura
+                        ? 'Factura '.$record->compra->numero_factura
+                        : 'Sin número de factura')
                     ->searchable(),
-                TextColumn::make('compra.numero_factura')
-                    ->label('Factura')
-                    ->placeholder('—'),
                 TextColumn::make('compra.fecha')
                     ->label('Fecha de compra')
-                    ->date('d/m/Y'),
-                TextColumn::make('monto_original')
-                    ->label('Monto original')
-                    ->money('BOB', locale: 'es_BO'),
+                    ->date('d/m/Y')
+                    ->fontFamily('mono'),
+                ViewColumn::make('pagado')
+                    ->label('Pagado')
+                    ->view('filament.cuentas.col-pagado'),
                 TextColumn::make('saldo_pendiente')
-                    ->label('Saldo pendiente')
+                    ->label('Saldo')
+                    ->alignEnd()
+                    ->fontFamily('mono')
                     ->money('BOB', locale: 'es_BO')
                     ->weight('bold')
-                    ->color(fn (CuentaPorPagar $record) => $record->saldo_pendiente > 0 ? 'danger' : 'success'),
-                TextColumn::make('fecha_vencimiento')
-                    ->label('Vencimiento')
-                    ->date('d/m/Y')
-                    ->placeholder('—')
+                    ->color(fn (CuentaPorPagar $record) => $record->saldo_pendiente > 0 ? 'warning' : 'success')
                     ->sortable(),
-                BadgeColumn::make('estado')
+                TextColumn::make('fecha_vencimiento')
+                    ->label('Vence')
+                    ->date('d/m/Y')
+                    ->fontFamily('mono')
+                    ->placeholder('Sin fecha')
+                    ->sortable(),
+                TextColumn::make('estado')
                     ->label('Estado')
-                    ->colors([
-                        'gray' => 'pendiente',
-                        'danger' => 'vencido',
-                        'success' => 'pagado',
-                    ])
+                    ->badge()
+                    ->color(fn (string $state) => match ($state) {
+                        'vencido' => 'danger',
+                        'pagado' => 'success',
+                        default => 'warning',
+                    })
                     ->formatStateUsing(fn (string $state) => match ($state) {
-                        'pendiente' => 'Pendiente',
-                        'vencido' => 'Vencido',
-                        'pagado' => 'Pagado',
+                        'pendiente' => 'Por pagar',
+                        'vencido' => 'Vencida',
+                        'pagado' => 'Pagada',
                         default => $state,
                     }),
             ])
-            ->defaultSort('fecha_vencimiento')
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 SelectFilter::make('estado')
                     ->label('Estado')

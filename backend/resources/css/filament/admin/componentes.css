@@ -1956,3 +1956,55 @@
 .dm-btn--peligro:hover {
     background: rgba(255, 138, 122, 0.08);
 }
+
+.dm-pagado {
+    min-width: 8rem;
+}
+
+.dm-pagado .dm-celda-sub {
+    margin-top: 0.25rem;
+}
+
+/* ── Conectar WhatsApp ──────────────────────────────────────────────────── */
+.dm-pasos {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.dm-pasos > li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.dm-pasos .dm-num {
+    margin-right: 0;
+    flex: none;
+}
+
+.dm-btn--primario {
+    height: 2.75rem;
+    border-color: var(--dm-lima);
+    background: var(--dm-lima);
+    color: var(--dm-bg);
+}
+
+.dm-btn--primario:hover {
+    background: #d4ff52;
+}
+
+.dm-btn--primario:disabled {
+    opacity: 0.6;
+}
+
+.dm-estado-conexion {
+    margin-top: 0.75rem;
+}
+
+.dm-aviso--bloque {
+    display: block;
+}
