@@ -35,6 +35,18 @@ class NotificacionesTable
                     ->label('Mensaje')
                     ->view('filament.notificaciones.col-mensaje')
                     ->searchable(),
+                // El texto tal como se va a mandar (con el formato de WhatsApp: *negrita*).
+                TextColumn::make('mensaje')
+                    ->label('Texto')
+                    ->state(fn (Notificacion $record) => $record->textoMensaje())
+                    ->limit(90)
+                    ->tooltip(fn (Notificacion $record) => $record->textoMensaje())
+                    ->wrap()
+                    ->extraAttributes(['class' => 'dm-texto-mensaje']),
+                // Abre el chat con el cliente (y lo da por enviado) o copia el texto.
+                ViewColumn::make('chat')
+                    ->label('Chat')
+                    ->view('filament.notificaciones.col-chat'),
                 TextColumn::make('ordenTrabajo.codigo')
                     ->label('Orden')
                     ->fontFamily('mono')
@@ -49,9 +61,11 @@ class NotificacionesTable
                     ->color(fn (string $state) => match ($state) {
                         'enviado' => 'success',
                         'fallido' => 'danger',
+                        'por_enviar' => 'warning',
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state) => match ($state) {
+                        'por_enviar' => 'Por enviar',
                         'enviado' => 'Enviado',
                         'fallido' => 'Fallido',
                         'pendiente' => 'Pendiente',
@@ -64,17 +78,27 @@ class NotificacionesTable
                 SelectFilter::make('estado')
                     ->label('Estado')
                     ->options([
+                        'por_enviar' => 'Por enviar',
                         'pendiente' => 'Pendiente',
                         'enviado' => 'Enviado',
                         'fallido' => 'Fallido',
                     ]),
             ])
             ->recordActions([
+                Action::make('marcarEnviado')
+                    ->label('Marcar como enviado')
+                    ->icon('heroicon-o-check')
+                    ->color('gray')
+                    ->visible(fn (Notificacion $record) => $record->estado === 'por_enviar')
+                    ->action(function (Notificacion $record) {
+                        $record->marcarEnviada(auth()->id());
+                        Notification::make()->title('Marcado como enviado')->success()->send();
+                    }),
                 Action::make('reintentar')
                     ->label('Reintentar')
                     ->icon('heroicon-o-arrow-path')
                     ->color('gray')
-                    ->visible(fn (Notificacion $record) => $record->estado === 'fallido')
+                    ->visible(fn (Notificacion $record) => $record->estado === 'fallido' && ! app(WhatsAppService::class)->modoManual())
                     ->requiresConfirmation()
                     ->modalHeading('Reintentar el envío')
                     ->modalDescription('Se vuelve a mandar el mismo mensaje por WhatsApp.')

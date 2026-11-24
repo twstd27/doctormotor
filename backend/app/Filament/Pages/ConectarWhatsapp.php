@@ -34,6 +34,12 @@ class ConectarWhatsapp extends Page
 
     public ?string $error = null;
 
+    // En modo manual (los mensajes los manda una persona) no hay nada que conectar: se esconde del menú.
+    public static function shouldRegisterNavigation(): bool
+    {
+        return ! app(\App\Services\WhatsAppService::class)->modoManual();
+    }
+
     public static function canAccess(): bool
     {
         return auth()->user()?->rol === 'super_admin';

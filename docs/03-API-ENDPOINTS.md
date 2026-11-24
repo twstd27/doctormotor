@@ -243,3 +243,8 @@ Convenciones: paginación estándar Laravel (`?page=`), filtros vía query param
 | Método | Ruta | Rol | Descripción |
 |---|---|---|---|
 | GET | `/api/v1/servicios-frecuentes` | cajero, operador_tecnico (y super_admin) | Servicios activos, ordenados por `orden` y `nombre`: `{ data: [{ id, nombre, tipo, descripcion, precio_unitario }] }`. Alimenta los botones de «Agregar ítem». |
+
+### WhatsApp manual (2026-11-24)
+
+- Con `WHATSAPP_MODO=manual` los endpoints que antes mandaban un mensaje (`POST /clientes/{id}/invitar`, `POST /auth/login/whatsapp-link`, cambios de estado de una OT, envío de presupuesto) **dejan el mensaje en `notificaciones` con estado `por_enviar`** y responden igual. El login por enlace (`whatsapp-link`) avisa al cajero/super_admin por la campanita y responde «Avisamos al taller: te van a mandar tu enlace por WhatsApp…».
+- Web (sesión del panel, solo super_admin y cajero): `GET /mensajes/{notificacion}/abrir` marca el mensaje como enviado y redirige a `https://wa.me/<número>?text=<mensaje codificado>` (si el texto pasa de ~1.500 caracteres abre el chat sin texto; hay que copiarlo).

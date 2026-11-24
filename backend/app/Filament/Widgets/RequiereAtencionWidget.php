@@ -47,6 +47,8 @@ class RequiereAtencionWidget extends Widget
         $listas = (clone $abiertas)->where('estado', 'listo_entrega')->with(['vehiculo', 'cliente'])->orderBy('updated_at')->get();
         if ($listas->isNotEmpty()) {
             $orden = $listas->first();
+            $avisoPendiente = \App\Models\Notificacion::where('orden_trabajo_id', $orden->id)
+                ->where('plantilla', 'ot_lista_entrega')->where('estado', 'por_enviar')->latest('id')->first();
             $tarjetas[] = [
                 'color' => 'lima',
                 'titulo' => 'Listo para entregar',
@@ -54,11 +56,12 @@ class RequiereAtencionWidget extends Widget
                 'texto' => $this->nombreVehiculo($orden).' — avisa a '.$orden->cliente?->nombre,
                 'mas' => $this->masCasos($listas),
                 'accion' => 'Avisar por WhatsApp →',
+                // Si el aviso ya está armado en «Mensajes → Por enviar», se abre ese (y queda como enviado).
                 'url' => filled($orden->cliente?->telefono_whatsapp)
-                    ? $whatsapp->linkWaMe($orden->cliente->telefono_whatsapp, 'ot_lista_entrega', [
+                    ? ($avisoPendiente ? route('mensajes.abrir', $avisoPendiente) : $whatsapp->linkWaMe($orden->cliente->telefono_whatsapp, 'ot_lista_entrega', [
                         'vehiculo' => $this->nombreVehiculo($orden),
                         'codigo_ot' => $orden->codigo,
-                    ])
+                    ]))
                     : OrdenTrabajoResource::getUrl('view', ['record' => $orden]),
                 'externa' => filled($orden->cliente?->telefono_whatsapp),
             ];

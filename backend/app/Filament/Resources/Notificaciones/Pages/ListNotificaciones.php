@@ -20,7 +20,9 @@ class ListNotificaciones extends ListRecords
 
     public function getSubheading(): string
     {
-        return 'Todo lo que el sistema le mandó a clientes y personal por WhatsApp.';
+        return app(\App\Services\WhatsAppService::class)->modoManual()
+            ? 'El sistema arma cada mensaje y tú lo mandas desde tu WhatsApp: abre el chat o copia el texto.'
+            : 'Todo lo que el sistema le mandó a clientes y personal por WhatsApp.';
     }
 
     public function content(Schema $schema): Schema
@@ -30,6 +32,8 @@ class ListNotificaciones extends ListRecords
 
         return $schema->components([
             View::make('filament.notificaciones.resumen')->viewData([
+                'modoManual' => app(\App\Services\WhatsAppService::class)->modoManual(),
+                'porEnviar' => Notificacion::where('estado', 'por_enviar')->count(),
                 'fallidos' => (clone $fallidos)->count(),
                 'ultimoError' => (clone $fallidos)->latest('id')->first()?->errorLegible(),
                 'enviados30' => Notificacion::where('estado', 'enviado')->where('created_at', '>=', $desde)->count(),
@@ -43,11 +47,20 @@ class ListNotificaciones extends ListRecords
         ]);
     }
 
+    public function getDefaultActiveTab(): string|int|null
+    {
+        return 'por_enviar';
+    }
+
     public function getTabs(): array
     {
         $grupo = fn (string $clave) => Notificacion::whereIn('plantilla', Notificacion::GRUPOS[$clave])->count();
 
         return [
+            'por_enviar' => Tab::make('Por enviar')
+                ->badge(Notificacion::where('estado', 'por_enviar')->count())
+                ->badgeColor('warning')
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('estado', 'por_enviar')),
             'todos' => Tab::make('Todos')
                 ->badge(Notificacion::count()),
             'fallidos' => Tab::make('Fallidos')

@@ -48,6 +48,9 @@ return [
     ],
 
     'whatsapp' => [
+        // 'manual' (por defecto): el sistema deja el mensaje armado y una persona lo manda desde su
+        // WhatsApp (sin costo por mensaje). 'api': lo manda solo por la API de Meta.
+        'modo' => env('WHATSAPP_MODO', 'manual'),
         'token' => env('WHATSAPP_TOKEN'),
         'phone_number_id' => env('WHATSAPP_PHONE_NUMBER_ID'),
         'api_url' => 'https://graph.facebook.com/v21.0/'.env('WHATSAPP_PHONE_NUMBER_ID'),

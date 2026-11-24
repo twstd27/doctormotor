@@ -107,7 +107,11 @@ class ClienteController extends Controller
             userId: $cliente->user_id,
         );
 
-        return response()->json(['message' => 'Invitación enviada por WhatsApp.']);
+        return response()->json([
+            'message' => $this->whatsApp->modoManual()
+                ? 'Invitación lista: quedó en Mensajes → Por enviar para mandarla desde WhatsApp.'
+                : 'Invitación enviada por WhatsApp.',
+        ]);
     }
 
     public function vehiculos(Cliente $cliente): JsonResponse

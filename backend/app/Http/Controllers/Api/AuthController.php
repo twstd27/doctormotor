@@ -66,9 +66,10 @@ class AuthController extends Controller
         }
 
         $token = Str::random(48);
-        Cache::put("whatsapp_login:{$token}", $user->id, now()->addMinutes(10));
+        // En modo manual alguien del taller manda el enlace a mano: se le da más tiempo que con la API.
+        Cache::put("whatsapp_login:{$token}", $user->id, now()->addMinutes($this->whatsApp->modoManual() ? 60 : 10));
 
-        $this->whatsApp->enviarPlantilla(
+        $notificacion = $this->whatsApp->enviarPlantilla(
             telefono: $user->telefono_whatsapp,
             // Reusa la plantilla de invitación (ya aprobada como Utilidad): "enlace_acceso" la
             // reclasificó Meta como Marketing, que cuesta más y puede frenar la entrega.
@@ -81,6 +82,18 @@ class AuthController extends Controller
             ],
             userId: $user->id,
         );
+
+        if ($this->whatsApp->modoManual()) {
+            // Sin API nadie lo manda solo: se avisa al personal del taller para que lo mande desde su WhatsApp.
+            \Filament\Notifications\Notification::make()
+                ->title('Un cliente pidió su enlace de acceso')
+                ->body("{$user->nombre} ({$user->telefono_whatsapp}) pidió entrar al portal. Mándale el enlace en Mensajes → Por enviar.")
+                ->icon('heroicon-o-paper-airplane')
+                ->iconColor('warning')
+                ->sendToDatabase(User::whereIn('rol', ['cajero', 'super_admin'])->get());
+
+            return response()->json(['message' => 'Avisamos al taller: te van a mandar tu enlace por WhatsApp en unos minutos.']);
+        }
 
         return response()->json(['message' => 'Enlace de acceso enviado por WhatsApp.']);
     }

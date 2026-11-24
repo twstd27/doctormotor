@@ -422,3 +422,16 @@ Atajos para armar presupuestos: servicios que se repiten (lavado, diagnóstico�
 | created_at / updated_at | timestamp | |
 
 Se administra en el panel (Inventario → Servicios frecuentes): el cajero puede crear; editar y borrar es del super_admin.
+
+### `notificaciones` — envío manual (2026-11-24)
+
+El cliente descartó la API de WhatsApp (cobra por mensaje). Con `WHATSAPP_MODO=manual` (por defecto) el sistema **no llama a Meta**: arma cada mensaje, lo guarda y una persona lo manda desde su WhatsApp.
+
+Cambios en la tabla:
+| Columna | Tipo | Notas |
+|---|---|---|
+| mensaje | text nullable | texto ya redactado (con formato de WhatsApp: `*negrita*`), tal como se debe mandar; no cambia si después se retocan las plantillas |
+| enviado_por_id | bigint FK → users, nullable | quién lo mandó |
+| estado | enum | se suma `por_enviar` (esperando que alguien lo mande); `pendiente` y `fallido` solo se usan con la API |
+
+`WHATSAPP_MODO=api` vuelve al envío automático por la API de Meta (el código sigue ahí).

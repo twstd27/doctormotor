@@ -74,3 +74,13 @@ Route::middleware('auth')->prefix('admin-pdf')->group(function () {
             ->stream("qr-{$vehiculo->placa}.pdf");
     })->name('admin-pdf.vehiculos.qr');
 });
+
+// Mensajes de WhatsApp que se mandan a mano: abrir el chat marca el mensaje como enviado y
+// redirige a wa.me con el texto ya escrito. Solo el personal del panel (super_admin y cajero).
+Route::middleware('auth')->get('/mensajes/{notificacion}/abrir', function (\App\Models\Notificacion $notificacion) {
+    abort_unless(in_array(auth()->user()->rol, ['super_admin', 'cajero'], true), 403);
+
+    $notificacion->marcarEnviada(auth()->id());
+
+    return redirect()->away($notificacion->linkChat());
+})->name('mensajes.abrir');

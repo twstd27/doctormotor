@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 
 #[Fillable([
     'user_id', 'telefono_destino', 'canal', 'plantilla', 'orden_trabajo_id',
-    'payload', 'estado', 'enviado_at', 'error',
+    'payload', 'mensaje', 'estado', 'enviado_at', 'enviado_por_id', 'error',
 ])]
 class Notificacion extends Model
 {
@@ -59,6 +59,33 @@ class Notificacion extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function enviadoPor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'enviado_por_id');
+    }
+
+    /** El texto a mandar: el que se guardó al crear el mensaje o, en los viejos, el de la plantilla. */
+    public function textoMensaje(): string
+    {
+        return $this->mensaje ?: app(\App\Services\WhatsAppService::class)->redactar($this->plantilla, $this->payload ?? []);
+    }
+
+    /** Enlace para abrir el chat con el cliente con el texto ya escrito. */
+    public function linkChat(): string
+    {
+        return app(\App\Services\WhatsAppService::class)->linkChat($this->telefono_destino, $this->textoMensaje());
+    }
+
+    /** Alguien lo mandó a mano desde su WhatsApp. */
+    public function marcarEnviada(?int $userId): void
+    {
+        if ($this->estado === 'enviado') {
+            return;
+        }
+
+        $this->update(['estado' => 'enviado', 'enviado_at' => now(), 'enviado_por_id' => $userId]);
     }
 
     public function ordenTrabajo(): BelongsTo

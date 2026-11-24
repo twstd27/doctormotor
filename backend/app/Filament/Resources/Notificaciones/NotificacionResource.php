@@ -23,7 +23,7 @@ class NotificacionResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
-    protected static ?string $navigationLabel = 'Mensajes enviados';
+    protected static ?string $navigationLabel = 'Mensajes';
 
     // Sin esto, Filament arma la URL como /admin/notificaciones/notificacions (mezcla el
     // namespace de la carpeta con su propio plural adivinado en inglés) — mismo bug de
@@ -35,24 +35,24 @@ class NotificacionResource extends Resource
     // Contador rojo del menú: mensajes que WhatsApp no pudo entregar y esperan atención.
     public static function getNavigationBadge(): ?string
     {
-        $fallidos = Notificacion::where('estado', 'fallido')->count();
+        $cantidad = Notificacion::whereIn('estado', ['por_enviar', 'fallido'])->count();
 
-        return $fallidos > 0 ? (string) $fallidos : null;
+        return $cantidad > 0 ? (string) $cantidad : null;
     }
 
     public static function getNavigationBadgeColor(): string|array|null
     {
-        return 'danger';
+        return Notificacion::where('estado', 'fallido')->exists() ? 'danger' : 'warning';
     }
 
     public static function getNavigationBadgeTooltip(): ?string
     {
-        return 'Mensajes fallidos';
+        return 'Mensajes por enviar o fallidos';
     }
 
-    protected static ?string $modelLabel = 'mensaje enviado';
+    protected static ?string $modelLabel = 'mensaje';
 
-    protected static ?string $pluralModelLabel = 'mensajes enviados';
+    protected static ?string $pluralModelLabel = 'mensajes';
 
     public static function table(Table $table): Table
     {

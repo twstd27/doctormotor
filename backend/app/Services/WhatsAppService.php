@@ -31,15 +31,15 @@ class WhatsAppService
         // el clasificador automático de Meta las confunde con Autenticación (código OTP) o
         // con Marketing, y rechaza la plantilla bajo la categoría Utilidad.
         'invitacion_tecnico' => 'Hola, tu cuenta de técnico en Doctor Motor ya está lista. Usa este enlace para ingresar y activarla: {link}. ¡Bienvenido al equipo!',
-        'ot_en_diagnostico' => 'Tu {vehiculo} ({codigo_ot}) ya está en diagnóstico.',
+        'ot_en_diagnostico' => 'Tu *{vehiculo}* ({codigo_ot}) ya está en *diagnóstico*.',
         // Reemplaza a "ot_esperando_aprobacion" (quedó aprobada como Marketing en Meta y
         // no se puede editar ni recategorizar in place).
-        'ot_presupuesto_listo' => 'Tu presupuesto para tu {vehiculo} ({codigo_ot}) ya está listo. Apruébalo en Doctor Motor para continuar con la reparación.',
-        'ot_en_reparacion' => 'Tu {vehiculo} ({codigo_ot}) ya está en reparación.',
-        'ot_lista_entrega' => '¡Tu {vehiculo} ({codigo_ot}) está listo para entrega!',
+        'ot_presupuesto_listo' => 'El presupuesto de tu *{vehiculo}* ({codigo_ot}) ya está listo. Apruébalo en Doctor Motor para continuar con la reparación.',
+        'ot_en_reparacion' => 'Tu *{vehiculo}* ({codigo_ot}) ya está en *reparación*.',
+        'ot_lista_entrega' => '¡Tu *{vehiculo}* ({codigo_ot}) está *listo para entrega*! Te esperamos en el taller.',
         // Sin "OT" literal antes de {codigo_ot}: el código ya viene con el prefijo
         // ("OT-2026-0001"), ponerlo dos veces salía "de la OT OT-2026-0001".
-        'presupuesto_enviado' => 'Te enviamos el presupuesto de la {codigo_ot} por Bs {total}. Revísalo en Doctor Motor.',
+        'presupuesto_enviado' => 'Te enviamos el presupuesto de la {codigo_ot} por *Bs {total}*. Revísalo en Doctor Motor.',
     ];
 
     /**
@@ -51,13 +51,47 @@ class WhatsAppService
      */
     public function linkWaMe(string $telefono, string $plantilla, array $parametros = []): string
     {
+        return $this->linkChat($telefono, $this->redactar($plantilla, $parametros));
+    }
+
+    /**
+     * El mensaje listo para mandar: la plantilla con sus datos puestos. Los asteriscos y guiones
+     * bajos son el formato de WhatsApp (*negrita*, _cursiva_): viajan en el texto y WhatsApp los
+     * dibuja al mostrarlo, sin hacer nada especial al copiar o pegar.
+     *
+     * @param  array<string, mixed>  $parametros
+     */
+    public function redactar(string $plantilla, array $parametros = []): string
+    {
         $texto = self::TEXTOS_PLANTILLA[$plantilla] ?? '';
 
         foreach ($parametros as $clave => $valor) {
             $texto = str_replace('{'.$clave.'}', (string) $valor, $texto);
         }
 
-        return 'https://wa.me/'.$this->normalizarTelefono($telefono).'?text='.rawurlencode($texto);
+        return $texto;
+    }
+
+    /**
+     * Enlace para abrir el chat con el cliente (https://wa.me/<número>?text=<mensaje>). El texto va
+     * codificado en la URL (espacios, saltos de línea, links y emojis incluidos). Si es muy largo
+     * (las URL largas fallan en algunos navegadores) se abre el chat sin texto y hay que copiarlo.
+     */
+    public function linkChat(string $telefono, ?string $texto = null, int $maximo = 1500): string
+    {
+        $enlace = 'https://wa.me/'.$this->normalizarTelefono($telefono);
+
+        if (blank($texto) || mb_strlen($texto) > $maximo) {
+            return $enlace;
+        }
+
+        return $enlace.'?text='.rawurlencode($texto);
+    }
+
+    /** ¿Los mensajes los manda una persona a mano (true) o la API de Meta sola (false)? */
+    public function modoManual(): bool
+    {
+        return config('services.whatsapp.modo', 'manual') !== 'api';
     }
 
     /**
@@ -95,7 +129,9 @@ class WhatsAppService
             'plantilla' => $plantilla,
             'orden_trabajo_id' => $ordenTrabajoId,
             'payload' => $parametros,
-            'estado' => 'pendiente',
+            'mensaje' => $this->redactar($plantilla, $parametros),
+            // Manual: queda esperando que alguien lo mande. API: sale ahora mismo.
+            'estado' => $this->modoManual() ? 'por_enviar' : 'pendiente',
         ]);
 
         $this->despachar($notificacion);
@@ -105,6 +141,12 @@ class WhatsAppService
 
     public function despachar(Notificacion $notificacion): void
     {
+        // Modo manual: no se llama a Meta. El mensaje queda en «Por enviar» hasta que una persona
+        // lo abra en WhatsApp (ver Notificacion::marcarEnviada).
+        if ($this->modoManual()) {
+            return;
+        }
+
         if (! $this->configurado()) {
             Log::info('[whatsapp-mock] Sin WHATSAPP_TOKEN configurado — no se envía de verdad', [
                 'notificacion_id' => $notificacion->id,

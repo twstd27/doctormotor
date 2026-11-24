@@ -31,6 +31,24 @@ class InvitarUsuario
             userId: $usuario->id,
         );
 
+        // Modo manual: el mensaje ya quedó armado en «Mensajes → Por enviar»; se ofrece abrirlo de una vez.
+        if ($whatsApp->modoManual()) {
+            Notification::make()
+                ->title('Invitación lista para enviar')
+                ->body('Ábrela en WhatsApp y apreta enviar. También queda en Mensajes → Por enviar.')
+                ->success()
+                ->actions([
+                    Action::make('abrir')
+                        ->label('Abrir en WhatsApp')
+                        ->url(route('mensajes.abrir', $notificacion))
+                        ->openUrlInNewTab(),
+                ])
+                ->persistent()
+                ->send();
+
+            return;
+        }
+
         if ($whatsApp->configurado() && $notificacion->estado === 'enviado') {
             Notification::make()
                 ->title('Invitación enviada')
