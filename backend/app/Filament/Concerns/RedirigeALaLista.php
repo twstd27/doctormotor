@@ -2,14 +2,18 @@
 
 namespace App\Filament\Concerns;
 
+use Illuminate\Contracts\Support\Htmlable;
+
 /**
  * Al crear un registro, Filament por defecto lleva a la página de edición del registro
  * recién creado (y el botón pasa a decir "Guardar cambios"). Acá se vuelve a la lista.
+ *
+ * También corrige el título: Filament arma "Crear Cliente" (mayúscula en cada palabra) y
+ * acá va "Crear cliente".
  */
 trait RedirigeALaLista
 {
-    // "Crear Cliente" (con mayúscula en cada palabra) es como lo arma Filament; acá va "Crear cliente".
-    public function getTitle(): string|IlluminateContractsSupportHtmlable
+    public function getTitle(): string|Htmlable
     {
         return 'Crear '.static::getResource()::getModelLabel();
     }
