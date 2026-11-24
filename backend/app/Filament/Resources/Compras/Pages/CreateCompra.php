@@ -6,7 +6,9 @@ use App\Filament\Concerns\RedirigeALaLista;
 use App\Filament\Resources\Compras\CompraResource;
 use App\Http\Controllers\Api\ProductoController;
 use App\Models\Compra;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -15,6 +17,31 @@ class CreateCompra extends CreateRecord
     use RedirigeALaLista;
 
     protected static string $resource = CompraResource::class;
+
+    public function getTitle(): string|Htmlable
+    {
+        return 'Registrar compra';
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Registrar';
+    }
+
+    protected function getCreateFormAction(): Action
+    {
+        return parent::getCreateFormAction()->label('Registrar compra');
+    }
+
+    protected function getCreateAnotherFormAction(): Action
+    {
+        return parent::getCreateAnotherFormAction()->label('Registrar y cargar otra');
+    }
+
+    protected function getCreatedNotificationTitle(): ?string
+    {
+        return 'Compra registrada';
+    }
 
     /**
      * Réplica exacta de CompraController::store(): la compra, sus ítems, el movimiento de

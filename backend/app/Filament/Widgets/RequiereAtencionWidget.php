@@ -113,7 +113,7 @@ class RequiereAtencionWidget extends Widget
                 'texto' => $bajos->first()->nombre.($bajos->count() > 1 ? ' y '.($bajos->count() - 1).($bajos->count() === 2 ? ' producto más' : ' productos más').' bajo el mínimo' : ' bajo el mínimo'),
                 'mas' => null,
                 'accion' => 'Crear compra →',
-                'url' => CompraResource::canCreate() ? CompraResource::getUrl('create') : ProductoResource::getUrl('index'),
+                'url' => CompraResource::canCreate() ? CompraResource::getUrl('create', ['bajo_minimo' => 1]) : ProductoResource::getUrl('index'),
                 'externa' => false,
             ];
         }

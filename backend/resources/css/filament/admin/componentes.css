@@ -1666,3 +1666,36 @@
     font-size: 1.625rem;
     font-weight: 700;
 }
+
+/* ── Compras ────────────────────────────────────────────────────────────── */
+.dm-subtotal {
+    font-weight: 600;
+    color: var(--dm-text);
+}
+
+.dm-compra-total {
+    padding-top: 0.875rem;
+    border-top: 1px solid var(--dm-border);
+}
+
+.dm-compra-efectos {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.875rem;
+    border: 1px solid var(--dm-border);
+    border-radius: 0.75rem;
+    background: var(--dm-sidebar);
+    color: var(--dm-text-2);
+    font-size: 0.8125rem;
+}
+
+.dm-compra-efectos > div {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.dm-compra-efectos-titulo {
+    color: var(--dm-text);
+    font-weight: 600;
+}
