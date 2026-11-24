@@ -65,7 +65,7 @@ class ConectarWhatsapp extends Page
      * y los IDs del WABA/número que llegaron por el evento WA_EMBEDDED_SIGNUP), y hace el
      * intercambio server-to-server — el App Secret nunca toca el navegador.
      */
-    public function completarConexion(string $code, string $wabaId, ?string $phoneNumberId = null): void
+    public function completarConexion(string $code, ?string $wabaId = null, ?string $phoneNumberId = null): void
     {
         $this->error = null;
 
@@ -83,6 +83,22 @@ class ConectarWhatsapp extends Page
         }
 
         $accessToken = $intercambio->json('access_token');
+
+        // El aviso con el WABA ID (postMessage) no siempre llega al navegador. Sin depender de él,
+        // el propio token dice a qué cuentas de WhatsApp Business se dio acceso (debug_token).
+        if (blank($wabaId)) {
+            $cuentas = $this->cuentasCompartidas($accessToken);
+
+            if ($cuentas === []) {
+                $this->error = 'El inicio de sesión funcionó pero Meta no compartió ninguna cuenta de WhatsApp Business: '
+                    .'el flujo se cerró antes de elegir o confirmar el número. Vuelve a intentarlo y llega hasta el final.';
+                Notification::make()->title('Falta elegir el número')->body($this->error)->warning()->persistent()->send();
+
+                return;
+            }
+
+            $wabaId = $cuentas[0];
+        }
 
         // Suscribe esta app a los eventos del WABA (mensajes entrantes, etc.) — sin esto,
         // el número queda vinculado pero el webhook de la app nunca recibe nada de él.
@@ -117,15 +133,43 @@ class ConectarWhatsapp extends Page
         $this->wabaId = $wabaId;
         $this->phoneNumberId = $phoneNumberId;
 
+        // ¿Quedó el número en la app del celular y en la API a la vez? (coexistencia)
+        $estadoNumero = Http::withToken($accessToken)
+            ->get("https://graph.facebook.com/v24.0/{$phoneNumberId}", ['fields' => 'is_on_biz_app,platform_type'])
+            ->json();
+        $coexiste = ($estadoNumero['is_on_biz_app'] ?? false) === true;
+
         Notification::make()
             ->title('WhatsApp conectado')
             ->body(
                 "WABA ID: {$wabaId} · Phone Number ID: {$phoneNumberId}.".
+                ($coexiste ? ' El número sigue activo en la app del celular.' : ' Ojo: Meta no confirma que el número siga en la app del celular (platform_type: '.($estadoNumero['platform_type'] ?? 'desconocido').').').
                 ($suscripcion->successful() ? '' : ' (ojo: no se pudo suscribir la app al WABA, revisa el log)').
                 ' Copia el Phone Number ID en WHATSAPP_PHONE_NUMBER_ID del .env.'
             )
             ->success()
             ->persistent()
             ->send();
+    }
+
+    /**
+     * IDs de las cuentas de WhatsApp Business a las que la persona dio acceso en el flujo,
+     * leídos del propio token con debug_token.
+     *
+     * @return list<string>
+     */
+    private function cuentasCompartidas(string $accessToken): array
+    {
+        $respuesta = Http::get('https://graph.facebook.com/v24.0/debug_token', [
+            'input_token' => $accessToken,
+            'access_token' => config('services.whatsapp.app_id').'|'.config('services.whatsapp.app_secret'),
+        ]);
+
+        return collect($respuesta->json('data.granular_scopes') ?? [])
+            ->where('scope', 'whatsapp_business_management')
+            ->flatMap(fn (array $permiso) => $permiso['target_ids'] ?? [])
+            ->map(fn ($id) => (string) $id)
+            ->values()
+            ->all();
     }
 }

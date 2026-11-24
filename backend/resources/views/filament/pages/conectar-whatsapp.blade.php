@@ -117,6 +117,7 @@
 
                 window.addEventListener('message', (event) => {
                     if (!event.origin.endsWith('facebook.com')) return;
+                    console.log('[whatsapp-signup] mensaje de ' + event.origin, event.data);
                     try {
                         const data = JSON.parse(event.data);
                         if (data.type === 'WA_EMBEDDED_SIGNUP') {
@@ -154,8 +155,8 @@
                         console.log('[whatsapp-signup] respuesta de FB.login', response);
                         const code = response?.authResponse?.code;
 
-                        // En el flujo de coexistencia Meta manda solo el WABA ID; el ID del número lo busca el servidor.
-                        if (!code || !ultimoWabaId) {
+                        // Si el aviso con el WABA ID no llegó al navegador, el servidor lo averigua con el código.
+                        if (!code) {
                             estado.textContent = 'No se completó la conexión. ' + explicarEvento()
                                 + (response?.status ? ' (estado: ' + response.status + '; ' + (code ? 'con código' : 'SIN código de autorización; campos: ' + Object.keys(response?.authResponse || {}).join(', ')) + ')' : '');
                             return;
