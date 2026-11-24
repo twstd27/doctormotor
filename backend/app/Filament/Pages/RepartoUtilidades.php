@@ -12,6 +12,7 @@ use App\Models\RepartoUtilidad;
 use App\Models\Socio;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
@@ -50,17 +51,53 @@ class RepartoUtilidades extends Page
 
     public function getSubheading(): string
     {
-        return 'Porcentaje de cada socio sobre la utilidad neta, y generación del reparto por período.';
+        return 'Define cuánto le toca a cada socio y genera el reparto del período.';
     }
 
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('editarSocios')
+                ->label('Editar socios')
+                ->icon('heroicon-o-pencil-square')
+                ->color('gray')
+                ->url(fn () => SocioResource::getUrl('index')),
+            // Los socios se manejan acá mismo: ya no hay una pantalla aparte para darlos de alta.
             Action::make('anadirSocio')
                 ->label('Añadir socio')
-                ->color('gray')
-                ->url(fn () => SocioResource::getUrl('create')),
+                ->icon('heroicon-o-plus')
+                ->modalHeading('Añadir socio')
+                ->modalDescription('Entra con el porcentaje que le pongas; después ajusta los demás hasta que sumen 100 %.')
+                ->modalSubmitActionLabel('Añadir socio')
+                ->schema([
+                    TextInput::make('nombre')->label('Nombre')->required()->maxLength(150),
+                    TextInput::make('porcentaje_default')->label('Porcentaje')->required()->numeric()->minValue(0)->maxValue(100)->suffix('%')->default(0),
+                ])
+                ->action(function (array $data) {
+                    Socio::create([
+                        'nombre' => $data['nombre'],
+                        'porcentaje_default' => $data['porcentaje_default'],
+                        'activo' => true,
+                    ]);
+
+                    $this->cargarReglas();
+
+                    Notification::make()->title('Socio añadido')->body('Ajusta los porcentajes y guárdalos.')->success()->send();
+                }),
         ];
+    }
+
+    /**
+     * Órdenes que siguen abiertas y lo que falta cobrarles: no entran en la utilidad del
+     * período porque todavía no se cobraron del todo.
+     *
+     * @return array{0: int, 1: float}
+     */
+    public function abiertasPorCobrar(): array
+    {
+        $abiertas = OrdenTrabajo::query()->conSaldo()->whereNotIn('estado', ['entregado', 'cancelado'])->get();
+
+        return [$abiertas->count(), (float) $abiertas->sum(fn (OrdenTrabajo $o) => max($o->saldoPendiente(), 0))];
     }
 
     private function cargarReglas(): void
@@ -111,6 +148,10 @@ class RepartoUtilidades extends Page
             'hoy' => [$this->periodoInicio, $this->periodoFin] = [now()->toDateString(), now()->toDateString()],
             '7dias' => [$this->periodoInicio, $this->periodoFin] = [now()->subDays(6)->toDateString(), now()->toDateString()],
             'estemes' => [$this->periodoInicio, $this->periodoFin] = [now()->startOfMonth()->toDateString(), now()->toDateString()],
+            'mesanterior' => [$this->periodoInicio, $this->periodoFin] = [
+                now()->subMonthNoOverflow()->startOfMonth()->toDateString(),
+                now()->subMonthNoOverflow()->endOfMonth()->toDateString(),
+            ],
             'ano' => [$this->periodoInicio, $this->periodoFin] = [now()->startOfYear()->toDateString(), now()->toDateString()],
             default => null,
         };
@@ -124,6 +165,8 @@ class RepartoUtilidades extends Page
             $this->periodoInicio === $hoy && $this->periodoFin === $hoy => 'hoy',
             $this->periodoInicio === now()->subDays(6)->toDateString() && $this->periodoFin === $hoy => '7dias',
             $this->periodoInicio === now()->startOfMonth()->toDateString() && $this->periodoFin === $hoy => 'estemes',
+            $this->periodoInicio === now()->subMonthNoOverflow()->startOfMonth()->toDateString()
+                && $this->periodoFin === now()->subMonthNoOverflow()->endOfMonth()->toDateString() => 'mesanterior',
             $this->periodoInicio === now()->startOfYear()->toDateString() && $this->periodoFin === $hoy => 'ano',
             default => null,
         };

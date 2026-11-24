@@ -33,6 +33,13 @@ class SocioResource extends Resource
 
     protected static ?string $pluralModelLabel = 'socios';
 
+    // Los socios se manejan dentro del Reparto de utilidades (Añadir / Editar socios); esta
+    // lista queda como pantalla de apoyo, fuera del menú.
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+
     public static function form(Schema $schema): Schema
     {
         return SocioForm::configure($schema);

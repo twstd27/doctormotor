@@ -1735,3 +1735,224 @@
     flex-direction: column;
     gap: 1.25rem;
 }
+
+/* ── Informe de ingresos y egresos ──────────────────────────────────────── */
+.dm-filtros--rango {
+    align-items: center;
+}
+
+.dm-rango-fechas {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: 0.75rem;
+}
+
+.dm-fecha-input {
+    height: 2.125rem;
+    min-height: 2.125rem !important;
+}
+
+.dm-grafico {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.dm-grafico-barras {
+    display: grid;
+    gap: 6px;
+    align-items: end;
+    height: 12.5rem;
+    border-bottom: 1px solid var(--dm-border);
+}
+
+.dm-grafico-etiquetas {
+    display: grid;
+    gap: 6px;
+    color: var(--dm-muted);
+    font-size: 0.625rem;
+    text-align: center;
+}
+
+.dm-tres {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 1024px) {
+    .dm-tres { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+.dm-tabla-total {
+    padding: 0.875rem 1rem;
+    border-top: 1px solid var(--dm-border-strong);
+    font-weight: 700;
+    color: var(--dm-text);
+}
+
+.dm-tres > .dm-panel + .dm-panel {
+    margin-top: 0;
+}
+
+.dm-pila > .dm-tabla-panel {
+    flex: none;
+}
+
+/* ── Reparto de utilidades ──────────────────────────────────────────────── */
+.dm-reparto-columnas {
+    display: grid;
+    gap: 1.25rem;
+    align-items: start;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 1024px) {
+    .dm-reparto-columnas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.dm-reparto-columnas > .dm-panel + .dm-panel {
+    margin-top: 0;
+}
+
+.dm-medidor--grueso {
+    height: 0.875rem;
+    border-radius: 0.4375rem;
+}
+
+.dm-socios {
+    display: flex;
+    flex-direction: column;
+}
+
+.dm-socio {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 0.875rem 0;
+    border-bottom: 1px solid #1e232a;
+}
+
+.dm-socio:last-child {
+    border-bottom: 0;
+}
+
+.dm-socio-nombre {
+    flex: 1;
+    min-width: 0;
+}
+
+.dm-socio-pct {
+    width: 7.5rem;
+    flex: none;
+}
+
+.dm-socio-monto {
+    width: 7rem;
+    flex: none;
+    text-align: right;
+}
+
+.dm-socios-pie {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.dm-socios-suma {
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.dm-rango-fechas--bloque {
+    margin-left: 0;
+}
+
+.dm-cascada {
+    padding: 0.375rem 1rem;
+    border: 1px solid var(--dm-border);
+    border-radius: 0.75rem;
+    background: var(--dm-sidebar);
+}
+
+.dm-cascada > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.625rem 0;
+    border-bottom: 1px solid #1e232a;
+    color: var(--dm-text-2);
+    font-size: 0.875rem;
+}
+
+.dm-cascada > .dm-cascada-total {
+    padding: 0.875rem 0;
+    border-bottom: 0;
+    color: var(--dm-text);
+    font-weight: 600;
+}
+
+.dm-cascada-total .dm-mono {
+    font-size: 1.375rem;
+    font-weight: 700;
+}
+
+.dm-btn-ancho {
+    width: 100%;
+    justify-content: center;
+}
+
+.dm-historial {
+    display: flex;
+    flex-direction: column;
+}
+
+.dm-historial-item {
+    border-bottom: 1px solid #1e232a;
+}
+
+.dm-historial-item:last-child {
+    border-bottom: 0;
+}
+
+.dm-historial-cabecera {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.875rem 0;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+}
+
+.dm-historial-resumen {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.dm-historial-detalle {
+    padding: 0 0 1rem;
+}
+
+.dm-historial-acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.875rem;
+}
+
+.dm-btn--peligro {
+    background: transparent;
+    border-color: rgba(255, 138, 122, 0.35);
+    color: var(--dm-rojo);
+}
+
+.dm-btn--peligro:hover {
+    background: rgba(255, 138, 122, 0.08);
+}
