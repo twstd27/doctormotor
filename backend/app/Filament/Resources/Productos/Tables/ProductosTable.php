@@ -2,14 +2,19 @@
 
 namespace App\Filament\Resources\Productos\Tables;
 
+use App\Filament\Resources\MovimientosInventario\MovimientoInventarioResource;
+use App\Models\Producto;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Tables\Columns\ImageColumn;
-use Filament\Tables\Columns\IconColumn;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class ProductosTable
 {
@@ -17,42 +22,59 @@ class ProductosTable
     {
         return $table
             ->columns([
-                ImageColumn::make('imagen_url')
-                    ->label('Foto')
-                    ->circular(),
-                TextColumn::make('sku')
-                    ->label('SKU')
-                    ->searchable(),
-                TextColumn::make('nombre')
-                    ->label('Nombre')
-                    ->searchable(),
+                ViewColumn::make('nombre')
+                    ->label('Producto')
+                    ->view('filament.productos.col-producto')
+                    ->searchable(['nombre', 'sku'])
+                    ->sortable(),
                 TextColumn::make('categoria')
-                    ->label('Categoría'),
-                TextColumn::make('stock_actual')
+                    ->label('Categoría')
+                    ->badge()
+                    ->color('gray')
+                    ->placeholder('—')
+                    ->sortable(),
+                ViewColumn::make('stock_actual')
                     ->label('Stock')
-                    ->numeric()
-                    ->sortable()
-                    ->color(fn ($record) => $record->stock_actual <= $record->stock_minimo ? 'danger' : null)
-                    ->weight(fn ($record) => $record->stock_actual <= $record->stock_minimo ? 'bold' : null),
-                TextColumn::make('stock_minimo')
-                    ->label('Mínimo')
-                    ->numeric(),
+                    ->view('filament.productos.col-stock')
+                    ->sortable(),
                 TextColumn::make('precio_venta')
-                    ->label('Precio venta')
+                    ->label('Precio de venta')
+                    ->alignEnd()
+                    ->fontFamily('mono')
+                    ->weight('semibold')
                     ->money('BOB', locale: 'es_BO')
                     ->sortable(),
-                IconColumn::make('activo')
+                ViewColumn::make('activo')
                     ->label('Activo')
-                    ->boolean(),
+                    ->view('filament.productos.col-activo'),
             ])
             ->defaultSort('nombre')
+            ->searchPlaceholder('Nombre, SKU o marca')
             ->filters([
+                SelectFilter::make('categoria')
+                    ->label('Categoría')
+                    ->options(fn () => Producto::query()
+                        ->whereNotNull('categoria')
+                        ->orderBy('categoria')
+                        ->distinct()
+                        ->pluck('categoria', 'categoria')),
+                // Lo usan los accesos directos del inicio y del menú (?tableFilters[stock_bajo]…).
                 Filter::make('stock_bajo')
-                    ->label('Stock bajo')
-                    ->query(fn ($query) => $query->whereColumn('stock_actual', '<=', 'stock_minimo')),
+                    ->label('Solo stock bajo')
+                    ->toggle()
+                    ->query(fn (Builder $query) => $query->whereColumn('stock_actual', '<=', 'stock_minimo')),
             ])
             ->recordActions([
-                EditAction::make(),
+                Action::make('kardex')
+                    ->label('Ver kardex')
+                    ->hiddenLabel()
+                    ->icon(Heroicon::OutlinedArrowsRightLeft)
+                    ->color('gray')
+                    ->tooltip('Ver kardex')
+                    ->url(fn (Producto $record) => MovimientoInventarioResource::getUrl('index', [
+                        'tableFilters' => ['producto_id' => ['value' => $record->id]],
+                    ])),
+                EditAction::make()->label('Editar')->hiddenLabel()->tooltip('Editar'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
