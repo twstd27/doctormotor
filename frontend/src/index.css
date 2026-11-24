@@ -8,15 +8,15 @@
      signifique siempre 900px (no el 768px por defecto de Tailwind). */
   --breakpoint-md: 900px;
 
-  --color-lime-50: #F4FCE4;   --color-lime-500: #C5F82A;
-  --color-lime-100: #E7F9C6;  --color-lime-600: #74B31F;
-  --color-lime-200: #D0F395;  --color-lime-700: #588718;
-  --color-lime-300: #B6EC5E;  --color-lime-800: #446618;
-  --color-lime-400: #9FE03A;  --color-lime-900: #394F1A;
-  --color-lime-950: #1D2B08;
+  --color-lime-50: #ECFCE8;   --color-lime-500: #44D62C;
+  --color-lime-100: #D3F8CA;  --color-lime-600: #34B022;
+  --color-lime-200: #ABF09C;  --color-lime-700: #2A8A1E;
+  --color-lime-300: #7EE669;  --color-lime-800: #24681C;
+  --color-lime-400: #5EDE48;  --color-lime-900: #1F551A;
+  --color-lime-950: #0C2E0A;
 
   --color-lime-ink: #0B0D10;
-  --color-lime-txt: #C5F82A;
+  --color-lime-txt: #44D62C;
 
   --color-amb: #FFB547;
   --color-amb-txt: #FFB547;
@@ -54,8 +54,8 @@
   --radius-logo: 22px;
 
   --shadow-card: 0 1px 2px rgba(0,0,0,.4), 0 14px 34px -16px rgba(0,0,0,.6);
-  --shadow-cta-lime: 0 12px 26px -12px rgba(197,248,42,.35);
-  --shadow-cta-lime-lg: 0 16px 34px -16px rgba(197,248,42,.4);
+  --shadow-cta-lime: 0 12px 26px -12px rgba(68, 214, 44,.35);
+  --shadow-cta-lime-lg: 0 16px 34px -16px rgba(68, 214, 44,.4);
   --shadow-sheet: 0 -20px 50px -20px rgba(0,0,0,.5);
   --shadow-toast: 0 14px 34px -12px rgba(0,0,0,.6);
 
@@ -108,7 +108,7 @@ body {
 .dm-plate { font-family: var(--font-mono); font-weight: 600; letter-spacing: .06em; background: #F2F4EF; color: #14181D; border-radius: 6px; padding: 2px 8px; border: 1px solid #C9CDC2; }
 .dm-prog { display: flex; gap: 4px; }
 .dm-prog span { flex: 1; height: 5px; border-radius: 3px; background: #262C34; }
-.dm-prog span.d { background: #7FA21C; }
+.dm-prog span.d { background: #2E9B20; }
 .dm-prog span.n { background: var(--color-lime-500); }
 .dm-btn { display: flex; align-items: center; justify-content: center; gap: 8px; height: 54px; width: 100%; border-radius: 14px; font-weight: 700; font-size: 16px; border: 1px solid transparent; cursor: pointer; text-decoration: none; }
 .dm-btn:disabled { opacity: .55; }

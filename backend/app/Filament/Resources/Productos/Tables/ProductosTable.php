@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Productos\Tables;
 
 use App\Filament\Resources\MovimientosInventario\MovimientoInventarioResource;
+use App\Filament\Resources\Productos\ProductoResource;
 use App\Models\Producto;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -49,6 +50,8 @@ class ProductosTable
                     ->view('filament.productos.col-activo'),
             ])
             ->defaultSort('nombre')
+            // Tocar la fila abre la edición solo para quien puede editar (el cajero solo da de alta).
+            ->recordUrl(fn (Producto $record) => ProductoResource::canEdit($record) ? ProductoResource::getUrl('edit', ['record' => $record]) : null)
             ->searchPlaceholder('Nombre, SKU o marca')
             ->filters([
                 SelectFilter::make('categoria')
@@ -74,7 +77,8 @@ class ProductosTable
                     ->url(fn (Producto $record) => MovimientoInventarioResource::getUrl('index', [
                         'tableFilters' => ['producto_id' => ['value' => $record->id]],
                     ])),
-                EditAction::make()->label('Editar')->hiddenLabel()->tooltip('Editar'),
+                EditAction::make()->label('Editar')->hiddenLabel()->tooltip('Editar')
+                    ->visible(fn (Producto $record) => ProductoResource::canEdit($record)),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

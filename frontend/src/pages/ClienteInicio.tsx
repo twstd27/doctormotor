@@ -63,7 +63,7 @@ export default function ClienteInicio() {
           className="dm-card overflow-hidden"
           style={{
             padding: 0,
-            borderColor: pendiente ? 'rgba(255,181,71,.4)' : 'rgba(197,248,42,.3)',
+            borderColor: pendiente ? 'rgba(255,181,71,.4)' : 'rgba(68, 214, 44,.3)',
             background: pendiente ? '#17150F' : undefined,
           }}
         >

@@ -30,7 +30,7 @@
                     <li><span style="background:#A3ACB8"></span><i></i></li>
                     <li><span style="background:#6CB4FF"></span><i></i></li>
                     <li><span style="background:#FFB547"></span><i></i></li>
-                    <li><span style="background:#C5F82A"></span><i></i></li>
+                    <li><span style="background:#44D62C"></span><i></i></li>
                     <li><span style="background:#B9A2FF"></span><i></i></li>
                     <li><span class="dm-login-flujo-fin"></span></li>
                 </ol>

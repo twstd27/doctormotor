@@ -266,7 +266,7 @@ Fuente: handoff de Claude Design (`HANDOFF.md`, §3). Rige para el **panel Filam
 actualiza en pasos posteriores. Lo implementado en el paso 1 vive en
 `backend/resources/css/filament/admin/theme.css` y `AdminPanelProvider`.
 
-- **Acento lima `#C5F82A`** con texto oscuro `#0B0D10` encima (botones primarios). Sobre fondos
+- **Acento lima `#44D62C`** con texto oscuro `#0B0D10` encima (botones primarios). Sobre fondos
   grandes, nunca.
 - **Superficies:** página `#0B0D10` · menú lateral `#0F1216` · tarjetas `#14181D` · botón
   secundario `#171B21` · inputs `#0F1216`. Bordes `#222830` (tarjetas) y `#2A313A` (inputs).
@@ -293,7 +293,7 @@ actualiza en pasos posteriores. Lo implementado en el paso 1 vive en
 ## Rediseño de la PWA móvil (v2, noviembre 2026)
 
 La PWA es **solo móvil** (columna de hasta 520 px centrada) y oscura fija, con los mismos colores que el panel admin:
-lima `#C5F82A`, ámbar `#FFB547`, rojo `#FF8A7A`, azul `#6CB4FF`; superficies `#0B0D10` / `#0F1216` / `#14181D` / `#1A1F26`.
+lima `#44D62C`, ámbar `#FFB547`, rojo `#FF8A7A`, azul `#6CB4FF`; superficies `#0B0D10` / `#0F1216` / `#14181D` / `#1A1F26`.
 Tipografías autoalojadas (`@fontsource`): Inter (texto), Archivo (títulos, clase `.dm-display`) y JetBrains Mono (placas, códigos y montos).
 
 - **Componentes** (en `frontend/src/index.css`): `.dm-card`, `.dm-lab`, `.dm-plate`, `.dm-prog` (progreso de 7 pasos), `.dm-btn` (`.p` lima / `.s` secundario / `.sm`), `.dm-sticky` (barra de acción fija) y `.dm-li` (fila de lista).
@@ -302,3 +302,9 @@ Tipografías autoalojadas (`@fontsource`): Inter (texto), Archivo (títulos, cla
 - **Cliente**: Inicio (`/`, vehículo en el taller + acción pendiente), Presupuesto con aprobación por trabajo (`/presupuestos/:id`), Seguimiento con línea de tiempo (`/seguimiento/:id`), Mis vehículos (`/vehiculos`, reemplaza a «Mi garaje»; `/garaje` redirige) e Historial público por QR (`/qr/:token`).
 - **Contacto con el taller**: los botones de WhatsApp / llamar aparecen solo si `VITE_TALLER_WHATSAPP` está definido en el `.env` del frontend (dígitos con código de país).
 - Fase 2 (no está en pantalla): clasificar el presupuesto en «Necesario / Recomendado», notas del técnico al cliente, etapas con fotos en «Fotos y videos».
+
+### Cambio de acento (2026-11-24)
+
+Por pedido del cliente, el acento pasó del verde lima `#C5F82A` al **verde Razer `#44D62C`** (500 de la escala; tono «hecho» de las barras de progreso `#2E9B20`).
+Los nombres internos de las variables siguen diciendo `lima` (`--dm-lima`, `--color-lime-*`) para no tocar cientos de reglas; el valor es el verde nuevo.
+El texto sobre el acento sigue siendo oscuro. Las menciones al lima anterior en este documento son históricas.

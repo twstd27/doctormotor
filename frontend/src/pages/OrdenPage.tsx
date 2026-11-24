@@ -44,7 +44,7 @@ function Tarea({
         className="flex size-7 shrink-0 items-center justify-center rounded-full"
         style={
           marca === 'ok'
-            ? { background: 'rgba(197,248,42,.15)', color: 'var(--color-lime-500)' }
+            ? { background: 'rgba(68, 214, 44,.15)', color: 'var(--color-lime-500)' }
             : marca === 'ahora'
               ? { border: '2px solid var(--color-lime-500)' }
               : { border: '2px solid #3A434E' }

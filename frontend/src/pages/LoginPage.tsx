@@ -75,7 +75,7 @@ export default function LoginPage() {
           <div className="relative flex size-[74px] items-center justify-center">
             <span
               className="absolute size-[82px] animate-[dmPulse_3.6s_ease-in-out_infinite] rounded-[24px]"
-              style={{ background: 'rgba(143,214,46,.16)' }}
+              style={{ background: 'rgba(68, 214, 44,.16)' }}
             />
             <div
               className="relative flex size-[74px] items-center justify-center rounded-[22px] bg-lime-500"

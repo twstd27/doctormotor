@@ -76,7 +76,7 @@ export default function TecnicoHoy() {
       {sigue ? (
         <>
           <span className="dm-lab mt-1.5">Sigue con esto</span>
-          <div className="dm-card overflow-hidden" style={{ padding: 0, borderColor: 'rgba(197,248,42,.35)' }}>
+          <div className="dm-card overflow-hidden" style={{ padding: 0, borderColor: 'rgba(68, 214, 44,.35)' }}>
             <div className="flex flex-col gap-3 p-4">
               <div className="flex items-center justify-between">
                 <span className="font-mono text-xs font-semibold text-app-faint">{sigue.codigo}</span>

@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class ProductoResource extends Resource
 {
@@ -30,6 +31,23 @@ class ProductoResource extends Resource
     protected static ?string $modelLabel = 'producto';
 
     protected static ?string $pluralModelLabel = 'productos';
+
+    // El cajero puede dar de alta productos, pero cambiarlos o borrarlos (precio, nombre,
+    // stock mínimo…) es del super_admin: así el inventario no se altera sin rastro.
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()?->rol === 'super_admin';
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()?->rol === 'super_admin';
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return auth()->user()?->rol === 'super_admin';
+    }
 
     // Contador ámbar del menú: productos activos en o por debajo de su stock mínimo.
     public static function getNavigationBadge(): ?string

@@ -192,8 +192,8 @@ export default function InspeccionPage() {
                 onClick={() => toggleAccesorio(nombre)}
                 className="flex h-14 items-center gap-2.5 rounded-xl px-3.5 text-left text-sm font-semibold"
                 style={{
-                  border: `1px solid ${activo ? 'rgba(197,248,42,.5)' : '#2A313A'}`,
-                  background: activo ? 'rgba(197,248,42,.07)' : 'var(--color-app-surface-2)',
+                  border: `1px solid ${activo ? 'rgba(68, 214, 44,.5)' : '#2A313A'}`,
+                  background: activo ? 'rgba(68, 214, 44,.07)' : 'var(--color-app-surface-2)',
                   color: activo ? 'var(--color-app-text)' : '#C9D0D8',
                 }}
               >

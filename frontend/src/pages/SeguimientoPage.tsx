@@ -93,18 +93,18 @@ export default function SeguimientoPage() {
                   className="flex size-[26px] shrink-0 items-center justify-center rounded-full"
                   style={
                     hecho
-                      ? { background: 'rgba(197,248,42,.15)', color: 'var(--color-lime-500)' }
+                      ? { background: 'rgba(68, 214, 44,.15)', color: 'var(--color-lime-500)' }
                       : actual
                         ? {
                             border: `2px solid ${aprobacion ? 'var(--color-amb)' : 'var(--color-lime-500)'}`,
-                            boxShadow: `0 0 0 4px ${aprobacion ? 'rgba(255,181,71,.15)' : 'rgba(197,248,42,.15)'}`,
+                            boxShadow: `0 0 0 4px ${aprobacion ? 'rgba(255,181,71,.15)' : 'rgba(68, 214, 44,.15)'}`,
                           }
                         : { border: '2px solid #3A434E' }
                   }
                 >
                   {hecho && <Check weight="bold" size={14} />}
                 </span>
-                {!ultimo && <span className="w-0.5 grow" style={{ minHeight: 26, background: hecho ? '#7FA21C' : 'var(--color-app-line)' }} />}
+                {!ultimo && <span className="w-0.5 grow" style={{ minHeight: 26, background: hecho ? '#2E9B20' : 'var(--color-app-line)' }} />}
               </div>
               <div className="pb-5">
                 <p

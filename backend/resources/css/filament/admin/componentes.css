@@ -341,7 +341,7 @@
 }
 
 .dm-paso--hecho .dm-paso-barra {
-    background: #7fa21c;
+    background: #2E9B20;
 }
 
 .dm-paso--hecho .dm-paso-texto {
@@ -350,7 +350,7 @@
 
 .dm-paso--ahora .dm-paso-barra {
     background: var(--dm-lima);
-    box-shadow: 0 0 0 3px rgba(197, 248, 42, 0.18);
+    box-shadow: 0 0 0 3px rgba(68, 214, 44, 0.18);
 }
 
 .dm-paso--ahora .dm-paso-texto {
@@ -934,7 +934,7 @@
     gap: 0.75rem;
     padding: 1rem 1.375rem;
     border-bottom: 1px solid var(--dm-border);
-    background: rgba(197, 248, 42, 0.06);
+    background: rgba(68, 214, 44, 0.06);
     font-size: 0.8125rem;
     color: var(--dm-text-2);
 }
@@ -982,7 +982,7 @@
 }
 
 .dm-stat--efectivo {
-    border-color: rgba(197, 248, 42, 0.35);
+    border-color: rgba(68, 214, 44, 0.35);
     background: #141a0f;
 }
 
@@ -1110,7 +1110,7 @@
     font-weight: 600;
 }
 
-.dm-metodo--efectivo { background: rgba(197, 248, 42, 0.12); color: var(--dm-lima); }
+.dm-metodo--efectivo { background: rgba(68, 214, 44, 0.12); color: var(--dm-lima); }
 .dm-metodo--qr { background: rgba(108, 180, 255, 0.12); color: var(--dm-azul); }
 .dm-metodo--tarjeta { background: rgba(185, 162, 255, 0.12); color: var(--dm-violeta); }
 
@@ -1164,7 +1164,7 @@
     white-space: nowrap;
 }
 
-.dm-diferencia--ok { background: rgba(197, 248, 42, 0.12); color: var(--dm-lima); }
+.dm-diferencia--ok { background: rgba(68, 214, 44, 0.12); color: var(--dm-lima); }
 .dm-diferencia--sobra { background: rgba(255, 181, 71, 0.15); color: var(--dm-ambar); }
 .dm-diferencia--falta { background: rgba(255, 138, 122, 0.15); color: var(--dm-rojo); }
 
@@ -1197,7 +1197,7 @@
     font-size: 1.25rem;
 }
 
-.dm-arqueo-dif--ok { border-color: rgba(197, 248, 42, 0.3); background: rgba(197, 248, 42, 0.07) !important; }
+.dm-arqueo-dif--ok { border-color: rgba(68, 214, 44, 0.3); background: rgba(68, 214, 44, 0.07) !important; }
 .dm-arqueo-dif--ok .dm-stat-valor { color: var(--dm-lima); }
 .dm-arqueo-dif--sobra { border-color: rgba(255, 181, 71, 0.3); background: rgba(255, 181, 71, 0.07) !important; }
 .dm-arqueo-dif--sobra .dm-stat-valor { color: var(--dm-ambar); }
@@ -1205,8 +1205,8 @@
 .dm-arqueo-dif--falta .dm-stat-valor { color: var(--dm-rojo); }
 
 .dm-aviso--ok {
-    border-color: rgba(197, 248, 42, 0.3);
-    background: rgba(197, 248, 42, 0.07);
+    border-color: rgba(68, 214, 44, 0.3);
+    background: rgba(68, 214, 44, 0.07);
     color: var(--dm-lima);
 }
 
@@ -1351,7 +1351,7 @@
 }
 
 .dm-taller-col--listo {
-    border-color: rgba(197, 248, 42, 0.35);
+    border-color: rgba(68, 214, 44, 0.35);
 }
 
 .dm-taller-col-cab {
@@ -2145,7 +2145,7 @@
         border-radius: 1.125rem;
         background: var(--dm-lima);
         color: var(--dm-bg);
-        box-shadow: 0 8px 24px rgba(197, 248, 42, 0.25);
+        box-shadow: 0 8px 24px rgba(68, 214, 44, 0.25);
     }
 
     .dm-nav-fab svg {

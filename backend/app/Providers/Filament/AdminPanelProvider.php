@@ -42,14 +42,14 @@ class AdminPanelProvider extends PanelProvider
             ->font('Inter Variable', provider: LocalFontProvider::class)
             ->monoFont('JetBrains Mono', provider: LocalFontProvider::class)
             ->colors([
-                // Acento lima del sistema (#C5F82A = 500). El texto sobre lima es oscuro: ver theme.css.
+                // Acento verde Razer del sistema (#44D62C = 500). El texto sobre lima es oscuro: ver theme.css.
                 'primary' => [
-                    50 => '248, 254, 227', 100 => '239, 253, 190',
-                    200 => '226, 252, 141', 300 => '212, 251, 90',
-                    400 => '203, 249, 61', 500 => '197, 248, 42',
-                    600 => '160, 201, 28', 700 => '122, 155, 24',
-                    800 => '92, 117, 24', 900 => '77, 97, 26',
-                    950 => '40, 54, 6',
+                    50 => '236, 252, 232', 100 => '211, 248, 202',
+                    200 => '171, 240, 156', 300 => '126, 230, 105',
+                    400 => '94, 222, 72', 500 => '68, 214, 44',
+                    600 => '52, 176, 34', 700 => '42, 138, 30',
+                    800 => '36, 104, 28', 900 => '31, 85, 26',
+                    950 => '12, 46, 10',
                 ],
                 // Grafito: 950 = fondo de página, 900 = tarjetas, 800 = botones secundarios, 700 = bordes.
                 'gray' => [
@@ -60,7 +60,7 @@ class AdminPanelProvider extends PanelProvider
                     800 => '30, 35, 42', 900 => '20, 24, 29',
                     950 => '11, 13, 16',
                 ],
-                'success' => Color::hex('#C5F82A'),
+                'success' => Color::hex('#44D62C'),
                 'warning' => Color::hex('#FFB547'),
                 'danger' => [
                     50 => '255, 241, 238', 100 => '255, 225, 219',

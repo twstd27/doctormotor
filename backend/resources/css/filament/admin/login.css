@@ -19,8 +19,8 @@
     border-right: 1px solid #1a1f26;
     background-color: var(--dm-bg);
     background-image:
-        linear-gradient(rgba(197, 248, 42, 0.045) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(197, 248, 42, 0.045) 1px, transparent 1px),
+        linear-gradient(rgba(68, 214, 44, 0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(68, 214, 44, 0.045) 1px, transparent 1px),
         linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
     background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
@@ -75,7 +75,7 @@
     position: absolute;
     inset: 60px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(197, 248, 42, 0.1), transparent 70%);
+    background: radial-gradient(circle, rgba(68, 214, 44, 0.1), transparent 70%);
 }
 
 .dm-login-tacometro {
@@ -170,7 +170,7 @@
     width: 14px;
     height: 14px;
     background: var(--dm-lima);
-    box-shadow: 0 0 0 5px rgba(197, 248, 42, 0.18);
+    box-shadow: 0 0 0 5px rgba(68, 214, 44, 0.18);
 }
 
 .dm-login-flujo-nota {
