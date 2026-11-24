@@ -51,7 +51,7 @@ export const TONO_CLASES: Record<Tono, { dot: string; bg: string; fg: string; bo
   neutro: { dot: 'bg-app-faint', bg: 'bg-app-surface-3', fg: 'text-app-muted', border: 'border-app-line' },
   cya: { dot: 'bg-cya', bg: 'bg-cya-bg', fg: 'text-cya-txt', border: 'border-cya' },
   amb: { dot: 'bg-amb', bg: 'bg-amb-bg', fg: 'text-amb-txt', border: 'border-amb' },
-  lima: { dot: 'bg-lime-500', fg: 'text-lime-txt', bg: 'bg-lime-500/15', border: 'border-lime-500' },
+  lima: { dot: 'bg-lime-500', fg: 'text-ok-txt', bg: 'bg-ok-bg', border: 'border-lime-500' },
 }
 
 export function antiguedad(fechaIso: string): string {

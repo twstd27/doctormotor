@@ -24,8 +24,8 @@ class AvatarIniciales implements AvatarProvider
         $iniciales = htmlspecialchars($iniciales !== '' ? $iniciales : '?', ENT_QUOTES);
 
         $svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
-            .'<rect width="64" height="64" fill="#2A313A"/>'
-            .'<text x="32" y="32" dy=".35em" text-anchor="middle" fill="#ECEEF1" '
+            .'<rect width="64" height="64" fill="#373A38"/>'
+            .'<text x="32" y="32" dy=".35em" text-anchor="middle" fill="#EAEEEA" '
             ."font-family=\"Inter, Arial, sans-serif\" font-size=\"26\" font-weight=\"700\">{$iniciales}</text>"
             .'</svg>';
 

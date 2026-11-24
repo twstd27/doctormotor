@@ -47,7 +47,7 @@ function Tarea({
             ? { background: 'rgba(68, 214, 44,.15)', color: 'var(--color-lime-500)' }
             : marca === 'ahora'
               ? { border: '2px solid var(--color-lime-500)' }
-              : { border: '2px solid #3A434E' }
+              : { border: '2px solid #373A38' }
         }
       >
         {marca === 'ok' && <Check weight="bold" size={15} />}

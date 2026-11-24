@@ -140,7 +140,7 @@ export default function EvidenciasPage() {
         tomadaAt: e.tomada_at,
         subidoPor: e.subido_por?.nombre,
         imagenUrl: e.tipo === 'foto' ? e.url : undefined,
-        chip: { label: 'Sincronizado', className: 'bg-lime-500/15 text-lime-txt' },
+        chip: { label: 'Sincronizado', className: 'bg-ok-bg text-ok-txt' },
       })),
     [servidor],
   )
@@ -195,7 +195,7 @@ export default function EvidenciasPage() {
           <button
             type="button"
             onClick={() => fotoRef.current?.click()}
-            className="flex h-24 w-full flex-col items-center justify-center gap-1.5 rounded-[18px] bg-lime-500 text-lime-ink"
+            className="flex h-24 w-full flex-col items-center justify-center gap-1.5 rounded-[18px] bg-lime-500 hover:bg-lime-600 text-lime-ink"
             style={{ boxShadow: 'var(--shadow-cta-lime-lg)' }}
           >
             <Camera weight="fill" size={34} />

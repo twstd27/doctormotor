@@ -218,7 +218,7 @@ export default function RegistrarCostoSheet({ otId, onClose, onRegistrado }: Reg
           type="button"
           disabled={creandoProducto}
           onClick={handleCrearProducto}
-          className="mt-5 h-[54px] w-full rounded-xl bg-lime-500 text-[15px] font-semibold text-lime-ink disabled:opacity-60"
+          className="mt-5 h-[54px] w-full rounded-xl bg-lime-500 hover:bg-lime-600 text-[15px] font-semibold text-lime-ink disabled:opacity-60"
           style={{ boxShadow: 'var(--shadow-cta-lime)' }}
         >
           {creandoProducto ? 'Creando…' : 'Crear y usar este producto'}
@@ -360,7 +360,7 @@ export default function RegistrarCostoSheet({ otId, onClose, onRegistrado }: Reg
         type="button"
         disabled={enviando}
         onClick={handleSubmit}
-        className="mt-5 h-[54px] w-full rounded-xl bg-lime-500 text-[15px] font-semibold text-lime-ink disabled:opacity-60"
+        className="mt-5 h-[54px] w-full rounded-xl bg-lime-500 hover:bg-lime-600 text-[15px] font-semibold text-lime-ink disabled:opacity-60"
         style={{ boxShadow: 'var(--shadow-cta-lime)' }}
       >
         {enviando ? 'Registrando…' : 'Registrar costo'}

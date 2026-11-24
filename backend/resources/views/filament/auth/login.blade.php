@@ -7,7 +7,7 @@
     <section class="dm-login-marca" aria-label="Doctor Motor">
         <div class="dm-login-logo">
             <span class="dm-login-logo-icono" aria-hidden="true">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0B0D10" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0D100D" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a4 4 0 0 0-5.4 5.4L3 18l3 3 6.3-6.3a4 4 0 0 0 5.4-5.4l-2.6 2.6-2.4-.6-.6-2.4z"/></svg>
             </span>
             <span class="dm-login-logo-nombre">Doctor Motor</span>
             <span class="dm-login-logo-etiqueta">TALLER · ADMIN</span>
@@ -27,9 +27,9 @@
                 <h1 class="dm-rise">Cada auto,<br><span>en tiempo real.</span></h1>
                 <p class="dm-rise dm-d1 dm-login-lema">Recepción, diagnóstico, presupuesto, cobro y entrega. Todo el taller en una sola pantalla.</p>
                 <ol class="dm-rise dm-d2 dm-login-flujo" aria-label="Flujo de una orden">
-                    <li><span style="background:#A3ACB8"></span><i></i></li>
-                    <li><span style="background:#6CB4FF"></span><i></i></li>
-                    <li><span style="background:#FFB547"></span><i></i></li>
+                    <li><span style="background:#ADB1AE"></span><i></i></li>
+                    <li><span style="background:#44A8E7"></span><i></i></li>
+                    <li><span style="background:#FCAA2B"></span><i></i></li>
                     <li><span style="background:#44D62C"></span><i></i></li>
                     <li><span style="background:#B9A2FF"></span><i></i></li>
                     <li><span class="dm-login-flujo-fin"></span></li>
@@ -59,7 +59,7 @@
 
             @if ($appUrl !== '')
                 <div class="dm-rise dm-d3 dm-login-app">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9AA3AE" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></svg>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ADB1AE" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></svg>
                     <div>¿Eres técnico o cliente? <a href="{{ $appUrl }}">Entra desde la app</a></div>
                 </div>
             @endif

@@ -107,7 +107,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => setWhatsappAbierto(true)}
-              className="flex h-[52px] w-full items-center justify-center gap-2 rounded-xl bg-lime-500 text-[15px] font-semibold text-lime-ink"
+              className="flex h-[52px] w-full items-center justify-center gap-2 rounded-xl bg-lime-500 hover:bg-lime-600 text-[15px] font-semibold text-lime-ink"
               style={{ boxShadow: 'var(--shadow-cta-lime)' }}
             >
               <WhatsappLogo weight="fill" size={20} />
@@ -132,7 +132,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="h-[52px] w-full rounded-xl bg-lime-500 text-[15px] font-semibold text-lime-ink disabled:opacity-60"
+                className="h-[52px] w-full rounded-xl bg-lime-500 hover:bg-lime-600 text-[15px] font-semibold text-lime-ink disabled:opacity-60"
                 style={{ boxShadow: 'var(--shadow-cta-lime)' }}
               >
                 {loading ? 'Enviando…' : 'Enviar enlace de acceso'}

@@ -63,7 +63,7 @@ export default function ClienteInicio() {
           className="dm-card overflow-hidden"
           style={{
             padding: 0,
-            borderColor: pendiente ? 'rgba(255,181,71,.4)' : 'rgba(68, 214, 44,.3)',
+            borderColor: pendiente ? 'rgba(252, 170, 43,.4)' : 'rgba(68, 214, 44,.3)',
             background: pendiente ? '#17150F' : undefined,
           }}
         >
@@ -133,7 +133,7 @@ export default function ClienteInicio() {
             <div key={h.id} className="flex gap-3">
               <span
                 className="mt-1.5 size-2 shrink-0 rounded-full"
-                style={{ background: i === 0 ? 'var(--color-cya)' : '#5B6470' }}
+                style={{ background: i === 0 ? 'var(--color-cya)' : '#636663' }}
               />
               <div>
                 <p className="text-sm font-medium">{etiquetaEstado(h.estado_nuevo as Estado)}</p>

@@ -318,7 +318,7 @@ export default function PresupuestoSheet({ otId, onClose, onEnviado }: Presupues
           type="button"
           disabled={creandoProducto}
           onClick={handleCrearProducto}
-          className="mt-5 h-[54px] w-full rounded-xl bg-lime-500 text-[15px] font-semibold text-lime-ink disabled:opacity-60"
+          className="mt-5 h-[54px] w-full rounded-xl bg-lime-500 hover:bg-lime-600 text-[15px] font-semibold text-lime-ink disabled:opacity-60"
           style={{ boxShadow: 'var(--shadow-cta-lime)' }}
         >
           {creandoProducto ? 'Creando…' : 'Crear y usar este producto'}
@@ -474,7 +474,7 @@ export default function PresupuestoSheet({ otId, onClose, onEnviado }: Presupues
           type="button"
           disabled={enviando}
           onClick={presupuestoExistente ? handleAgregarAdicional : agregarItemALaLista}
-          className="mt-5 h-[54px] w-full rounded-xl bg-lime-500 text-[15px] font-semibold text-lime-ink disabled:opacity-60"
+          className="mt-5 h-[54px] w-full rounded-xl bg-lime-500 hover:bg-lime-600 text-[15px] font-semibold text-lime-ink disabled:opacity-60"
           style={{ boxShadow: 'var(--shadow-cta-lime)' }}
         >
           {presupuestoExistente ? (enviando ? 'Enviando…' : 'Enviar adicional al cliente') : 'Agregar a la lista'}
@@ -528,7 +528,7 @@ export default function PresupuestoSheet({ otId, onClose, onEnviado }: Presupues
           <button
             type="button"
             onClick={() => setPaso('item')}
-            className="mt-3.5 h-[54px] w-full rounded-xl bg-lime-500 text-[15px] font-semibold text-lime-ink"
+            className="mt-3.5 h-[54px] w-full rounded-xl bg-lime-500 hover:bg-lime-600 text-[15px] font-semibold text-lime-ink"
             style={{ boxShadow: 'var(--shadow-cta-lime)' }}
           >
             + Agregar hallazgo adicional
@@ -583,7 +583,7 @@ export default function PresupuestoSheet({ otId, onClose, onEnviado }: Presupues
             type="button"
             disabled={enviando || items.length === 0}
             onClick={handleEnviarPresupuesto}
-            className="mt-3.5 h-[54px] w-full rounded-xl bg-lime-500 text-[15px] font-semibold text-lime-ink disabled:opacity-60"
+            className="mt-3.5 h-[54px] w-full rounded-xl bg-lime-500 hover:bg-lime-600 text-[15px] font-semibold text-lime-ink disabled:opacity-60"
             style={{ boxShadow: 'var(--shadow-cta-lime)' }}
           >
             {enviando ? 'Enviando…' : 'Enviar presupuesto al cliente'}

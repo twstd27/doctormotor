@@ -182,7 +182,7 @@ export default function PresupuestoPage() {
                     style={
                       activo
                         ? { background: 'var(--color-lime-500)', color: 'var(--color-lime-ink)' }
-                        : { border: '2px solid #3A434E' }
+                        : { border: '2px solid #373A38' }
                     }
                   >
                     {activo && (

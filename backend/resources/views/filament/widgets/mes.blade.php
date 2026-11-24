@@ -24,7 +24,7 @@
         </div>
         <div class="dm-barras-leyenda">
             <span><i class="dm-cuadrito" style="background: var(--dm-lima)"></i>Ingresos</span>
-            <span><i class="dm-cuadrito" style="background: #4a525c"></i>Egresos</span>
+            <span><i class="dm-cuadrito" style="background: #494C4A"></i>Egresos</span>
         </div>
     </section>
 </x-filament-widgets::widget>

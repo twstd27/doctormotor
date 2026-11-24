@@ -9,36 +9,38 @@
   --breakpoint-md: 900px;
 
   --color-lime-50: #ECFCE8;   --color-lime-500: #44D62C;
-  --color-lime-100: #D3F8CA;  --color-lime-600: #34B022;
-  --color-lime-200: #ABF09C;  --color-lime-700: #2A8A1E;
-  --color-lime-300: #7EE669;  --color-lime-800: #24681C;
-  --color-lime-400: #5EDE48;  --color-lime-900: #1F551A;
-  --color-lime-950: #0C2E0A;
+  --color-lime-100: #D3F9C4;  --color-lime-600: #2EB21B;
+  --color-lime-200: #ADF695;  --color-lime-700: #29891A;
+  --color-lime-300: #81F161;  --color-lime-800: #236718;
+  --color-lime-400: #5AE039;  --color-lime-900: #234F19;
+  --color-lime-950: #0D2A06;
 
-  --color-lime-ink: #0B0D10;
+  --color-lime-ink: #0D140B;   /* texto sobre verde de marca */
+  --color-ok-txt: #81F161;      /* estado "ok" (Pagada, Sincronizado): distinto del verde de los CTA */
+  --color-ok-bg: #0D2A06;
   --color-lime-txt: #44D62C;
 
-  --color-amb: #FFB547;
-  --color-amb-txt: #FFB547;
-  --color-amb-bg: rgba(255,181,71,.12);
+  --color-amb: #FCAA2B;
+  --color-amb-txt: #FCAA2B;
+  --color-amb-bg: #3A2808;
 
-  --color-cor: #FF8A7A;
-  --color-cor-txt: #FF8A7A;
-  --color-cor-bg: rgba(255,138,122,.12);
+  --color-cor: #EC485C;
+  --color-cor-txt: #EC485C;
+  --color-cor-bg: #3A1219;
 
-  --color-cya: #6CB4FF;
-  --color-cya-txt: #6CB4FF;
-  --color-cya-bg: rgba(108,180,255,.12);
+  --color-cya: #44A8E7;
+  --color-cya-txt: #44A8E7;
+  --color-cya-bg: #0F2A3D;
 
-  --color-app-bg: #0B0D10;
-  --color-app-surface: #14181D;
-  --color-app-surface-2: #0F1216;
-  --color-app-surface-3: #1A1F26;
-  --color-app-text: #ECEEF1;
-  --color-app-muted: #9AA3AE;
-  --color-app-faint: #8B95A1;
-  --color-app-line: #222830;
-  --color-app-line-2: #1E232A;
+  --color-app-bg: #0D100D;
+  --color-app-surface: #151815;
+  --color-app-surface-2: #0D100D;
+  --color-app-surface-3: #1D201D;
+  --color-app-text: #EAEEEA;
+  --color-app-muted: #ADB1AE;
+  --color-app-faint: #808380;
+  --color-app-line: #262926;
+  --color-app-line-2: #1D201D;
 
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, Menlo, monospace;
@@ -105,15 +107,16 @@ body {
 .dm-card { background: var(--color-app-surface); border: 1px solid var(--color-app-line); border-radius: 16px; padding: 16px; }
 .dm-lab { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--color-app-faint); }
 .dm-display { font-family: var(--font-display); letter-spacing: -0.01em; }
-.dm-plate { font-family: var(--font-mono); font-weight: 600; letter-spacing: .06em; background: #F2F4EF; color: #14181D; border-radius: 6px; padding: 2px 8px; border: 1px solid #C9CDC2; }
+.dm-plate { font-family: var(--font-mono); font-weight: 600; letter-spacing: .06em; background: #EAEEEA; color: #151815; border-radius: 6px; padding: 2px 8px; border: 1px solid #D0D4D1; }
 .dm-prog { display: flex; gap: 4px; }
-.dm-prog span { flex: 1; height: 5px; border-radius: 3px; background: #262C34; }
+.dm-prog span { flex: 1; height: 5px; border-radius: 3px; background: #262926; }
 .dm-prog span.d { background: #2E9B20; }
 .dm-prog span.n { background: var(--color-lime-500); }
 .dm-btn { display: flex; align-items: center; justify-content: center; gap: 8px; height: 54px; width: 100%; border-radius: 14px; font-weight: 700; font-size: 16px; border: 1px solid transparent; cursor: pointer; text-decoration: none; }
 .dm-btn:disabled { opacity: .55; }
 .dm-btn.p { background: var(--color-lime-500); color: var(--color-lime-ink); }
-.dm-btn.s { background: #171B21; border-color: #2A313A; color: var(--color-app-text); }
+.dm-btn.p:hover { background: var(--color-lime-600); }
+.dm-btn.s { background: #1D201D; border-color: #373A38; color: var(--color-app-text); }
 .dm-btn.sm { height: 44px; font-size: 14px; border-radius: 12px; }
 .dm-sticky { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; padding: 12px 18px calc(20px + env(safe-area-inset-bottom)); background: var(--color-app-surface-2); border-top: 1px solid var(--color-app-line-2); display: flex; flex-direction: column; gap: 8px; }
 .dm-sticky > * { max-width: 520px; width: 100%; margin-inline: auto; }

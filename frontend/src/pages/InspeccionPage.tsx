@@ -80,7 +80,7 @@ export default function InspeccionPage() {
 
     padRef.current = new SignaturePad(canvas, {
       backgroundColor: 'rgba(0,0,0,0)',
-      penColor: '#E9EDF0',
+      penColor: '#EAEEEA',
       minWidth: 2.2,
       maxWidth: 2.2,
     })
@@ -192,14 +192,14 @@ export default function InspeccionPage() {
                 onClick={() => toggleAccesorio(nombre)}
                 className="flex h-14 items-center gap-2.5 rounded-xl px-3.5 text-left text-sm font-semibold"
                 style={{
-                  border: `1px solid ${activo ? 'rgba(68, 214, 44,.5)' : '#2A313A'}`,
+                  border: `1px solid ${activo ? 'rgba(68, 214, 44,.5)' : '#373A38'}`,
                   background: activo ? 'rgba(68, 214, 44,.07)' : 'var(--color-app-surface-2)',
-                  color: activo ? 'var(--color-app-text)' : '#C9D0D8',
+                  color: activo ? 'var(--color-app-text)' : '#D0D4D1',
                 }}
               >
                 <span
                   className="flex size-[22px] shrink-0 items-center justify-center rounded-md"
-                  style={activo ? { background: 'var(--color-lime-500)', color: '#0B0D10' } : { border: '2px solid #3A434E' }}
+                  style={activo ? { background: 'var(--color-lime-500)', color: '#0D100D' } : { border: '2px solid #373A38' }}
                 >
                   {activo && (
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
@@ -232,7 +232,7 @@ export default function InspeccionPage() {
           rows={3}
           placeholder={editable ? 'Ej. rayón en puerta delantera derecha, parachoques trasero con golpe leve…' : 'Sin observaciones.'}
           className="w-full resize-y rounded-xl bg-app-surface-2 p-3 text-[15px] leading-normal outline-none placeholder:text-app-faint focus-visible:border-lime-500"
-          style={{ minHeight: 96, border: '1px solid #2A313A' }}
+          style={{ minHeight: 96, border: '1px solid #373A38' }}
         />
       </section>
 
@@ -259,7 +259,7 @@ export default function InspeccionPage() {
         </div>
 
         {mostrarCanvas ? (
-          <div className="relative h-[170px] w-full overflow-hidden rounded-xl bg-app-surface-2" style={{ border: '1px dashed #3A434E' }}>
+          <div className="relative h-[170px] w-full overflow-hidden rounded-xl bg-app-surface-2" style={{ border: '1px dashed #373A38' }}>
             <canvas ref={canvasRef} className="absolute inset-0 size-full touch-none" />
             <span className="pointer-events-none absolute inset-x-0" style={{ bottom: 38, borderTop: '1px solid var(--color-app-line)' }} />
             {!tieneTrazo && (
@@ -270,11 +270,11 @@ export default function InspeccionPage() {
             )}
           </div>
         ) : firmaExistente ? (
-          <div className="flex h-[150px] w-full items-center justify-center overflow-hidden rounded-xl bg-[#F2F4EF]">
+          <div className="flex h-[150px] w-full items-center justify-center overflow-hidden rounded-xl bg-[#EAEEEA]">
             <img src={firmaExistente} alt="Firma del cliente" className="max-h-full max-w-full object-contain" />
           </div>
         ) : (
-          <div className="flex h-[110px] w-full items-center justify-center rounded-xl bg-app-surface-2 text-sm text-app-faint" style={{ border: '1px dashed #3A434E' }}>
+          <div className="flex h-[110px] w-full items-center justify-center rounded-xl bg-app-surface-2 text-sm text-app-faint" style={{ border: '1px dashed #373A38' }}>
             Sin firma registrada.
           </div>
         )}

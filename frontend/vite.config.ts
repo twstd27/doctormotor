@@ -16,8 +16,8 @@ export default defineConfig({
         short_name: 'Doctor Motor',
         display: 'standalone',
         orientation: 'portrait',
-        background_color: '#0B0D10',
-        theme_color: '#0B0D10',
+        background_color: '#0D100D',
+        theme_color: '#0D100D',
         icons: [
           { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },

@@ -41,13 +41,13 @@ app/
 - **Backend**: Laravel 13 (PHP 8.3), PostgreSQL 16, Redis, Laravel Reverb (WebSockets), Sanctum
   (auth API), spatie/laravel-permission (roles).
 - **Panel admin**: Filament 5 sobre el mismo backend — Super Admin y Cajero. Tema oscuro fijo con
-  el acento lima de `docs/05-DESIGN-SYSTEM.md` vía `Panel::colors()`.
+  el verde Razer de `docs/05-DESIGN-SYSTEM.md` vía `Panel::colors()`.
 - **PWA**: React 19 + Vite + TypeScript + TanStack Query + Zustand + Tailwind CSS v4,
   `vite-plugin-pwa` para offline (mecánicos) e instalabilidad. Mobile-first siempre — la mayoría
-  del tráfico es móvil, así que ninguna pantalla se diseña "desktop primero y se adapta". Tema
-  claro por defecto con oscuro automático (`prefers-color-scheme` + override manual) — a
-  diferencia del panel Filament, que es oscuro fijo sin toggle.
-- **Notificaciones**: WhatsApp Business Cloud API (Meta).
+  del tráfico es móvil, así que ninguna pantalla se diseña "desktop primero y se adapta". Solo
+  modo oscuro, igual que el panel Filament: no hay tema claro ni toggle.
+- **Notificaciones**: mensajes de WhatsApp armados por el sistema y enviados a mano con `wa.me`
+  (`WHATSAPP_MODO=manual`); la API de Meta queda detrás de `WHATSAPP_MODO=api`.
 - **Almacenamiento**: DigitalOcean Spaces (S3-compatible) para fotos/video de evidencia.
 - **Hosting**: DigitalOcean, región Nueva York (nyc1).
 

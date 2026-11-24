@@ -82,7 +82,7 @@ export default function HistorialPublicoPage() {
                         <p className="font-semibold">{ot.descripcion_problema}</p>
                         <p className="mt-0.5 text-[12.5px] text-app-faint">{ot.kilometraje_ingreso.toLocaleString('es-BO')} km</p>
                         {enCurso && (
-                          <span className="mt-2 inline-flex h-6 items-center gap-1.5 rounded-full bg-lime-500/15 px-2.5 text-[11.5px] font-semibold text-lime-500">
+                          <span className="mt-2 inline-flex h-6 items-center gap-1.5 rounded-full bg-ok-bg px-2.5 text-[11.5px] font-semibold text-ok-txt">
                             <span className="size-1.5 rounded-full bg-lime-500" />
                             {ESTADOS.find((e) => e.value === ot.estado)?.label ?? ot.estado}
                           </span>

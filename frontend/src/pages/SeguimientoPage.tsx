@@ -97,9 +97,9 @@ export default function SeguimientoPage() {
                       : actual
                         ? {
                             border: `2px solid ${aprobacion ? 'var(--color-amb)' : 'var(--color-lime-500)'}`,
-                            boxShadow: `0 0 0 4px ${aprobacion ? 'rgba(255,181,71,.15)' : 'rgba(68, 214, 44,.15)'}`,
+                            boxShadow: `0 0 0 4px ${aprobacion ? 'rgba(252, 170, 43,.15)' : 'rgba(68, 214, 44,.15)'}`,
                           }
-                        : { border: '2px solid #3A434E' }
+                        : { border: '2px solid #373A38' }
                   }
                 >
                   {hecho && <Check weight="bold" size={14} />}

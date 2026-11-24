@@ -20,20 +20,23 @@
    acá van los tokens propios que no tienen equivalente en la paleta de Filament.
    ────────────────────────────────────────────────────────────────────────── */
 :root {
-    --dm-bg: #0b0d10;
-    --dm-sidebar: #0f1216;
-    --dm-surface: #14181d;
-    --dm-surface-2: #171b21;
-    --dm-input: #0f1216;
-    --dm-border: #222830;
-    --dm-border-strong: #2a313a;
-    --dm-text: #eceef1;
-    --dm-text-2: #c9d0d8;
-    --dm-muted: #8b95a1;
+    --dm-bg: #0D100D;
+    --dm-sidebar: #0D100D;
+    --dm-surface: #151815;
+    --dm-surface-2: #1D201D;
+    --dm-input: #0D100D;
+    --dm-border: #262926;
+    --dm-border-strong: #373A38;
+    --dm-text: #EAEEEA;
+    --dm-text-2: #D0D4D1;
+    --dm-muted: #808380;
     --dm-lima: #44D62C;
-    --dm-ambar: #ffb547;
-    --dm-rojo: #ff8a7a;
-    --dm-azul: #6cb4ff;
+    --dm-on-brand: #0D140B;
+    --dm-ok-txt: #81F161;
+    --dm-ok-bg: #0D2A06;
+    --dm-ambar: #FCAA2B;
+    --dm-rojo: #EC485C;
+    --dm-azul: #44A8E7;
     --dm-violeta: #b9a2ff;
     --dm-font-titulo: 'Archivo Variable', 'Inter Variable', system-ui, sans-serif;
     --dm-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -60,7 +63,7 @@
     justify-content: center;
     border-radius: 0.5625rem;
     background: var(--dm-lima);
-    color: var(--dm-bg);
+    color: var(--dm-on-brand);
 }
 
 .dm-brand-mark svg {
@@ -125,7 +128,7 @@
 /* ── Menú lateral ───────────────────────────────────────────────────────── */
 .fi-sidebar {
     background-color: var(--dm-sidebar) !important;
-    border-right: 1px solid #1e232a;
+    border-right: 1px solid #1D201D;
 }
 
 .fi-body-has-topbar .fi-sidebar-header {
@@ -167,7 +170,7 @@
     letter-spacing: 0.09em;
     line-height: 1rem;
     text-transform: uppercase;
-    color: #808a96;
+    color: #808380;
 }
 
 .fi-sidebar-item-btn {
@@ -181,11 +184,11 @@
 .fi-sidebar-item-label {
     font-size: 0.875rem;
     font-weight: 500;
-    color: #b4bcc6;
+    color: #ADB1AE;
 }
 
 .fi-sidebar-item-btn > .fi-icon {
-    color: #8b95a1;
+    color: #808380;
 }
 
 .fi-sidebar-item.fi-sidebar-item-has-url > .fi-sidebar-item-btn:hover {
@@ -226,7 +229,7 @@
     min-height: 4rem;
     padding-inline: 2rem;
     background-color: var(--dm-bg) !important;
-    border-bottom: 1px solid #1e232a;
+    border-bottom: 1px solid #1D201D;
     box-shadow: none !important;
     --tw-ring-shadow: 0 0 #0000 !important;
     --tw-ring-color: transparent;
@@ -251,7 +254,7 @@
 
 .fi-topbar .fi-global-search .fi-input-wrp {
     height: 2.5rem;
-    background: #111418;
+    background: #151815;
     border-radius: 0.625rem;
 }
 
@@ -336,8 +339,8 @@
 }
 
 .dm-caja--cerrada {
-    border-color: rgba(255, 181, 71, 0.35);
-    background: rgba(255, 181, 71, 0.07);
+    border-color: rgba(252, 170, 43, 0.35);
+    background: rgba(252, 170, 43, 0.07);
     color: var(--dm-ambar);
 }
 
@@ -369,7 +372,7 @@
     height: 2.5rem;
     border-radius: 0.625rem;
     border: 1px solid var(--dm-border-strong);
-    background: #111418;
+    background: #151815;
 }
 
 .fi-topbar .fi-user-menu-trigger {
@@ -470,7 +473,7 @@
 }
 
 .dm-chip--info {
-    background: rgba(108, 180, 255, 0.12);
+    background: rgba(68, 168, 231, 0.12);
     color: var(--dm-azul);
 }
 
@@ -531,7 +534,7 @@
 }
 
 .dm-btn--secundario:hover {
-    background: #1e232a;
+    background: #1D201D;
 }
 
 .dm-btn--bloque {
@@ -592,17 +595,17 @@
 .fi-btn:not(.fi-btn-group-btn).fi-color-primary:not(.fi-outlined),
 .fi-btn:not(.fi-btn-group-btn).fi-color-success:not(.fi-outlined) {
     background-color: var(--dm-lima);
-    color: var(--dm-bg);
+    color: var(--dm-on-brand);
 }
 
 .fi-btn:not(.fi-btn-group-btn).fi-color-primary:not(.fi-outlined):hover,
 .fi-btn:not(.fi-btn-group-btn).fi-color-success:not(.fi-outlined):hover {
-    background-color: #5ede48;
+    background-color: #2EB21B;
 }
 
 .fi-btn:not(.fi-btn-group-btn).fi-color-primary:not(.fi-outlined) .fi-icon,
 .fi-btn:not(.fi-btn-group-btn).fi-color-success:not(.fi-outlined) .fi-icon {
-    color: var(--dm-bg);
+    color: var(--dm-on-brand);
 }
 
 .fi-btn {
@@ -612,6 +615,11 @@
 }
 
 /* ── Insignias: píldora con color al ~12 % y texto pleno ────────────────── */
+.fi-badge.fi-color-success {
+    background-color: var(--dm-ok-bg) !important;
+    color: var(--dm-ok-txt) !important;
+}
+
 .fi-badge {
     border-radius: 9999px;
     font-size: 0.75rem;

@@ -36,7 +36,7 @@
 .fi-tabs:not(.fi-vertical) .fi-tabs-item .fi-tabs-item-label {
     font-size: 0.875rem;
     font-weight: 600;
-    color: #9aa3ae;
+    color: #ADB1AE;
 }
 
 .fi-tabs:not(.fi-vertical) .fi-tabs-item:hover .fi-tabs-item-label {
@@ -66,7 +66,7 @@
     padding: 0.125rem 0.5rem;
     border-top: 3px solid #2d5bd0;
     border-radius: 4px;
-    background: #f2f4ef;
+    background: #EAEEEA;
     color: var(--dm-bg);
     font-family: var(--dm-font-mono);
     font-size: 0.75rem;
@@ -93,7 +93,7 @@
     font-size: 0.75rem;
     font-weight: 600;
     white-space: nowrap;
-    --dm-e: #a3acb8;
+    --dm-e: #ADB1AE;
     background: color-mix(in srgb, var(--dm-e) 13%, transparent);
     color: var(--dm-e);
 }
@@ -114,14 +114,14 @@
 /* Listo para entrega: lima sólido (es la acción que sigue). */
 .dm-estado--listo_entrega {
     background: var(--dm-lima);
-    color: var(--dm-bg);
+    color: var(--dm-on-brand);
 }
 
 /* Entregado: gris con borde, sin relleno. */
 .dm-estado--entregado {
     background: transparent;
     border: 1px solid var(--dm-border-strong);
-    color: #9aa3ae;
+    color: #ADB1AE;
 }
 
 /* ── Celdas de tabla con dos líneas ─────────────────────────────────────── */
@@ -242,18 +242,18 @@
     padding: 0 0.625rem;
     border-radius: 9999px;
     background: rgba(163, 172, 184, 0.12);
-    color: #a3acb8;
+    color: #ADB1AE;
     font-size: 0.75rem;
     font-weight: 600;
 }
 
 .dm-chip-aviso--ambar {
-    background: rgba(255, 181, 71, 0.12);
+    background: rgba(252, 170, 43, 0.12);
     color: var(--dm-ambar);
 }
 
 .dm-chip-aviso--rojo {
-    background: rgba(255, 138, 122, 0.12);
+    background: rgba(236, 72, 92, 0.12);
     color: var(--dm-rojo);
 }
 
@@ -317,7 +317,7 @@
     margin: 0;
     padding: 1.125rem 1.5rem 1.375rem;
     border-top: 1px solid var(--dm-border);
-    background: #111418;
+    background: #151815;
     list-style: none;
 }
 
@@ -331,7 +331,7 @@
 .dm-paso-barra {
     height: 4px;
     border-radius: 2px;
-    background: #262c34;
+    background: #262926;
 }
 
 .dm-paso-texto {
@@ -345,7 +345,7 @@
 }
 
 .dm-paso--hecho .dm-paso-texto {
-    color: #9aa3ae;
+    color: #ADB1AE;
 }
 
 .dm-paso--ahora .dm-paso-barra {
@@ -361,7 +361,7 @@
 .dm-progreso-cancelada {
     padding: 1rem 1.5rem;
     border-top: 1px solid var(--dm-border);
-    background: #111418;
+    background: #151815;
     color: var(--dm-rojo);
     font-size: 0.875rem;
     font-weight: 600;
@@ -400,7 +400,7 @@
 }
 
 .dm-stat--saldo {
-    border-color: rgba(255, 181, 71, 0.35);
+    border-color: rgba(252, 170, 43, 0.35);
     background: #1a1710;
 }
 
@@ -499,7 +499,7 @@
     margin: 0.375rem 0 0;
     font-size: 0.875rem;
     line-height: 1.55;
-    color: #d5dae0;
+    color: #D0D4D1;
 }
 
 .dm-combustible {
@@ -512,7 +512,7 @@
     height: 6px;
     flex: 1;
     border-radius: 2px;
-    background: #262c34;
+    background: #262926;
 }
 
 .dm-combustible > .dm-combustible--lleno {
@@ -539,7 +539,7 @@
     flex: none;
     margin-top: 0.375rem;
     border-radius: 9999px;
-    background: #5b6470;
+    background: #636663;
 }
 
 .dm-actividad-punto--success { background: var(--dm-lima); }
@@ -569,7 +569,7 @@
     margin-right: 0.75rem;
     border-radius: 0.5rem;
     background: var(--dm-lima);
-    color: var(--dm-bg);
+    color: var(--dm-on-brand);
     font-family: var(--dm-font-mono);
     font-size: 0.8125rem;
     font-weight: 700;
@@ -659,7 +659,7 @@
     align-items: center;
     justify-content: center;
     border-radius: 0.625rem;
-    background: #1a1f26;
+    background: #1D201D;
     color: var(--dm-text-2);
 }
 
@@ -716,8 +716,8 @@
 }
 
 .dm-aviso--ambar {
-    border-color: rgba(255, 181, 71, 0.25);
-    background: rgba(255, 181, 71, 0.08);
+    border-color: rgba(252, 170, 43, 0.25);
+    background: rgba(252, 170, 43, 0.08);
     color: #f3d9ae;
 }
 
@@ -747,13 +747,13 @@
 }
 
 .fi-fo-toggle-buttons .fi-btn:hover {
-    background: #1e232a !important;
+    background: #1D201D !important;
 }
 
 .fi-fo-toggle-buttons .fi-fo-toggle-buttons-input:checked + .fi-btn {
     background: var(--dm-lima) !important;
     border-color: var(--dm-lima);
-    color: var(--dm-bg) !important;
+    color: var(--dm-on-brand) !important;
 }
 
 .fi-fo-toggle-buttons .fi-fo-toggle-buttons-input:focus-visible + .fi-btn {
@@ -784,19 +784,19 @@
 }
 
 .fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Blanco"] + .fi-btn {
-    background: #F2F2EE !important;
+    background: #EAEEEA !important;
 }
 
 .fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Plata"] + .fi-btn {
-    background: #B8BEC6 !important;
+    background: #ADB1AE !important;
 }
 
 .fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Gris"] + .fi-btn {
-    background: #6B7179 !important;
+    background: #808380 !important;
 }
 
 .fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Negro"] + .fi-btn {
-    background: #16181B !important;
+    background: #151815 !important;
 }
 
 .fi-fo-toggle-buttons.dm-colores .fi-fo-toggle-buttons-input[value="Rojo"] + .fi-btn {
@@ -987,7 +987,7 @@
 }
 
 .dm-stat--efectivo .dm-stat-etiqueta {
-    color: #b9f0ad;
+    color: #ADF695;
 }
 
 .dm-caja-vacia {
@@ -1079,7 +1079,7 @@
 
 .dm-tabla td {
     padding: 0.875rem 1rem;
-    border-bottom: 1px solid #1c2128;
+    border-bottom: 1px solid #1D201D;
     vertical-align: middle;
     font-size: 0.875rem;
     color: var(--dm-text);
@@ -1111,7 +1111,7 @@
 }
 
 .dm-metodo--efectivo { background: rgba(68, 214, 44, 0.12); color: var(--dm-lima); }
-.dm-metodo--qr { background: rgba(108, 180, 255, 0.12); color: var(--dm-azul); }
+.dm-metodo--qr { background: rgba(68, 168, 231, 0.12); color: var(--dm-azul); }
 .dm-metodo--tarjeta { background: rgba(185, 162, 255, 0.12); color: var(--dm-violeta); }
 
 .dm-medidor {
@@ -1119,7 +1119,7 @@
     height: 0.5rem;
     overflow: hidden;
     border-radius: 0.25rem;
-    background: #262c34;
+    background: #262926;
 }
 
 .dm-medidor--alto {
@@ -1146,7 +1146,7 @@
     justify-content: space-between;
     gap: 0.75rem;
     padding: 0.625rem 0;
-    border-bottom: 1px solid #1e232a;
+    border-bottom: 1px solid #1D201D;
 }
 
 .dm-cierre:last-child {
@@ -1165,8 +1165,8 @@
 }
 
 .dm-diferencia--ok { background: rgba(68, 214, 44, 0.12); color: var(--dm-lima); }
-.dm-diferencia--sobra { background: rgba(255, 181, 71, 0.15); color: var(--dm-ambar); }
-.dm-diferencia--falta { background: rgba(255, 138, 122, 0.15); color: var(--dm-rojo); }
+.dm-diferencia--sobra { background: rgba(252, 170, 43, 0.15); color: var(--dm-ambar); }
+.dm-diferencia--falta { background: rgba(236, 72, 92, 0.15); color: var(--dm-rojo); }
 
 /* Cierre con arqueo */
 .dm-input-contador {
@@ -1199,9 +1199,9 @@
 
 .dm-arqueo-dif--ok { border-color: rgba(68, 214, 44, 0.3); background: rgba(68, 214, 44, 0.07) !important; }
 .dm-arqueo-dif--ok .dm-stat-valor { color: var(--dm-lima); }
-.dm-arqueo-dif--sobra { border-color: rgba(255, 181, 71, 0.3); background: rgba(255, 181, 71, 0.07) !important; }
+.dm-arqueo-dif--sobra { border-color: rgba(252, 170, 43, 0.3); background: rgba(252, 170, 43, 0.07) !important; }
 .dm-arqueo-dif--sobra .dm-stat-valor { color: var(--dm-ambar); }
-.dm-arqueo-dif--falta { border-color: rgba(255, 138, 122, 0.35); background: rgba(255, 138, 122, 0.07) !important; }
+.dm-arqueo-dif--falta { border-color: rgba(236, 72, 92, 0.35); background: rgba(236, 72, 92, 0.07) !important; }
 .dm-arqueo-dif--falta .dm-stat-valor { color: var(--dm-rojo); }
 
 .dm-aviso--ok {
@@ -1259,7 +1259,7 @@
 }
 
 .dm-contador--ambar {
-    background: rgba(255, 181, 71, 0.15);
+    background: rgba(252, 170, 43, 0.15);
     color: var(--dm-ambar);
 }
 
@@ -1396,7 +1396,7 @@
 }
 
 .dm-vc--vencida {
-    border-color: rgba(255, 138, 122, 0.4);
+    border-color: rgba(236, 72, 92, 0.4);
 }
 
 .dm-vc-titulo {
@@ -1443,7 +1443,7 @@
 }
 
 .dm-barra--ingresos { background: var(--dm-lima); }
-.dm-barra--egresos { background: #4a525c; }
+.dm-barra--egresos { background: #494C4A; }
 
 .dm-barras-leyenda {
     display: flex;
@@ -1461,7 +1461,7 @@
 }
 
 .dm-entregas li {
-    border-bottom: 1px solid #1e232a;
+    border-bottom: 1px solid #1D201D;
 }
 
 .dm-entregas li:last-child {
@@ -1499,7 +1499,7 @@
 
 /* ── Clientes ───────────────────────────────────────────────────────────── */
 .dm-num--gris {
-    background: #262c34;
+    background: #262926;
     color: var(--dm-text);
 }
 
@@ -1565,7 +1565,7 @@
 }
 
 .dm-contador--gris {
-    background: #1e232a;
+    background: #1D201D;
     color: var(--dm-text-2);
 }
 
@@ -1599,7 +1599,7 @@
     display: flex;
     gap: 1.25rem;
     padding-top: 0.75rem;
-    border-top: 1px solid #1e232a;
+    border-top: 1px solid #1D201D;
 }
 
 .dm-vehiculo-valor {
@@ -1636,9 +1636,9 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    border: 1px solid #262c34;
+    border: 1px solid #262926;
     border-radius: 0.625rem;
-    background: #1a1f26;
+    background: #1D201D;
     color: var(--dm-muted);
 }
 
@@ -1715,7 +1715,7 @@
     align-items: center;
     border: 1px solid var(--dm-border);
     border-radius: 0.625rem;
-    background: #111418;
+    background: #151815;
     font-size: 1.125rem;
     font-weight: 700;
 }
@@ -1789,8 +1789,8 @@
 }
 
 .dm-aviso--rojo {
-    border-color: rgba(255, 138, 122, 0.3);
-    background: rgba(255, 138, 122, 0.08);
+    border-color: rgba(236, 72, 92, 0.3);
+    background: rgba(236, 72, 92, 0.08);
     color: #ffd6cf;
 }
 
@@ -1807,7 +1807,7 @@
 }
 
 .dm-stat--falla {
-    border-color: rgba(255, 138, 122, 0.35);
+    border-color: rgba(236, 72, 92, 0.35);
     background: #1a1110;
 }
 
@@ -1912,7 +1912,7 @@
     align-items: center;
     gap: 0.875rem;
     padding: 0.875rem 0;
-    border-bottom: 1px solid #1e232a;
+    border-bottom: 1px solid #1D201D;
 }
 
 .dm-socio:last-child {
@@ -1964,7 +1964,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 0.625rem 0;
-    border-bottom: 1px solid #1e232a;
+    border-bottom: 1px solid #1D201D;
     color: var(--dm-text-2);
     font-size: 0.875rem;
 }
@@ -1992,7 +1992,7 @@
 }
 
 .dm-historial-item {
-    border-bottom: 1px solid #1e232a;
+    border-bottom: 1px solid #1D201D;
 }
 
 .dm-historial-item:last-child {
@@ -2030,12 +2030,12 @@
 
 .dm-btn--peligro {
     background: transparent;
-    border-color: rgba(255, 138, 122, 0.35);
+    border-color: rgba(236, 72, 92, 0.35);
     color: var(--dm-rojo);
 }
 
 .dm-btn--peligro:hover {
-    background: rgba(255, 138, 122, 0.08);
+    background: rgba(236, 72, 92, 0.08);
 }
 
 .dm-pagado {
@@ -2071,11 +2071,11 @@
     height: 2.75rem;
     border-color: var(--dm-lima);
     background: var(--dm-lima);
-    color: var(--dm-bg);
+    color: var(--dm-on-brand);
 }
 
 .dm-btn--primario:hover {
-    background: #5ede48;
+    background: #2EB21B;
 }
 
 .dm-btn--primario:disabled {
@@ -2107,7 +2107,7 @@
         height: 4.75rem;
         padding-top: 0.5rem;
         background: var(--dm-sidebar);
-        border-top: 1px solid #1e232a;
+        border-top: 1px solid #1D201D;
     }
 
     .dm-nav-item {
@@ -2202,7 +2202,7 @@
         margin-inline: -1rem;
         padding: 0.75rem 1rem;
         background: var(--dm-sidebar);
-        border-top: 1px solid #1e232a;
+        border-top: 1px solid #1D201D;
     }
 
     .fi-form-actions .fi-btn {
@@ -2251,7 +2251,7 @@
     .fi-ta-cell.fi-ta-actions-cell,
     .fi-ta-actions-cell {
         padding-top: 0.5rem !important;
-        border-top: 1px solid #1e232a !important;
+        border-top: 1px solid #1D201D !important;
         margin-top: 0.375rem;
     }
 
@@ -2340,7 +2340,7 @@
 }
 
 .dm-stat--alerta {
-    border-color: rgba(255, 181, 71, 0.35);
+    border-color: rgba(252, 170, 43, 0.35);
 }
 
 .dm-texto-mensaje {

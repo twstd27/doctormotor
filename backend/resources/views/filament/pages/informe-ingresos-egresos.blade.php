@@ -69,7 +69,7 @@
                 <h2 class="dm-panel-titulo">{{ $serie->count() > 0 && \Illuminate\Support\Carbon::parse($desde)->diffInDays($hasta) > 62 ? 'Por mes' : 'Por día' }}</h2>
                 <div class="dm-barras-leyenda">
                     <span><i class="dm-cuadrito" style="background: var(--dm-lima)"></i>Ingresos</span>
-                    <span><i class="dm-cuadrito" style="background: #5b6470"></i>Egresos (costos y gastos)</span>
+                    <span><i class="dm-cuadrito" style="background: #636663"></i>Egresos (costos y gastos)</span>
                 </div>
             </div>
             <div class="dm-grafico" role="img" aria-label="Gráfico de barras de ingresos y egresos del período">
