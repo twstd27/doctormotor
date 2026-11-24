@@ -65,7 +65,7 @@ class ConectarWhatsapp extends Page
      * y los IDs del WABA/número que llegaron por el evento WA_EMBEDDED_SIGNUP), y hace el
      * intercambio server-to-server — el App Secret nunca toca el navegador.
      */
-    public function completarConexion(string $code, string $wabaId, string $phoneNumberId): void
+    public function completarConexion(string $code, string $wabaId, ?string $phoneNumberId = null): void
     {
         $this->error = null;
 
@@ -88,6 +88,31 @@ class ConectarWhatsapp extends Page
         // el número queda vinculado pero el webhook de la app nunca recibe nada de él.
         $suscripcion = Http::withToken($accessToken)
             ->post("https://graph.facebook.com/v21.0/{$wabaId}/subscribed_apps");
+
+        // En la coexistencia Meta avisa solo el WABA ID: el número se busca en la cuenta.
+        if (blank($phoneNumberId)) {
+            $numeros = Http::withToken($accessToken)
+                ->get("https://graph.facebook.com/v21.0/{$wabaId}/phone_numbers", ['fields' => 'id,display_phone_number'])
+                ->json('data') ?? [];
+            $phoneNumberId = $numeros[0]['id'] ?? null;
+
+            if (! $phoneNumberId) {
+                $this->error = 'La cuenta quedó conectada pero Meta no devolvió ningún número. Revisa el WABA '.$wabaId.' en Meta Business Suite.';
+                Notification::make()->title('Falta el número')->body($this->error)->warning()->persistent()->send();
+
+                return;
+            }
+        }
+
+        // Coexistencia: Meta da solo 24 horas para pedir la copia de contactos y del historial de
+        // chats; pasado ese plazo ya no se puede. Es de una sola vez y los resultados llegan al
+        // webhook (que hoy los ignora): se piden igual para no perder la oportunidad.
+        foreach (['smb_app_state_sync', 'history'] as $tipoSync) {
+            Http::withToken($accessToken)->post("https://graph.facebook.com/v21.0/{$phoneNumberId}/smb_app_data", [
+                'messaging_product' => 'whatsapp',
+                'sync_type' => $tipoSync,
+            ]);
+        }
 
         $this->wabaId = $wabaId;
         $this->phoneNumberId = $phoneNumberId;

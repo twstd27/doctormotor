@@ -111,29 +111,53 @@
 
                 let ultimoWabaId = null;
                 let ultimoPhoneNumberId = null;
+                // Último evento que mandó Meta (CANCEL, ERROR o FINISH…): se muestra en pantalla para
+                // saber por qué se cerró la ventana, en vez de adivinar.
+                let ultimoEvento = null;
 
                 window.addEventListener('message', (event) => {
                     if (!event.origin.endsWith('facebook.com')) return;
                     try {
                         const data = JSON.parse(event.data);
-                        if (data.type === 'WA_EMBEDDED_SIGNUP' && data.data) {
-                            ultimoWabaId = data.data.waba_id ?? ultimoWabaId;
-                            ultimoPhoneNumberId = data.data.phone_number_id ?? ultimoPhoneNumberId;
+                        if (data.type === 'WA_EMBEDDED_SIGNUP') {
+                            ultimoEvento = data;
+                            console.log('[whatsapp-signup]', data);
+                            if (data.data) {
+                                ultimoWabaId = data.data.waba_id ?? ultimoWabaId;
+                                ultimoPhoneNumberId = data.data.phone_number_id ?? ultimoPhoneNumberId;
+                            }
                         }
                     } catch (e) {
                         // Mensajes de otros orígenes/formatos de facebook.com que no son de este flujo — se ignoran.
                     }
                 });
 
+                function explicarEvento() {
+                    if (!ultimoEvento) {
+                        return 'Meta no mandó ningún aviso: la ventana se cerró sola. Suele ser que el dominio no está permitido en la app de Meta, que el navegador bloquea cookies de terceros, o que tu usuario no tiene rol en la app.';
+                    }
+                    const d = ultimoEvento.data || {};
+                    if (ultimoEvento.event === 'CANCEL') return 'Se canceló en el paso «' + (d.current_step || 'desconocido') + '».';
+                    if (ultimoEvento.event === 'ERROR') return 'Meta devolvió un error: ' + (d.error_message || 'sin detalle') + ' (código ' + (d.error_code ?? '?') + ').';
+                    return 'Último aviso de Meta: ' + ultimoEvento.event + '.';
+                }
+
                 window.iniciarEmbeddedSignup = function () {
                     const estado = document.getElementById('estado-conexion');
                     estado.textContent = 'Abriendo la ventana de conexión de Meta…';
 
+                    ultimoEvento = null;
+                    ultimoWabaId = null;
+                    ultimoPhoneNumberId = null;
+
                     FB.login(function (response) {
+                        console.log('[whatsapp-signup] respuesta de FB.login', response);
                         const code = response?.authResponse?.code;
 
-                        if (!code || !ultimoWabaId || !ultimoPhoneNumberId) {
-                            estado.textContent = 'No se completó la conexión (se cerró la ventana o falta confirmar en la app de WhatsApp Business).';
+                        // En el flujo de coexistencia Meta manda solo el WABA ID; el ID del número lo busca el servidor.
+                        if (!code || !ultimoWabaId) {
+                            estado.textContent = 'No se completó la conexión. ' + explicarEvento()
+                                + (response?.status ? ' (estado: ' + response.status + ')' : '');
                             return;
                         }
 
@@ -144,7 +168,9 @@
                         config_id: '{{ $this->configId() }}',
                         response_type: 'code',
                         override_default_response_type: true,
-                        extras: { setup: {} },
+                        // featureType: pide el flujo de «ya uso WhatsApp Business en el celular» (coexistencia);
+                        // sin esto Meta ofrece solo registrar un número nuevo.
+                        extras: { setup: {}, featureType: 'whatsapp_business_app_onboarding', sessionInfoVersion: '3' },
                     });
                 };
             </script>
