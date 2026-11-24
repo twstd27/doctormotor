@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -41,15 +42,53 @@ class Cliente extends Model
      */
     public function totalFacturado(): float
     {
-        return (float) PresupuestoItem::whereHas(
+        // Si la consulta vino con scopeConSaldo, el total ya está calculado (sin otra consulta).
+        return (float) ($this->total_facturado ?? PresupuestoItem::whereHas(
             'presupuesto.ordenTrabajo',
             fn ($q) => $q->where('cliente_id', $this->id)
-        )->where('aprobado', true)->sum('subtotal');
+        )->where('aprobado', true)->sum('subtotal'));
     }
 
     public function totalPagado(): float
     {
-        return (float) $this->pagos()->sum('monto');
+        return (float) ($this->total_pagado ?? $this->pagos()->sum('monto'));
+    }
+
+    /**
+     * Agrega `total_facturado` y `total_pagado` como columnas calculadas, para mostrar el
+     * saldo de muchos clientes sin una consulta por fila (misma regla que totalFacturado()).
+     */
+    public function scopeConSaldo(Builder $query): void
+    {
+        $query->addSelect([
+            'total_facturado' => PresupuestoItem::query()
+                ->selectRaw('COALESCE(SUM(presupuesto_items.subtotal), 0)')
+                ->join('presupuestos', 'presupuestos.id', '=', 'presupuesto_items.presupuesto_id')
+                ->join('ordenes_trabajo', 'ordenes_trabajo.id', '=', 'presupuestos.orden_trabajo_id')
+                ->whereColumn('ordenes_trabajo.cliente_id', 'clientes.id')
+                ->where('presupuesto_items.aprobado', true),
+            'total_pagado' => Pago::query()
+                ->selectRaw('COALESCE(SUM(pagos.monto), 0)')
+                ->whereColumn('pagos.cliente_id', 'clientes.id'),
+        ]);
+    }
+
+    /** Clientes a los que todavía se les debe cobrar algo (facturado > pagado). */
+    public function scopeConSaldoPendiente(Builder $query): void
+    {
+        $query->whereRaw(
+            '(SELECT COALESCE(SUM(pi.subtotal), 0) FROM presupuesto_items pi'
+            .' JOIN presupuestos p ON p.id = pi.presupuesto_id'
+            .' JOIN ordenes_trabajo o ON o.id = p.orden_trabajo_id'
+            .' WHERE o.cliente_id = clientes.id AND pi.aprobado = true)'
+            .' > (SELECT COALESCE(SUM(pg.monto), 0) FROM pagos pg WHERE pg.cliente_id = clientes.id) + 0.009',
+        );
+    }
+
+    /** Clientes que tienen un vehículo en el taller en este momento. */
+    public function scopeEnElTaller(Builder $query): void
+    {
+        $query->whereHas('ordenesTrabajo', fn ($q) => $q->whereNotIn('estado', ['entregado', 'cancelado']));
     }
 
     /**

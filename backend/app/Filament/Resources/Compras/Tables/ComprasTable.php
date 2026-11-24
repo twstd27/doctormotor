@@ -27,7 +27,7 @@ class ComprasTable
                     ->searchable(),
                 TextColumn::make('total')
                     ->label('Total')
-                    ->money('BOB')
+                    ->money('BOB', locale: 'es_BO')
                     ->sortable(),
                 BadgeColumn::make('estado_pago')
                     ->label('Estado')

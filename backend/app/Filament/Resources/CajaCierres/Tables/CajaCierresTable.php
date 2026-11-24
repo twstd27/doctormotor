@@ -20,18 +20,18 @@ class CajaCierresTable
                     ->label('Cajero'),
                 TextColumn::make('monto_apertura')
                     ->label('Apertura')
-                    ->money('BOB'),
+                    ->money('BOB', locale: 'es_BO'),
                 TextColumn::make('monto_esperado')
                     ->label('Esperado')
-                    ->money('BOB')
+                    ->money('BOB', locale: 'es_BO')
                     ->placeholder('—'),
                 TextColumn::make('monto_contado')
                     ->label('Contado')
-                    ->money('BOB')
+                    ->money('BOB', locale: 'es_BO')
                     ->placeholder('—'),
                 TextColumn::make('diferencia')
                     ->label('Diferencia')
-                    ->money('BOB')
+                    ->money('BOB', locale: 'es_BO')
                     ->placeholder('—')
                     ->color(fn ($state) => $state === null ? 'gray' : ($state < 0 ? 'danger' : ($state > 0 ? 'warning' : 'success'))),
                 BadgeColumn::make('estado')

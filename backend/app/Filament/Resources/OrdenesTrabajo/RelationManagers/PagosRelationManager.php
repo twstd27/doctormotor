@@ -68,8 +68,8 @@ class PagosRelationManager extends RelationManager
                     ->label('Monto')
                     ->alignEnd()
                     ->fontFamily('mono')
-                    ->money('BOB')
-                    ->summarize(Sum::make()->label('Total cobrado')->money('BOB')),
+                    ->money('BOB', locale: 'es_BO')
+                    ->summarize(Sum::make()->label('Total cobrado')->money('BOB', locale: 'es_BO')),
             ])
             ->defaultSort('fecha', 'desc')
             ->headerActions([

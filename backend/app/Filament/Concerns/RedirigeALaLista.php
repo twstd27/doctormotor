@@ -8,6 +8,12 @@ namespace App\Filament\Concerns;
  */
 trait RedirigeALaLista
 {
+    // "Crear Cliente" (con mayúscula en cada palabra) es como lo arma Filament; acá va "Crear cliente".
+    public function getTitle(): string|IlluminateContractsSupportHtmlable
+    {
+        return 'Crear '.static::getResource()::getModelLabel();
+    }
+
     protected function getRedirectUrl(): string
     {
         return static::getResource()::getUrl('index');

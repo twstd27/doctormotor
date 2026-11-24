@@ -2,134 +2,91 @@
 
 namespace App\Filament\Resources\Clientes\Tables;
 
+use App\Filament\Resources\Clientes\Actions\InvitarPorWhatsapp;
+use App\Filament\Resources\Clientes\ClienteResource;
+use App\Filament\Resources\OrdenesTrabajo\OrdenTrabajoResource;
 use App\Models\Cliente;
-use App\Models\User;
 use App\Services\WhatsAppService;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Notifications\Notification;
-use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\ViewAction;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Builder;
 
 class ClientesTable
 {
     public static function configure(Table $table): Table
     {
         return $table
+            // El saldo, la última visita y las placas salen de la propia consulta (sin una por fila).
+            ->modifyQueryUsing(fn (Builder $query) => $query
+                ->with(['vehiculos:id,cliente_id,placa', 'user:id'])
+                ->conSaldo()
+                ->withMax('ordenesTrabajo as ultima_visita', 'fecha_ingreso'))
             ->columns([
-                TextColumn::make('nombre')
-                    ->label('Nombre')
-                    ->searchable()
+                ViewColumn::make('nombre')
+                    ->label('Cliente')
+                    ->view('filament.clientes.col-cliente')
+                    ->searchable(['nombre', 'ci_nit'])
                     ->sortable(),
-                TextColumn::make('ci_nit')
-                    ->label('CI / NIT')
-                    ->searchable(),
-                TextColumn::make('telefono_whatsapp')
+                ViewColumn::make('telefono_whatsapp')
                     ->label('WhatsApp')
+                    ->view('filament.clientes.col-whatsapp')
                     ->searchable(),
-                TextColumn::make('correo')
-                    ->label('Correo')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('vehiculos_count')
+                ViewColumn::make('vehiculos')
                     ->label('Vehículos')
-                    ->counts('vehiculos')
-                    ->badge(),
-                TextColumn::make('created_at')
-                    ->label('Registrado')
-                    ->dateTime('d/m/Y')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->view('filament.clientes.col-vehiculos')
+                    ->searchable(query: fn (Builder $query, string $search) => $query
+                        ->orWhereHas('vehiculos', fn ($q) => $q->where('placa', 'ilike', "%{$search}%"))),
+                ViewColumn::make('ultima_visita')
+                    ->label('Última visita')
+                    ->view('filament.clientes.col-visita')
+                    ->sortable(),
+                ViewColumn::make('saldo')
+                    ->label('Saldo')
+                    ->alignEnd()
+                    ->view('filament.clientes.col-saldo'),
+                ViewColumn::make('user_id')
+                    ->label('Portal')
+                    ->view('filament.clientes.col-portal'),
             ])
             ->defaultSort('created_at', 'desc')
+            ->searchPlaceholder('Nombre, CI/NIT, WhatsApp o placa')
             ->filters([
                 TrashedFilter::make(),
             ])
+            ->recordUrl(fn (Cliente $record) => ClienteResource::getUrl('view', ['record' => $record]))
             ->recordActions([
-                Action::make('invitar')
-                    ->label('Invitar por WhatsApp')
-                    ->icon('heroicon-o-paper-airplane')
-                    ->color('warning')
-                    ->requiresConfirmation()
-                    ->modalDescription(fn (Cliente $record) => "Se manda un enlace de acceso por WhatsApp al {$record->telefono_whatsapp} para que {$record->nombre} entre a \"Mi garaje\".")
-                    ->disabled(fn (Cliente $record) => blank($record->telefono_whatsapp))
-                    ->action(function (Cliente $record, WhatsAppService $whatsApp) {
-                        if (! $record->user_id) {
-                            // Puede que ya exista una cuenta con este correo o WhatsApp (ej. el
-                            // cliente se autorregistró por Google antes de que el cajero cargara
-                            // su ficha) — vincular esa en vez de crear una duplicada, que choca
-                            // con la restricción unique y tira un error 500.
-                            $user = User::where('telefono_whatsapp', $record->telefono_whatsapp)
-                                ->when($record->correo, fn ($query) => $query->orWhere('email', $record->correo))
-                                ->first();
-
-                            if (! $user) {
-                                $user = User::create([
-                                    'nombre' => $record->nombre,
-                                    'email' => $record->correo,
-                                    'telefono_whatsapp' => $record->telefono_whatsapp,
-                                    'rol' => 'cliente',
-                                    'activo' => true,
-                                ]);
-                            }
-
-                            $record->update(['user_id' => $user->id]);
-                        }
-
-                        $token = Str::random(48);
-                        Cache::put("whatsapp_login:{$token}", $record->user_id, now()->addDays(7));
-
-                        $parametros = [
-                            'nombre' => $record->nombre,
-                            'link' => config('services.frontend.url')."/auth/whatsapp/{$token}",
-                        ];
-
-                        $notificacion = $whatsApp->enviarPlantilla(
-                            telefono: $record->telefono_whatsapp,
-                            plantilla: 'invitacion_cuenta_cliente',
-                            parametros: $parametros,
-                            userId: $record->user_id,
-                        );
-
-                        if ($whatsApp->configurado() && $notificacion->estado === 'enviado') {
-                            Notification::make()
-                                ->title('Invitación enviada')
-                                ->body('Meta aceptó el mensaje y lo está entregando por WhatsApp.')
-                                ->success()
-                                ->send();
-
-                            return;
-                        }
-
-                        // Con el token configurado pero el envío rechazado (token vencido,
-                        // plantilla sin aprobar, número inválido...) el cajero no debe quedarse
-                        // creyendo que salió: se avisa y se le deja el mensaje para mandarlo a mano.
-                        $rechazado = $whatsApp->configurado();
-
-                        $aviso = Notification::make()
-                            ->title($rechazado ? 'WhatsApp no pudo enviar la invitación' : 'WhatsApp no está configurado todavía')
-                            ->body($rechazado
-                                ? 'Meta rechazó el envío (el detalle está en Administración → Notificaciones). Abre el mensaje ya redactado y mándalo tú mismo.'
-                                : 'Abre el mensaje ya redactado y mándalo tú mismo desde tu WhatsApp.')
-                            ->actions([
-                                Action::make('abrir')
-                                    ->label('Abrir en WhatsApp')
-                                    ->url($whatsApp->linkWaMe($record->telefono_whatsapp, 'invitacion_cuenta_cliente', $parametros))
-                                    ->openUrlInNewTab(),
-                            ])
-                            ->persistent();
-
-                        $rechazado ? $aviso->danger() : $aviso->warning();
-                        $aviso->send();
-                    }),
-                EditAction::make(),
+                Action::make('recepcion')
+                    ->label('Nueva recepción')
+                    ->hiddenLabel()
+                    ->icon(Heroicon::OutlinedPlusCircle)
+                    ->color('gray')
+                    ->tooltip('Recepcionar un vehículo')
+                    ->url(fn () => OrdenTrabajoResource::getUrl('create'))
+                    ->visible(fn () => OrdenTrabajoResource::canCreate()),
+                Action::make('whatsapp')
+                    ->label('Escribir por WhatsApp')
+                    ->hiddenLabel()
+                    ->icon(Heroicon::OutlinedChatBubbleLeftEllipsis)
+                    ->color('gray')
+                    ->tooltip('Escribir por WhatsApp')
+                    ->url(fn (Cliente $record) => 'https://wa.me/'.app(WhatsAppService::class)->normalizarTelefono((string) $record->telefono_whatsapp))
+                    ->openUrlInNewTab()
+                    ->visible(fn (Cliente $record) => filled($record->telefono_whatsapp)),
+                ActionGroup::make([
+                    ViewAction::make()->label('Ver ficha'),
+                    EditAction::make()->label('Editar datos'),
+                    InvitarPorWhatsapp::make(),
+                ])->label('Más acciones'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

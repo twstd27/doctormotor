@@ -126,12 +126,12 @@ class CostosDirectosRelationManager extends RelationManager
                     ->numeric(2),
                 TextColumn::make('costo_unitario')
                     ->label('Costo unitario')
-                    ->money('BOB'),
+                    ->money('BOB', locale: 'es_BO'),
                 TextColumn::make('costo_total')
                     ->label('Costo total')
-                    ->money('BOB')
+                    ->money('BOB', locale: 'es_BO')
                     ->weight('bold')
-                    ->summarize(Sum::make()->money('BOB')->label('Total')),
+                    ->summarize(Sum::make()->money('BOB', locale: 'es_BO')->label('Total')),
                 TextColumn::make('created_at')
                     ->label('Registrado')
                     ->dateTime('d/m/Y H:i')

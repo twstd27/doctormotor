@@ -49,7 +49,7 @@ class GastoEgresosTable
                     ->label('Monto')
                     ->alignEnd()
                     ->fontFamily('mono')
-                    ->money('BOB')
+                    ->money('BOB', locale: 'es_BO')
                     ->sortable(),
                 IconColumn::make('comprobante_path')
                     ->label('Comprobante')

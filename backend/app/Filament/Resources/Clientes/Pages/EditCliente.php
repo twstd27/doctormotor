@@ -12,11 +12,10 @@ class EditCliente extends EditRecord
 {
     protected static string $resource = ClienteResource::class;
 
-    // Por defecto Filament se queda en el formulario tras guardar — acá se prefiere volver
-    // al listado, consistente en todos los recursos del panel.
+    // Por defecto Filament se queda en el formulario tras guardar — acá se vuelve a la ficha.
     protected function getRedirectUrl(): string
     {
-        return $this->getResource()::getUrl('index');
+        return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
     }
 
     protected function getHeaderActions(): array

@@ -28,10 +28,10 @@ class CuentasPorPagarTable
                     ->date('d/m/Y'),
                 TextColumn::make('monto_original')
                     ->label('Monto original')
-                    ->money('BOB'),
+                    ->money('BOB', locale: 'es_BO'),
                 TextColumn::make('saldo_pendiente')
                     ->label('Saldo pendiente')
-                    ->money('BOB')
+                    ->money('BOB', locale: 'es_BO')
                     ->weight('bold')
                     ->color(fn (CuentaPorPagar $record) => $record->saldo_pendiente > 0 ? 'danger' : 'success'),
                 TextColumn::make('fecha_vencimiento')

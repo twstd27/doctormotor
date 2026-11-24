@@ -6,6 +6,8 @@ use App\Filament\Concerns\TituloEnOracion;
 use App\Filament\Resources\Clientes\Pages\CreateCliente;
 use App\Filament\Resources\Clientes\Pages\EditCliente;
 use App\Filament\Resources\Clientes\Pages\ListClientes;
+use App\Filament\Resources\Clientes\Pages\ViewCliente;
+use App\Filament\Resources\Clientes\RelationManagers\OrdenesRelationManager;
 use App\Filament\Resources\Clientes\Schemas\ClienteForm;
 use App\Filament\Resources\Clientes\Tables\ClientesTable;
 use App\Models\Cliente;
@@ -63,7 +65,7 @@ class ClienteResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            OrdenesRelationManager::class,
         ];
     }
 
@@ -72,6 +74,7 @@ class ClienteResource extends Resource
         return [
             'index' => ListClientes::route('/'),
             'create' => CreateCliente::route('/create'),
+            'view' => ViewCliente::route('/{record}'),
             'edit' => EditCliente::route('/{record}/edit'),
         ];
     }

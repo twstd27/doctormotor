@@ -39,7 +39,7 @@ class ProductosTable
                     ->numeric(),
                 TextColumn::make('precio_venta')
                     ->label('Precio venta')
-                    ->money('BOB')
+                    ->money('BOB', locale: 'es_BO')
                     ->sortable(),
                 IconColumn::make('activo')
                     ->label('Activo')

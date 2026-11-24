@@ -1415,3 +1415,133 @@
     color: var(--dm-text-2);
     font-size: 0.8125rem;
 }
+
+/* ── Clientes ───────────────────────────────────────────────────────────── */
+.dm-num--gris {
+    background: #262c34;
+    color: var(--dm-text);
+}
+
+.dm-cliente-celda {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.125rem 0;
+}
+
+.dm-celda-whatsapp {
+    font-size: 0.8125rem;
+    color: var(--dm-text-2);
+}
+
+.dm-placas {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.dm-avatar--xl {
+    width: 4rem;
+    height: 4rem;
+    font-size: 1.25rem;
+}
+
+.dm-cliente-cabecera {
+    flex-direction: row;
+    align-items: center;
+    gap: 1.125rem;
+}
+
+.dm-cliente-cabecera-datos {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.dm-cliente-contacto {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 1.25rem;
+    color: var(--dm-text-2);
+    font-size: 0.875rem;
+}
+
+.dm-icono-link-texto {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    color: var(--dm-text-2);
+    text-decoration: none;
+}
+
+.dm-icono-link-texto svg {
+    width: 1rem;
+    height: 1rem;
+    color: #25d366;
+}
+
+.dm-contador--gris {
+    background: #1e232a;
+    color: var(--dm-text-2);
+}
+
+.dm-vehiculos-grid {
+    display: grid;
+    gap: 0.75rem;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+    .dm-vehiculos-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.dm-tarjeta--vertical {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.875rem;
+    text-decoration: none;
+}
+
+.dm-tarjeta--vertical:hover {
+    border-color: var(--dm-border-strong);
+}
+
+.dm-tarjeta-titulo--grande {
+    margin-top: 0.625rem;
+    font-size: 1rem;
+}
+
+.dm-vehiculo-pie {
+    display: flex;
+    gap: 1.25rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #1e232a;
+}
+
+.dm-vehiculo-valor {
+    margin-top: 0.125rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--dm-text);
+}
+
+.dm-datos-lista dd {
+    margin: 0;
+    text-align: right;
+    color: var(--dm-text);
+}
+
+.dm-portal-estado {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 0.875rem;
+    color: var(--dm-text);
+}
+
+.dm-panel + .dm-panel {
+    margin-top: 1rem;
+}

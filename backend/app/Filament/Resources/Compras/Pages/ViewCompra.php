@@ -45,14 +45,14 @@ class ViewCompra extends ViewRecord
                             ->schema([
                                 TextEntry::make('producto.nombre')->label('Producto'),
                                 TextEntry::make('cantidad')->label('Cantidad')->numeric(2),
-                                TextEntry::make('precio_unitario')->label('Precio unitario')->money('BOB'),
-                                TextEntry::make('subtotal')->label('Subtotal')->money('BOB')->weight('bold'),
+                                TextEntry::make('precio_unitario')->label('Precio unitario')->money('BOB', locale: 'es_BO'),
+                                TextEntry::make('subtotal')->label('Subtotal')->money('BOB', locale: 'es_BO')->weight('bold'),
                             ])
                             ->columns(4)
                             ->columnSpanFull(),
                         TextEntry::make('total')
                             ->label('Total de la compra')
-                            ->money('BOB')
+                            ->money('BOB', locale: 'es_BO')
                             ->size('lg')
                             ->weight('bold'),
                     ]),

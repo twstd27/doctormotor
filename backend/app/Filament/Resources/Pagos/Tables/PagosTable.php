@@ -39,7 +39,7 @@ class PagosTable
                     ->formatStateUsing(fn (string $state) => strtoupper($state) === 'QR' ? 'QR' : ucfirst($state)),
                 TextColumn::make('monto')
                     ->label('Monto')
-                    ->money('BOB')
+                    ->money('BOB', locale: 'es_BO')
                     ->sortable(),
                 BadgeColumn::make('tipo_documento')
                     ->label('Comprobante')
