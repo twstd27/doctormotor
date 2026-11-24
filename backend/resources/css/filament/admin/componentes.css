@@ -876,3 +876,277 @@
     margin-right: 0.5rem;
     vertical-align: middle;
 }
+
+/* ── Caja del día, arqueo y gastos ──────────────────────────────────────── */
+.dm-opcional {
+    margin-left: 0.5rem;
+    color: var(--dm-muted);
+    font-family: 'Inter Variable', sans-serif;
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+.dm-estado--titulo {
+    margin-left: 0.75rem;
+    vertical-align: middle;
+    font-family: 'Inter Variable', sans-serif;
+    font-stretch: 100%;
+    letter-spacing: 0;
+}
+
+.dm-caja-pagina {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.dm-stat--efectivo {
+    border-color: rgba(197, 248, 42, 0.35);
+    background: #141a0f;
+}
+
+.dm-stat--efectivo .dm-stat-etiqueta {
+    color: #d7efa0;
+}
+
+.dm-caja-vacia {
+    gap: 0.5rem;
+}
+
+.dm-caja-division {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 1.25rem;
+}
+
+.dm-tabla-panel {
+    flex: 999 1 34rem;
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid var(--dm-border);
+    border-radius: 1rem;
+    background: var(--dm-surface);
+}
+
+.dm-caja-lateral {
+    display: flex;
+    flex: 1 1 18rem;
+    max-width: 24rem;
+    min-width: 0;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.dm-tabla-cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 1.25rem;
+}
+
+.dm-filtros {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+}
+
+.dm-filtro {
+    display: inline-flex;
+    height: 1.875rem;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0 0.75rem;
+    border: 1px solid var(--dm-border-strong);
+    border-radius: 9999px;
+    background: transparent;
+    color: var(--dm-text-2);
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.dm-filtro--activo {
+    border-color: var(--dm-text);
+    background: var(--dm-text);
+    color: var(--dm-bg);
+    font-weight: 600;
+}
+
+.dm-tabla-scroll {
+    overflow-x: auto;
+}
+
+.dm-tabla {
+    width: 100%;
+    min-width: 40rem;
+    border-collapse: collapse;
+}
+
+.dm-tabla th {
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--dm-border);
+    border-bottom: 1px solid var(--dm-border);
+    color: var(--dm-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.dm-tabla td {
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid #1c2128;
+    vertical-align: middle;
+    font-size: 0.875rem;
+    color: var(--dm-text);
+}
+
+.dm-tabla .dm-tabla-der {
+    text-align: right;
+    white-space: nowrap;
+}
+
+.dm-tabla-monto {
+    font-weight: 600;
+}
+
+.dm-tabla-vacia {
+    padding: 2rem 1rem !important;
+    text-align: center;
+    color: var(--dm-muted) !important;
+}
+
+.dm-metodo {
+    display: inline-flex;
+    align-items: center;
+    height: 1.5rem;
+    padding: 0 0.5rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.dm-metodo--efectivo { background: rgba(197, 248, 42, 0.12); color: var(--dm-lima); }
+.dm-metodo--qr { background: rgba(108, 180, 255, 0.12); color: var(--dm-azul); }
+.dm-metodo--tarjeta { background: rgba(185, 162, 255, 0.12); color: var(--dm-violeta); }
+
+.dm-medidor {
+    display: flex;
+    height: 0.5rem;
+    overflow: hidden;
+    border-radius: 0.25rem;
+    background: #262c34;
+}
+
+.dm-medidor--alto {
+    height: 0.625rem;
+    border-radius: 0.3125rem;
+}
+
+.dm-medidor > span {
+    display: block;
+    height: 100%;
+}
+
+.dm-cuadrito {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-right: 0.25rem;
+    border-radius: 0.125rem;
+}
+
+.dm-cierre {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.625rem 0;
+    border-bottom: 1px solid #1e232a;
+}
+
+.dm-cierre:last-child {
+    border-bottom: 0;
+}
+
+.dm-diferencia {
+    display: inline-flex;
+    align-items: center;
+    height: 1.5rem;
+    padding: 0 0.5rem;
+    border-radius: 0.375rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.dm-diferencia--ok { background: rgba(197, 248, 42, 0.12); color: var(--dm-lima); }
+.dm-diferencia--sobra { background: rgba(255, 181, 71, 0.15); color: var(--dm-ambar); }
+.dm-diferencia--falta { background: rgba(255, 138, 122, 0.15); color: var(--dm-rojo); }
+
+/* Cierre con arqueo */
+.dm-input-contador {
+    text-align: center;
+    font-size: 1rem;
+}
+
+.dm-arqueo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.dm-arqueo-totales {
+    display: grid;
+    gap: 0.625rem;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.dm-arqueo-totales .dm-stat {
+    padding: 0.875rem;
+    border-radius: 0.75rem;
+    background: var(--dm-sidebar);
+}
+
+.dm-arqueo-totales .dm-stat-valor {
+    margin-top: 0.375rem;
+    font-size: 1.25rem;
+}
+
+.dm-arqueo-dif--ok { border-color: rgba(197, 248, 42, 0.3); background: rgba(197, 248, 42, 0.07) !important; }
+.dm-arqueo-dif--ok .dm-stat-valor { color: var(--dm-lima); }
+.dm-arqueo-dif--sobra { border-color: rgba(255, 181, 71, 0.3); background: rgba(255, 181, 71, 0.07) !important; }
+.dm-arqueo-dif--sobra .dm-stat-valor { color: var(--dm-ambar); }
+.dm-arqueo-dif--falta { border-color: rgba(255, 138, 122, 0.35); background: rgba(255, 138, 122, 0.07) !important; }
+.dm-arqueo-dif--falta .dm-stat-valor { color: var(--dm-rojo); }
+
+.dm-aviso--ok {
+    border-color: rgba(197, 248, 42, 0.3);
+    background: rgba(197, 248, 42, 0.07);
+    color: var(--dm-lima);
+}
+
+/* Resumen del mes en el formulario de gasto */
+.dm-resumen-rubros {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding-top: 0.875rem;
+    border-top: 1px solid var(--dm-border);
+}
+
+.dm-resumen-rubro-fila {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.375rem;
+    font-size: 0.8125rem;
+    color: var(--dm-text-2);
+}
+
+.dm-resumen-rubro--actual .dm-resumen-rubro-fila {
+    color: var(--dm-text);
+    font-weight: 600;
+}

@@ -3,17 +3,42 @@
 namespace App\Filament\Resources\CajaCierres\Pages;
 
 use App\Filament\Concerns\RedirigeALaLista;
+use App\Filament\Pages\CajaDelDia;
 use App\Filament\Resources\CajaCierres\CajaCierreResource;
 use App\Models\CajaCierre;
+use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Support\Exceptions\Halt;
+use Illuminate\Contracts\Support\Htmlable;
 
 class CreateCajaCierre extends CreateRecord
 {
+    protected static bool $canCreateAnother = false;
+
     use RedirigeALaLista;
 
     protected static string $resource = CajaCierreResource::class;
+
+    public function getTitle(): string|Htmlable
+    {
+        return 'Abrir caja';
+    }
+
+    protected function getCreateFormAction(): Action
+    {
+        return parent::getCreateFormAction()->label('Abrir caja');
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return CajaDelDia::getUrl();
+    }
+
+    protected function getCreatedNotificationTitle(): ?string
+    {
+        return 'Caja abierta';
+    }
 
     protected function beforeCreate(): void
     {

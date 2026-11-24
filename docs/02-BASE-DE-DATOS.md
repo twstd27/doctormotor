@@ -208,11 +208,24 @@ Cierre de caja diario por cajero.
 | cajero_id | bigint FK → users | |
 | fecha | date | |
 | monto_apertura | decimal(10,2) | |
-| monto_esperado | decimal(10,2) | calculado de pagos del día |
-| monto_contado | decimal(10,2) | ingresado manualmente al cerrar |
+| monto_esperado | decimal(10,2) | efectivo que debía haber al cerrar: apertura + cobros en efectivo del turno − gastos pagados desde caja |
+| monto_contado | decimal(10,2) | efectivo contado al cerrar (suma del arqueo por billetes y monedas) |
 | diferencia | decimal(10,2) | contado - esperado |
+| motivo_diferencia | text nullable | obligatorio si la diferencia no es cero |
+| fondo_siguiente | decimal(10,2) nullable | efectivo que se deja de fondo para el turno siguiente (propone 200, editable); 0 si no se deja |
 | estado | enum(`abierta`,`cerrada`) | |
 | cerrado_at | timestamp nullable | |
+
+### `caja_arqueos`
+Conteo de efectivo por denominación al cerrar una caja.
+| Columna | Tipo | Notas |
+|---|---|---|
+| id | bigint PK | |
+| caja_cierre_id | bigint FK → caja_cierres, cascade | |
+| denominacion | decimal(8,2) | 200, 100, 50, 20, 10, 5, 2, 1, 0.50 |
+| cantidad | int unsigned | billetes o monedas contados |
+
+Único por (`caja_cierre_id`, `denominacion`).
 
 ### `costos_directos`
 Costo real imputado a cada OT (repuestos + mano de obra + tercerizados) para margen neto.
@@ -233,11 +246,15 @@ Costos fijos/variables del taller (no ligados a una OT).
 | Columna | Tipo | Notas |
 |---|---|---|
 | id | bigint PK | |
-| categoria | enum(`fijo`,`variable`) | |
-| concepto | varchar(150) | ej. "Alquiler", "Luz/Agua", "Insumos químicos", "Sueldos" |
+| categoria | enum(`fijo`,`variable`) | se deriva del rubro: alquiler, servicios y sueldos son fijos; el resto, variable |
+| rubro | varchar(30) default `otros` | `alquiler`, `servicios`, `sueldos`, `insumos`, `herramientas`, `refrigerio`, `otros` |
+| concepto | varchar(150) | ej. "Compra de lijas y masilla" |
 | monto | decimal(10,2) | |
 | registrado_por_id | bigint FK → users | |
-| comprobante_url | varchar(255) nullable | |
+| comprobante_url | varchar(255) nullable | enlace externo (registros antiguos) |
+| comprobante_path | varchar(255) nullable | foto o PDF subido (máx. 5 MB), disco `public` |
+| origen | enum(`caja`,`banco`,`qr`) default `banco` | de dónde salió el dinero; solo `caja` descuenta del efectivo esperado |
+| caja_cierre_id | bigint FK → caja_cierres, nullable | turno de caja del que salió, si el origen es `caja` |
 | fecha | date | |
 
 ### `reglas_reparto`

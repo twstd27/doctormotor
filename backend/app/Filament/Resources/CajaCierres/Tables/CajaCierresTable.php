@@ -2,10 +2,6 @@
 
 namespace App\Filament\Resources\CajaCierres\Tables;
 
-use App\Models\CajaCierre;
-use Filament\Actions\Action;
-use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -44,41 +40,7 @@ class CajaCierresTable
                     ->formatStateUsing(fn (string $state) => $state === 'abierta' ? 'Abierta' : 'Cerrada'),
             ])
             ->defaultSort('fecha', 'desc')
-            ->recordActions([
-                Action::make('cerrar')
-                    ->label('Cerrar caja')
-                    ->icon('heroicon-o-lock-closed')
-                    ->color('danger')
-                    ->visible(fn (CajaCierre $record) => $record->estado === 'abierta'
-                        && ($record->cajero_id === auth()->id() || auth()->user()->rol === 'super_admin'))
-                    ->schema([
-                        TextInput::make('monto_contado')
-                            ->label('Monto contado en efectivo')
-                            ->required()
-                            ->numeric()
-                            ->minValue(0)
-                            ->prefix('Bs'),
-                    ])
-                    ->action(function (CajaCierre $record, array $data) {
-                        $montoEsperado = $record->efectivoEsperado();
-                        $diferencia = $data['monto_contado'] - $montoEsperado;
-
-                        $record->update([
-                            'monto_esperado' => $montoEsperado,
-                            'monto_contado' => $data['monto_contado'],
-                            'diferencia' => $diferencia,
-                            'estado' => 'cerrada',
-                            'cerrado_at' => now(),
-                        ]);
-
-                        Notification::make()
-                            ->title('Caja cerrada')
-                            ->body($diferencia == 0
-                                ? 'Cuadró exacto.'
-                                : ($diferencia > 0 ? "Sobraron Bs {$diferencia}." : 'Faltaron Bs '.abs($diferencia).'.'))
-                            ->color($diferencia == 0 ? 'success' : 'warning')
-                            ->send();
-                    }),
-            ]);
+            ->recordActions([])
+            ->emptyStateHeading('Todavía no hay cierres');
     }
 }

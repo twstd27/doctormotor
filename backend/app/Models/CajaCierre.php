@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
     'cajero_id', 'fecha', 'monto_apertura', 'monto_esperado', 'monto_contado',
-    'diferencia', 'estado', 'cerrado_at',
+    'diferencia', 'motivo_diferencia', 'fondo_siguiente', 'estado', 'cerrado_at',
 ])]
 class CajaCierre extends Model
 {
@@ -21,6 +21,7 @@ class CajaCierre extends Model
             'monto_esperado' => 'decimal:2',
             'monto_contado' => 'decimal:2',
             'diferencia' => 'decimal:2',
+            'fondo_siguiente' => 'decimal:2',
             'cerrado_at' => 'datetime',
         ];
     }
@@ -35,13 +36,36 @@ class CajaCierre extends Model
         return $this->hasMany(Pago::class, 'caja_cierre_id');
     }
 
+    public function gastos(): HasMany
+    {
+        return $this->hasMany(GastoEgreso::class, 'caja_cierre_id');
+    }
+
+    public function arqueos(): HasMany
+    {
+        return $this->hasMany(CajaArqueo::class, 'caja_cierre_id');
+    }
+
+    /** Cobros en efectivo del turno (QR y tarjeta no pasan por el cajón). */
+    public function cobrosEnEfectivo(): float
+    {
+        return (float) $this->pagos()->where('metodo', 'efectivo')->sum('monto');
+    }
+
+    /** Gastos que salieron del cajón durante el turno. */
+    public function gastosEnEfectivo(): float
+    {
+        return (float) $this->gastos()->where('origen', 'caja')->sum('monto');
+    }
+
     /**
-     * Efectivo que debería haber en la caja: apertura + cobros en efectivo del turno.
-     * Es la única fórmula: la usan el cierre (API y panel) y el indicador de la barra superior.
+     * Efectivo que debería haber en la caja: apertura + cobros en efectivo − gastos pagados
+     * desde caja. Es la única fórmula: la usan el cierre (API y panel) y el indicador de la
+     * barra superior.
      */
     public function efectivoEsperado(): float
     {
-        return (float) $this->monto_apertura + (float) $this->pagos()->where('metodo', 'efectivo')->sum('monto');
+        return (float) $this->monto_apertura + $this->cobrosEnEfectivo() - $this->gastosEnEfectivo();
     }
 
     public static function abiertaDe(int $cajeroId): ?self

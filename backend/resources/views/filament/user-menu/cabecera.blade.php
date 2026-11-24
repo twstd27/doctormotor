@@ -1,5 +1,6 @@
 @php
-    use App\Filament\Resources\CajaCierres\CajaCierreResource;
+    use App\Filament\Pages\CajaDelDia;
+use App\Filament\Resources\CajaCierres\CajaCierreResource;
     use App\Models\CajaCierre;
 
     $usuario = filament()->auth()->user();
@@ -31,6 +32,6 @@
             Desde {{ $caja->created_at->format('H:i') }} · {{ $caja->pagos()->count() }} {{ $caja->pagos()->count() === 1 ? 'cobro' : 'cobros' }}.
             Ciérrala antes de salir para cuadrar el turno.
         </div>
-        <a href="{{ CajaCierreResource::getUrl('index') }}" class="dm-btn dm-btn--secundario dm-btn--bloque">Ir a cerrar la caja</a>
+        <a href="{{ CajaDelDia::getUrl() }}" class="dm-btn dm-btn--secundario dm-btn--bloque">Cerrar caja y arquear</a>
     </div>
 @endif

@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\GastoEgresos;
 
-use App\Filament\Concerns\SoloSuperAdmin;
 use App\Filament\Concerns\TituloEnOracion;
 use App\Filament\Resources\GastoEgresos\Pages\CreateGastoEgreso;
 use App\Filament\Resources\GastoEgresos\Pages\EditGastoEgreso;
@@ -15,10 +14,11 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class GastoEgresoResource extends Resource
 {
-    use SoloSuperAdmin;
     use TituloEnOracion;
 
     protected static ?string $model = GastoEgreso::class;
@@ -43,6 +43,35 @@ class GastoEgresoResource extends Resource
     public static function table(Table $table): Table
     {
         return GastoEgresosTable::configure($table);
+    }
+
+    /**
+     * El cajero registra gastos del día a día (refrigerio, insumos…) y ve solo los suyos; el
+     * super_admin ve todos. Los reportes, el informe y el reparto siguen siendo solo del
+     * super_admin.
+     */
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $usuario = auth()->user();
+
+        return $usuario?->rol === 'super_admin' ? $query : $query->where('registrado_por_id', $usuario?->id);
+    }
+
+    // Corregir o borrar un gasto ya registrado es del super_admin: deja rastro contable.
+    public static function canEdit(Model $record): bool
+    {
+        return auth()->user()?->rol === 'super_admin';
+    }
+
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()?->rol === 'super_admin';
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return auth()->user()?->rol === 'super_admin';
     }
 
     public static function getRelations(): array

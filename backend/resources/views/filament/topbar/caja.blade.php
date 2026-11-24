@@ -1,5 +1,6 @@
 @php
-    use App\Filament\Resources\CajaCierres\CajaCierreResource;
+    use App\Filament\Pages\CajaDelDia;
+use App\Filament\Resources\CajaCierres\CajaCierreResource;
     use App\Models\CajaCierre;
 
     $usuario = filament()->auth()->user();
@@ -11,7 +12,7 @@
 @if ($mostrar)
     <div class="dm-topbar-caja">
         @if ($caja)
-            <a href="{{ CajaCierreResource::getUrl('index') }}" class="dm-caja dm-caja--abierta" title="Efectivo esperado en tu caja">
+            <a href="{{ CajaDelDia::getUrl() }}" class="dm-caja dm-caja--abierta" title="Efectivo esperado en tu caja">
                 <span class="dm-dot dm-dot--lima" aria-hidden="true"></span>
                 <span class="dm-caja-estado">Caja abierta</span>
                 <span class="dm-caja-sep" aria-hidden="true"></span>

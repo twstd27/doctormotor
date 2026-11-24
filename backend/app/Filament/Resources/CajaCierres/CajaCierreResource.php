@@ -33,6 +33,13 @@ class CajaCierreResource extends Resource
 
     protected static ?string $pluralModelLabel = 'cajas';
 
+    // La Caja del día es la pantalla del menú; esta lista queda como historial de cierres
+    // (se llega con "Ver todos") y para abrir la caja.
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+
     public static function form(Schema $schema): Schema
     {
         return CajaCierreForm::configure($schema);

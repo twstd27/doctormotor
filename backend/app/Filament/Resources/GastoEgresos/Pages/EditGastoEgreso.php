@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\GastoEgresos\Pages;
 
 use App\Filament\Resources\GastoEgresos\GastoEgresoResource;
+use App\Models\GastoEgreso;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
@@ -15,6 +16,13 @@ class EditGastoEgreso extends EditRecord
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $data['categoria'] = GastoEgreso::categoriaDeRubro($data['rubro'] ?? null);
+
+        return $data;
     }
 
     protected function getHeaderActions(): array
