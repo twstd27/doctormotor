@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\PerfilController;
 use App\Http\Controllers\Api\PresupuestoController;
 use App\Http\Controllers\Api\ProductoController;
 use App\Http\Controllers\Api\ProveedorController;
+use App\Http\Controllers\Api\ServicioFrecuenteController;
 use App\Http\Controllers\Api\ReglaRepartoController;
 use App\Http\Controllers\Api\RepartoUtilidadController;
 use App\Http\Controllers\Api\ReporteController;
@@ -179,6 +180,9 @@ Route::prefix('v1')->group(function () {
         // Sección 5 — Inventario y Proveedores
         Route::get('/productos/alertas-stock', [ProductoController::class, 'alertasStock'])->middleware('rol:cajero');
         Route::apiResource('productos', ProductoController::class)->only(['index', 'store', 'show'])
+            ->middleware('rol:cajero,operador_tecnico');
+        // Atajos de «Agregar ítem» (lavado, diagnóstico…): los usan el técnico y el cajero.
+        Route::get('/servicios-frecuentes', [ServicioFrecuenteController::class, 'index'])
             ->middleware('rol:cajero,operador_tecnico');
         Route::put('/productos/{producto}', [ProductoController::class, 'update'])->middleware('rol:super_admin');
         Route::get('/productos/{producto}/movimientos', [ProductoController::class, 'movimientos'])->middleware('rol:super_admin');

@@ -405,3 +405,20 @@ PDFs de presupuestos, recibos, órdenes de trabajo, historial clínico.
 - `movimientos_inventario(producto_id, fecha)` — cálculo de stock/kardex.
 - `notificaciones(estado)` — reintentos de envío fallidos (job en cola).
 - Índice único compuesto en `evidencias(uuid_cliente)` para idempotencia offline.
+
+### `servicios_frecuentes` (2026-11-24)
+
+Atajos para armar presupuestos: servicios que se repiten (lavado, diagnóstico…). En la app del técnico aparecen como botones en «Agregar ítem»; un toque agrega el servicio con su precio.
+
+| Columna | Tipo | Notas |
+|---|---|---|
+| id | bigint PK | |
+| nombre | varchar(80) | texto del botón |
+| tipo | enum(`mano_obra`, `tercerizado`) | default `mano_obra` |
+| descripcion | varchar(150) | lo que ve el cliente en el presupuesto |
+| precio_unitario | decimal(12,2) | precio sugerido (el técnico puede ajustarlo antes de enviar) |
+| activo | boolean | default true |
+| orden | int unsigned | menores primero |
+| created_at / updated_at | timestamp | |
+
+Se administra en el panel (Inventario → Servicios frecuentes): el cajero puede crear; editar y borrar es del super_admin.

@@ -237,3 +237,9 @@ Convenciones: paginación estándar Laravel (`?page=`), filtros vía query param
 - **Rate limiting:** aplicar throttle más estricto en `/auth/*` y `/webhooks/whatsapp`.
 - **Versionado:** prefijo `/api/v1` desde el día uno para poder introducir cambios que rompan
   compatibilidad sin afectar la PWA en producción durante actualizaciones.
+
+### Servicios frecuentes (2026-11-24)
+
+| Método | Ruta | Rol | Descripción |
+|---|---|---|---|
+| GET | `/api/v1/servicios-frecuentes` | cajero, operador_tecnico (y super_admin) | Servicios activos, ordenados por `orden` y `nombre`: `{ data: [{ id, nombre, tipo, descripcion, precio_unitario }] }`. Alimenta los botones de «Agregar ítem». |

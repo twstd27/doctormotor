@@ -9,6 +9,7 @@ import {
   type Presupuesto,
 } from '../lib/presupuestos'
 import { buscarProductos, crearProducto, type Producto } from '../lib/productos'
+import { listarServiciosFrecuentes, type ServicioFrecuente } from '../lib/serviciosFrecuentes'
 import { useToastStore } from '../store/toast'
 import BottomSheet from './BottomSheet'
 
@@ -60,6 +61,12 @@ export default function PresupuestoSheet({ otId, onClose, onEnviado }: Presupues
   const [creandoProducto, setCreandoProducto] = useState(false)
   const fotoRef = useRef<HTMLInputElement>(null)
   const galeriaRef = useRef<HTMLInputElement>(null)
+
+  const [servicios, setServicios] = useState<ServicioFrecuente[]>([])
+
+  useEffect(() => {
+    listarServiciosFrecuentes().then(setServicios).catch(() => setServicios([]))
+  }, [])
 
   useEffect(() => {
     listarPresupuestosDeOt(otId)
@@ -121,6 +128,35 @@ export default function PresupuestoSheet({ otId, onClose, onEnviado }: Presupues
     } finally {
       setCreandoProducto(false)
     }
+  }
+
+  // Un toque en un servicio frecuente lo agrega a la lista con su precio (se puede quitar o reenviar con otro).
+  function agregarServicioFrecuente(servicio: ServicioFrecuente) {
+    // Con un presupuesto ya aprobado/enviado el ítem va como hallazgo adicional y avisa al cliente:
+    // se deja el formulario lleno para revisarlo y confirmarlo con «Enviar adicional al cliente».
+    if (presupuestoExistente) {
+      setTipo(servicio.tipo)
+      setProductoSeleccionado(null)
+      setDescripcion(servicio.descripcion)
+      setCantidad('1')
+      setPrecioUnitario(String(Number(servicio.precio_unitario)))
+      setError(null)
+      return
+    }
+    setItems((prev) => [
+      ...prev,
+      {
+        key: crypto.randomUUID(),
+        tipo: servicio.tipo,
+        producto_id: null,
+        productoNombre: null,
+        descripcion: servicio.descripcion,
+        cantidad: 1,
+        precio_unitario: Number(servicio.precio_unitario),
+      },
+    ])
+    showToast(`${servicio.nombre} agregado`)
+    setPaso('resumen')
   }
 
   function agregarItemALaLista() {
@@ -300,6 +336,26 @@ export default function PresupuestoSheet({ otId, onClose, onEnviado }: Presupues
         <h2 className="text-lg font-semibold tracking-[-0.02em]">
           {presupuestoExistente ? 'Agregar hallazgo adicional' : 'Agregar ítem'}
         </h2>
+
+        {servicios.length > 0 && (
+          <div className="mt-3">
+            <p className="dm-lab mb-2">Servicios frecuentes · un toque</p>
+            <div className="flex flex-wrap gap-2">
+              {servicios.map((sv) => (
+                <button
+                  key={sv.id}
+                  type="button"
+                  onClick={() => agregarServicioFrecuente(sv)}
+                  className="flex h-11 items-center gap-2 rounded-full px-3.5 text-[13px] font-semibold"
+                  style={{ background: 'rgba(68, 214, 44, 0.12)', border: '1px solid rgba(68, 214, 44, 0.45)', color: 'var(--color-lime-500)' }}
+                >
+                  + {sv.nombre}
+                  <span className="font-mono text-[11.5px] font-medium opacity-80">Bs {Number(sv.precio_unitario).toLocaleString('es-BO')}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="mt-3 flex gap-2">
           {TIPOS.map((t) => (
