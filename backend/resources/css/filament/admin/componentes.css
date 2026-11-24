@@ -987,7 +987,7 @@
 }
 
 .dm-stat--efectivo .dm-stat-etiqueta {
-    color: #d7efa0;
+    color: #b9f0ad;
 }
 
 .dm-caja-vacia {
@@ -2075,7 +2075,7 @@
 }
 
 .dm-btn--primario:hover {
-    background: #d4ff52;
+    background: #5ede48;
 }
 
 .dm-btn--primario:disabled {

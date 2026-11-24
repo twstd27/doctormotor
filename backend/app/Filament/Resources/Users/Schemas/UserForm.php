@@ -56,12 +56,16 @@ class UserForm
                                 ->prefix('+591')
                                 ->maxLength(20)
                                 ->required(fn (Get $get) => blank($get('password')))
+                                ->unique(ignoreRecord: true)
+                                ->validationMessages(['unique' => 'Ese WhatsApp ya lo usa otra persona (puede ser un cliente). Revisa el número.'])
                                 ->extraInputAttributes(['class' => 'dm-input-mono'])
                                 ->helperText('Por acá le llega la invitación.'),
                             TextInput::make('email')
                                 ->label('Correo')
                                 ->email()
                                 ->maxLength(150)
+                                ->unique(ignoreRecord: true)
+                                ->validationMessages(['unique' => 'Ese correo ya está registrado con otro usuario.'])
                                 ->placeholder('Opcional: para recuperar la cuenta'),
                         ]),
                     ]),
