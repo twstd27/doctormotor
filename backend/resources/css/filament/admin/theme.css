@@ -394,6 +394,12 @@
     }
 }
 
+/* La lista del menú es una grilla: sin esto la columna se ensancha al ancho del correo y
+   la cabecera y la tarjeta de caja se salen del panel. */
+.fi-user-menu .fi-dropdown-list {
+    grid-template-columns: minmax(0, 1fr);
+}
+
 .fi-user-menu .fi-dropdown-panel {
     border-radius: 1rem;
     background: var(--dm-surface);
@@ -422,11 +428,13 @@
     color: var(--dm-text);
 }
 
+.dm-um-rol {
+    margin-top: 0.5rem;
+}
+
 .dm-um-correo {
     margin-top: 0.125rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
     font-size: 0.75rem;
     color: var(--dm-muted);
 }

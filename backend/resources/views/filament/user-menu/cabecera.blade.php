@@ -18,8 +18,8 @@ use App\Filament\Resources\CajaCierres\CajaCierreResource;
         @if ($usuario->email)
             <div class="dm-um-correo">{{ $usuario->email }}</div>
         @endif
+        <span class="dm-chip dm-chip--info dm-um-rol">{{ $rol }}</span>
     </div>
-    <span class="dm-chip dm-chip--info">{{ $rol }}</span>
 </div>
 
 @if ($caja)
