@@ -2008,3 +2008,193 @@
 .dm-aviso--bloque {
     display: block;
 }
+
+/* ── Admin en el celular (HANDOFF §4, Admin móvil) ──────────────────────── */
+.dm-nav-movil {
+    display: none;
+}
+
+@media (max-width: 1023px) {
+    /* Barra inferior fija con el botón + en el centro. */
+    .dm-nav-movil {
+        position: fixed;
+        inset-inline: 0;
+        bottom: 0;
+        z-index: 35;
+        display: flex;
+        align-items: flex-start;
+        height: 4.75rem;
+        padding-top: 0.5rem;
+        background: var(--dm-sidebar);
+        border-top: 1px solid #1e232a;
+    }
+
+    .dm-nav-item {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.25rem;
+        height: 3.25rem;
+        background: transparent;
+        color: var(--dm-muted);
+        font-size: 0.6875rem;
+        font-weight: 600;
+        text-decoration: none;
+    }
+
+    .dm-nav-item svg {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+
+    .dm-nav-item--activo {
+        color: var(--dm-lima);
+    }
+
+    .dm-nav-fab {
+        display: flex;
+        flex: none;
+        align-items: center;
+        justify-content: center;
+        width: 3.5rem;
+        height: 3.5rem;
+        margin: -1.125rem 0.375rem 0;
+        border-radius: 1.125rem;
+        background: var(--dm-lima);
+        color: var(--dm-bg);
+        box-shadow: 0 8px 24px rgba(197, 248, 42, 0.25);
+    }
+
+    .dm-nav-fab svg {
+        width: 1.75rem;
+        height: 1.75rem;
+    }
+
+    /* El contenido no queda tapado por la barra. */
+    .fi-main-ctn {
+        padding-bottom: 5.5rem;
+    }
+
+    .fi-topbar {
+        padding-inline: 0.75rem;
+    }
+}
+
+@media (max-width: 767px) {
+    /* Títulos y botones de cabecera a la medida del celular. */
+    .fi-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+
+    .fi-header-heading,
+    .fi-header-heading * {
+        font-size: 1.5rem !important;
+    }
+
+    .fi-header .fi-ac {
+        width: 100%;
+    }
+
+    .fi-header .fi-ac .fi-btn {
+        flex: 1;
+        justify-content: center;
+    }
+
+    /* Campos y botones táctiles (52 px). */
+    .fi-input-wrp {
+        min-height: 3.25rem;
+    }
+
+    .fi-btn:not(.fi-icon-btn):not(.fi-btn-group-btn) {
+        min-height: 3.25rem;
+    }
+
+    /* Barra de acciones del formulario siempre a mano, sobre la barra inferior. */
+    .fi-form-actions {
+        position: sticky;
+        bottom: 4.75rem;
+        z-index: 20;
+        margin-inline: -1rem;
+        padding: 0.75rem 1rem;
+        background: var(--dm-sidebar);
+        border-top: 1px solid #1e232a;
+    }
+
+    .fi-form-actions .fi-btn {
+        flex: 1;
+        justify-content: center;
+    }
+
+    /* Tablas como tarjetas: una por fila, sin encabezado ni desplazamiento lateral. */
+    .fi-ta-table,
+    .fi-ta-table tbody,
+    .fi-ta-table tr,
+    .fi-ta-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .fi-ta-table thead {
+        display: none;
+    }
+
+    .fi-ta-table tbody {
+        display: flex;
+        flex-direction: column;
+        gap: 0.625rem;
+        padding: 0.75rem;
+    }
+
+    .fi-ta-row {
+        position: relative;
+        padding: 0.875rem 0.875rem 0.625rem;
+        border: 1px solid var(--dm-border);
+        border-radius: 1rem;
+        background: var(--dm-surface);
+    }
+
+    .fi-ta-row td,
+    .fi-ta-cell {
+        padding: 0.25rem 0 !important;
+        border: 0 !important;
+    }
+
+    .fi-ta-cell:empty {
+        display: none;
+    }
+
+    .fi-ta-cell.fi-ta-actions-cell,
+    .fi-ta-actions-cell {
+        padding-top: 0.5rem !important;
+        border-top: 1px solid #1e232a !important;
+        margin-top: 0.375rem;
+    }
+
+    .fi-ta-cell.fi-align-end,
+    .fi-ta-cell .fi-ta-col-wrp {
+        text-align: left;
+    }
+
+    .fi-ta-cell .dm-saldo,
+    .fi-ta-cell .fi-ta-text {
+        justify-content: flex-start;
+    }
+
+    /* Resúmenes de la parte superior en dos columnas. */
+    .dm-stats--3,
+    .dm-stats--4 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .dm-stat-valor {
+        font-size: 1.25rem;
+    }
+
+    .dm-tabla {
+        min-width: 32rem;
+    }
+}

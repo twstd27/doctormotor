@@ -103,6 +103,11 @@ class AdminPanelProvider extends PanelProvider
                 PanelsRenderHook::USER_MENU_PROFILE_BEFORE,
                 fn () => view('filament.user-menu.cabecera'),
             )
+            // Barra de navegación inferior del celular (solo se ve bajo 1024 px).
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                fn () => view('filament.mobile.nav'),
+            )
             // Campanita del topbar — usada para avisarle al cajero cuando un cliente
             // responde por WhatsApp (ver WebhookController::whatsapp).
             ->databaseNotifications()
