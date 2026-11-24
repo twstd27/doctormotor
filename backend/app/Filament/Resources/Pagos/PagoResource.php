@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Pagos;
 
+use App\Filament\Concerns\TituloEnOracion;
 use App\Filament\Resources\Pagos\Pages\CreatePago;
 use App\Filament\Resources\Pagos\Pages\ListPagos;
 use App\Filament\Resources\Pagos\Schemas\PagoForm;
@@ -15,11 +16,15 @@ use Filament\Tables\Table;
 
 class PagoResource extends Resource
 {
+    use TituloEnOracion;
+
     protected static ?string $model = Pago::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCreditCard;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Finanzas';
+    protected static string|\UnitEnum|null $navigationGroup = 'Caja';
+
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $navigationLabel = 'Cobros';
 

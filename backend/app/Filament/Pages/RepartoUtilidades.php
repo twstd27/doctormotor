@@ -24,7 +24,9 @@ class RepartoUtilidades extends Page
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Finanzas';
+    protected static string|\UnitEnum|null $navigationGroup = 'Reportes';
+
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $navigationLabel = 'Reparto de utilidades';
 

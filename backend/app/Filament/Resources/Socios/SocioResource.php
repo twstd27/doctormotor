@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Socios;
 
 use App\Filament\Concerns\SoloSuperAdmin;
+use App\Filament\Concerns\TituloEnOracion;
 use App\Filament\Resources\Socios\Pages\CreateSocio;
 use App\Filament\Resources\Socios\Pages\EditSocio;
 use App\Filament\Resources\Socios\Pages\ListSocios;
@@ -18,12 +19,15 @@ use Filament\Tables\Table;
 class SocioResource extends Resource
 {
     use SoloSuperAdmin;
+    use TituloEnOracion;
 
     protected static ?string $model = Socio::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Finanzas';
+    protected static string|\UnitEnum|null $navigationGroup = 'Reportes';
+
+    protected static ?int $navigationSort = 3;
 
     protected static ?string $modelLabel = 'socio';
 

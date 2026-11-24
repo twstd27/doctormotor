@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\GastoEgresos;
 
 use App\Filament\Concerns\SoloSuperAdmin;
+use App\Filament\Concerns\TituloEnOracion;
 use App\Filament\Resources\GastoEgresos\Pages\CreateGastoEgreso;
 use App\Filament\Resources\GastoEgresos\Pages\EditGastoEgreso;
 use App\Filament\Resources\GastoEgresos\Pages\ListGastoEgresos;
@@ -18,12 +19,15 @@ use Filament\Tables\Table;
 class GastoEgresoResource extends Resource
 {
     use SoloSuperAdmin;
+    use TituloEnOracion;
 
     protected static ?string $model = GastoEgreso::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Finanzas';
+    protected static string|\UnitEnum|null $navigationGroup = 'Caja';
+
+    protected static ?int $navigationSort = 3;
 
     protected static ?string $modelLabel = 'gasto';
 

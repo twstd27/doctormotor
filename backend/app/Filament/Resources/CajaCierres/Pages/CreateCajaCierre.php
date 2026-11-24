@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CajaCierres\Pages;
 
+use App\Filament\Concerns\RedirigeALaLista;
 use App\Filament\Resources\CajaCierres\CajaCierreResource;
 use App\Models\CajaCierre;
 use Filament\Notifications\Notification;
@@ -10,6 +11,8 @@ use Filament\Support\Exceptions\Halt;
 
 class CreateCajaCierre extends CreateRecord
 {
+    use RedirigeALaLista;
+
     protected static string $resource = CajaCierreResource::class;
 
     protected function beforeCreate(): void
@@ -24,7 +27,7 @@ class CreateCajaCierre extends CreateRecord
                 ->danger()
                 ->send();
 
-            throw new Halt();
+            throw new Halt;
         }
     }
 

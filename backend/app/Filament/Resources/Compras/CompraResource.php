@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Compras;
 
+use App\Filament\Concerns\TituloEnOracion;
 use App\Filament\Resources\Compras\Pages\CreateCompra;
 use App\Filament\Resources\Compras\Pages\ListCompras;
 use App\Filament\Resources\Compras\Pages\ViewCompra;
@@ -16,11 +17,15 @@ use Filament\Tables\Table;
 
 class CompraResource extends Resource
 {
+    use TituloEnOracion;
+
     protected static ?string $model = Compra::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedShoppingCart;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Inventario';
+
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $navigationLabel = 'Compras';
 

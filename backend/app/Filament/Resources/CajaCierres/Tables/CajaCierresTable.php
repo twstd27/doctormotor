@@ -60,7 +60,7 @@ class CajaCierresTable
                             ->prefix('Bs'),
                     ])
                     ->action(function (CajaCierre $record, array $data) {
-                        $montoEsperado = $record->monto_apertura + $record->pagos()->where('metodo', 'efectivo')->sum('monto');
+                        $montoEsperado = $record->efectivoEsperado();
                         $diferencia = $data['monto_contado'] - $montoEsperado;
 
                         $record->update([

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\MovimientosInventario;
 
+use App\Filament\Concerns\TituloEnOracion;
 use App\Filament\Resources\MovimientosInventario\Pages\ListMovimientosInventario;
 use App\Filament\Resources\MovimientosInventario\Tables\MovimientosInventarioTable;
 use App\Models\MovimientoInventario;
@@ -12,11 +13,15 @@ use Filament\Tables\Table;
 
 class MovimientoInventarioResource extends Resource
 {
+    use TituloEnOracion;
+
     protected static ?string $model = MovimientoInventario::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedArrowsRightLeft;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Inventario';
+
+    protected static ?int $navigationSort = 4;
 
     protected static ?string $navigationLabel = 'Kardex';
 

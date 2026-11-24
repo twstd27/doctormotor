@@ -1,18 +1,98 @@
 @import '../../../../vendor/filament/filament/resources/css/theme.css';
 
+/* Tipografías empaquetadas (sin pedirlas a Google): Inter = interfaz, Archivo = títulos,
+   JetBrains Mono = placas, códigos de orden, montos y contadores. */
+@import '@fontsource-variable/inter/index.css';
+@import '@fontsource-variable/archivo/wdth.css';
+@import '@fontsource/jetbrains-mono/500.css';
+@import '@fontsource/jetbrains-mono/600.css';
+@import '@fontsource/jetbrains-mono/700.css';
+
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
 
-/* El saludo + botón de salir del topbar los renderiza filament.topbar.saludo-salir
-   (render hook TOPBAR_END); el dropdown de usuario por defecto de Filament queda oculto. */
-.fi-topbar .fi-user-menu {
+/* ──────────────────────────────────────────────────────────────────────────
+   Sistema visual "Taller de precisión" (HANDOFF del rediseño §3).
+   Los colores de Filament (primary, gray, danger…) se definen en AdminPanelProvider;
+   acá van los tokens propios que no tienen equivalente en la paleta de Filament.
+   ────────────────────────────────────────────────────────────────────────── */
+:root {
+    --dm-bg: #0b0d10;
+    --dm-sidebar: #0f1216;
+    --dm-surface: #14181d;
+    --dm-surface-2: #171b21;
+    --dm-input: #0f1216;
+    --dm-border: #222830;
+    --dm-border-strong: #2a313a;
+    --dm-text: #eceef1;
+    --dm-text-2: #c9d0d8;
+    --dm-muted: #8b95a1;
+    --dm-lima: #c5f82a;
+    --dm-ambar: #ffb547;
+    --dm-rojo: #ff8a7a;
+    --dm-azul: #6cb4ff;
+    --dm-violeta: #b9a2ff;
+    --dm-font-titulo: 'Archivo Variable', 'Inter Variable', system-ui, sans-serif;
+    --dm-font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.dm-mono {
+    font-family: var(--dm-font-mono);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ── Marca ──────────────────────────────────────────────────────────────── */
+.dm-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+}
+
+.dm-brand-mark {
+    display: flex;
+    width: 2.125rem;
+    height: 2.125rem;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.5625rem;
+    background: var(--dm-lima);
+    color: var(--dm-bg);
+}
+
+.dm-brand-mark svg {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.dm-brand-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+}
+
+.dm-brand-name {
+    font-family: var(--dm-font-titulo);
+    font-stretch: 110%;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: var(--dm-text);
+}
+
+.dm-brand-sub {
+    font-size: 0.75rem;
+    color: var(--dm-muted);
+}
+
+/* ── Estructura: el sidebar ocupa todo el alto, el topbar queda a su derecha ─ */
+.fi-topbar .fi-user-menu-trigger-text {
     display: none;
 }
 
 /* Filament repite la marca en fi-topbar-start además del sidebar, y en escritorio oculta
    por defecto el header del sidebar (fi-body-has-topbar .fi-sidebar-header{display:none})
    porque asume que la marca solo debe verse en el topbar. Queremos lo contrario: la marca
-   completa ("D" + Doctor Motor) vive solo en el sidebar, el topbar solo lleva la fecha. */
+   vive solo en el sidebar. */
 .fi-topbar .fi-logo {
     display: none;
 }
@@ -23,29 +103,518 @@
     }
 
     /* El sidebar vive debajo del topbar por defecto (top:4rem) con position:sticky, que
-       no puede subir por delante de donde empieza su contenedor en el flujo normal (justo
-       debajo del topbar). Para que ocupe todo el alto de la vista hace falta sacarlo del
-       flujo (fixed) y subirlo por delante del topbar (z-index); el topbar se corre a la
-       derecha del ancho del sidebar para que no queden superpuestos. */
+       no puede subir por delante de donde empieza su contenedor en el flujo normal. Para
+       que ocupe todo el alto de la vista hay que sacarlo del flujo (fixed) y subirlo por
+       delante del topbar; el topbar se corre a la derecha del ancho del sidebar. */
     .fi-body-has-topbar .fi-sidebar {
         position: fixed !important;
         top: 0;
         height: 100dvh;
         z-index: 40;
-        /* En escritorio Filament deja el sidebar transparente (se ve el fondo de la
-           página, más oscuro) mientras el topbar mantiene su propio color sólido
-           (.fi-topbar:where(.dark,.dark *){background-color:var(--gray-900)}) — se ven
-           como dos superficies distintas. Se iguala el sidebar al color del topbar. */
-        background-color: var(--gray-900);
-        border-right: 1px solid rgb(27, 39, 64);
     }
 
     .fi-body-has-topbar .fi-topbar-ctn,
     .fi-body-has-topbar .fi-main-ctn {
         margin-inline-start: var(--sidebar-width);
     }
+}
 
-    .fi-body-has-topbar .fi-topbar {
-        border-bottom: 1px solid rgb(27, 39, 64);
+/* ── Menú lateral ───────────────────────────────────────────────────────── */
+.fi-sidebar {
+    background-color: var(--dm-sidebar) !important;
+    border-right: 1px solid #1e232a;
+}
+
+.fi-body-has-topbar .fi-sidebar-header {
+    background: transparent;
+    box-shadow: none;
+    --tw-ring-shadow: 0 0 #0000;
+    height: 4.5rem;
+    justify-content: flex-start;
+    padding-inline: 1.25rem;
+}
+
+.fi-sidebar-nav {
+    padding: 0.25rem 0.75rem 1.5rem;
+    row-gap: 0;
+}
+
+.fi-sidebar-nav-groups {
+    margin-inline: 0;
+    row-gap: 0;
+}
+
+.fi-sidebar-group {
+    row-gap: 0.125rem;
+    margin-top: 1.125rem;
+}
+
+.fi-sidebar-group:first-child {
+    margin-top: 0;
+}
+
+.fi-sidebar-group-btn {
+    padding: 0 0.75rem;
+    margin-bottom: 0.25rem;
+}
+
+.fi-sidebar-group-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    line-height: 1rem;
+    text-transform: uppercase;
+    color: #808a96;
+}
+
+.fi-sidebar-item-btn {
+    height: 2.375rem;
+    padding: 0 0.75rem;
+    border-radius: 0.5625rem;
+    justify-content: flex-start;
+    gap: 0.75rem;
+}
+
+.fi-sidebar-item-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #b4bcc6;
+}
+
+.fi-sidebar-item-btn > .fi-icon {
+    color: #8b95a1;
+}
+
+.fi-sidebar-item.fi-sidebar-item-has-url > .fi-sidebar-item-btn:hover {
+    background: var(--dm-surface-2);
+}
+
+.fi-sidebar-item.fi-sidebar-item-has-url > .fi-sidebar-item-btn:hover .fi-sidebar-item-label {
+    color: var(--dm-text);
+}
+
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn {
+    background: rgba(197, 248, 42, 0.1);
+}
+
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-icon,
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-sidebar-item-label {
+    color: var(--dm-lima);
+}
+
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn > .fi-sidebar-item-label {
+    font-weight: 600;
+}
+
+/* Contadores del menú (órdenes activas, stock bajo, mensajes fallidos). */
+.fi-sidebar-item-badge-ctn .fi-badge {
+    min-width: 0;
+    height: auto;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.375rem;
+    font-family: var(--dm-font-mono);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    line-height: 1rem;
+}
+
+/* ── Barra superior ─────────────────────────────────────────────────────── */
+.fi-topbar {
+    min-height: 4rem;
+    padding-inline: 2rem;
+    background-color: var(--dm-bg) !important;
+    border-bottom: 1px solid #1e232a;
+    box-shadow: none !important;
+    --tw-ring-shadow: 0 0 #0000 !important;
+    --tw-ring-color: transparent;
+}
+
+/* Búsqueda a la izquierda; caja, campana y usuario a la derecha. */
+.fi-topbar-end {
+    flex: 1;
+    gap: 0.875rem;
+}
+
+.fi-topbar .fi-global-search-ctn {
+    flex: 1 1 20rem;
+    max-width: 32.5rem;
+    margin-inline-end: auto;
+}
+
+.fi-topbar .fi-global-search,
+.fi-topbar .fi-global-search-field {
+    width: 100%;
+}
+
+.fi-topbar .fi-global-search .fi-input-wrp {
+    height: 2.5rem;
+    background: #111418;
+    border-radius: 0.625rem;
+}
+
+.fi-topbar .fi-global-search .fi-input-wrp-suffix {
+    font-family: var(--dm-font-mono);
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: var(--dm-muted);
+}
+
+.fi-topbar .fi-global-search-results-ctn {
+    border-radius: 0.875rem;
+    background: var(--dm-surface);
+    border: 1px solid var(--dm-border-strong);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+}
+
+/* El encabezado de cada grupo de resultados viene en minúscula y Filament lo pasa a
+   "Capitalizar Cada Palabra"; en el diseño solo va la primera letra en mayúscula. */
+.fi-global-search-result-group-header {
+    text-transform: none;
+}
+
+.fi-global-search-result-group-header::first-letter {
+    text-transform: uppercase;
+}
+
+/* En teléfono la barra superior no alcanza para todo: se deja el estado de caja
+   compacto (punto + monto) y la búsqueda ocupa el espacio que sobre. */
+@media (max-width: 639px) {
+    .fi-topbar {
+        padding-inline: 0.75rem;
     }
+
+    .fi-topbar-end {
+        gap: 0.5rem;
+        min-width: 0;
+    }
+
+    .fi-topbar .fi-global-search-ctn {
+        flex: 1 1 0;
+        min-width: 0;
+    }
+
+    .fi-topbar .fi-global-search .fi-input-wrp-suffix {
+        display: none;
+    }
+
+    .dm-topbar-caja .dm-caja {
+        padding: 0 0.625rem;
+    }
+
+    .dm-caja-estado,
+    .dm-caja-sep {
+        display: none;
+    }
+}
+
+/* Indicador de caja */
+.dm-topbar-caja {
+    display: flex;
+}
+
+.dm-caja {
+    display: inline-flex;
+    height: 2.5rem;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0 0.875rem;
+    border-radius: 0.625rem;
+    border: 1px solid transparent;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.dm-caja--abierta {
+    border-color: rgba(197, 248, 42, 0.3);
+    background: rgba(197, 248, 42, 0.06);
+    color: var(--dm-text);
+}
+
+.dm-caja--cerrada {
+    border-color: rgba(255, 181, 71, 0.35);
+    background: rgba(255, 181, 71, 0.07);
+    color: var(--dm-ambar);
+}
+
+.dm-caja-sep {
+    width: 1px;
+    height: 1.125rem;
+    background: var(--dm-border-strong);
+}
+
+.dm-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    flex: none;
+    border-radius: 9999px;
+}
+
+.dm-dot--lima {
+    background: var(--dm-lima);
+    box-shadow: 0 0 0 3px rgba(197, 248, 42, 0.2);
+}
+
+.dm-dot--ambar {
+    background: var(--dm-ambar);
+}
+
+/* Campana y botón de usuario */
+.fi-topbar .fi-icon-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.625rem;
+    border: 1px solid var(--dm-border-strong);
+    background: #111418;
+}
+
+.fi-topbar .fi-user-menu-trigger {
+    display: flex;
+    align-items: center;
+    padding: 0;
+    border-radius: 9999px;
+}
+
+.fi-topbar .fi-user-menu-trigger .fi-avatar {
+    width: 2.375rem;
+    height: 2.375rem;
+}
+
+/* ── Menú de usuario ────────────────────────────────────────────────────── */
+/* Filament declara el ancho del panel (max-width: 14rem !important) dentro de su capa
+   `components` y con @scope. Un !important sin capa pierde contra uno con capa, así que
+   el override va en la misma capa y con más especificidad. */
+@layer components {
+    .fi-user-menu .fi-dropdown-panel.fi-dropdown-panel {
+        width: 20rem !important;
+        max-width: min(20rem, 92vw) !important;
+    }
+}
+
+.fi-user-menu .fi-dropdown-panel {
+    border-radius: 1rem;
+    background: var(--dm-surface);
+    border: 1px solid var(--dm-border-strong);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+    --tw-ring-shadow: 0 0 #0000;
+}
+
+.dm-um-cabecera {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1.125rem;
+    border-bottom: 1px solid var(--dm-border);
+}
+
+.dm-um-datos {
+    overflow: hidden;
+    min-width: 0;
+    flex: 1;
+}
+
+.dm-um-nombre {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--dm-text);
+}
+
+.dm-um-correo {
+    margin-top: 0.125rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.75rem;
+    color: var(--dm-muted);
+}
+
+.dm-avatar {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background: var(--dm-border-strong);
+    color: var(--dm-text);
+    font-weight: 700;
+}
+
+.dm-avatar--lg {
+    width: 2.875rem;
+    height: 2.875rem;
+    font-size: 0.9375rem;
+}
+
+.dm-chip {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    height: 1.625rem;
+    padding: 0 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.dm-chip--info {
+    background: rgba(108, 180, 255, 0.12);
+    color: var(--dm-azul);
+}
+
+.dm-um-caja {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    margin: 0.75rem;
+    padding: 0.875rem;
+    border-radius: 0.75rem;
+    background: var(--dm-sidebar);
+    border: 1px solid var(--dm-border);
+}
+
+.dm-um-caja-fila {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dm-um-caja-titulo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--dm-text);
+}
+
+.dm-um-caja-monto {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--dm-text);
+}
+
+.dm-um-caja-nota {
+    font-size: 0.75rem;
+    color: var(--dm-muted);
+}
+
+.dm-btn {
+    display: inline-flex;
+    height: 2.375rem;
+    align-items: center;
+    justify-content: center;
+    padding: 0 1rem;
+    border-radius: 0.625rem;
+    border: 1px solid var(--dm-border-strong);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.dm-btn--secundario {
+    background: var(--dm-surface-2);
+    color: var(--dm-text);
+}
+
+.dm-btn--secundario:hover {
+    background: #1e232a;
+}
+
+.dm-btn--bloque {
+    width: 100%;
+}
+
+/* ── Títulos de página y de sección ─────────────────────────────────────── */
+.fi-header-heading {
+    font-family: var(--dm-font-titulo);
+    font-stretch: 108%;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    color: var(--dm-text);
+}
+
+.fi-header-subheading {
+    color: var(--dm-muted);
+}
+
+.fi-breadcrumbs-item-label {
+    font-size: 0.8125rem;
+    color: var(--dm-muted);
+}
+
+.fi-section-header-heading {
+    font-family: var(--dm-font-titulo);
+    font-stretch: 105%;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.fi-section {
+    border-radius: 1rem;
+    background: var(--dm-surface);
+    --tw-ring-color: var(--dm-border);
+}
+
+/* ── Formularios: alturas táctiles de 44 px y radio de 10 px ────────────── */
+.fi-input-wrp {
+    min-height: 2.75rem;
+    border-radius: 0.625rem;
+    background: var(--dm-input);
+}
+
+.fi-input-wrp:focus-within {
+    --tw-ring-color: var(--dm-lima) !important;
+}
+
+.fi-fo-field-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--dm-text-2);
+}
+
+/* ── Botones: texto oscuro sobre lima ───────────────────────────────────── */
+.fi-btn.fi-color-primary:not(.fi-outlined),
+.fi-btn.fi-color-success:not(.fi-outlined) {
+    background-color: var(--dm-lima);
+    color: var(--dm-bg);
+}
+
+.fi-btn.fi-color-primary:not(.fi-outlined):hover,
+.fi-btn.fi-color-success:not(.fi-outlined):hover {
+    background-color: #d4ff52;
+}
+
+.fi-btn.fi-color-primary:not(.fi-outlined) .fi-icon,
+.fi-btn.fi-color-success:not(.fi-outlined) .fi-icon {
+    color: var(--dm-bg);
+}
+
+.fi-btn {
+    min-height: 2.5rem;
+    border-radius: 0.625rem;
+    font-weight: 600;
+}
+
+/* ── Insignias: píldora con color al ~12 % y texto pleno ────────────────── */
+.fi-badge {
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* ── Tablas ─────────────────────────────────────────────────────────────── */
+.fi-ta-header-cell-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--dm-muted);
+}
+
+.fi-ta-ctn {
+    border-radius: 1rem;
+    background: var(--dm-surface);
 }

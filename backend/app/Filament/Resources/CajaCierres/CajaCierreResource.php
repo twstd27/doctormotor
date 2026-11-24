@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CajaCierres;
 
+use App\Filament\Concerns\TituloEnOracion;
 use App\Filament\Resources\CajaCierres\Pages\CreateCajaCierre;
 use App\Filament\Resources\CajaCierres\Pages\ListCajaCierres;
 use App\Filament\Resources\CajaCierres\Schemas\CajaCierreForm;
@@ -16,13 +17,17 @@ use Illuminate\Database\Eloquent\Builder;
 
 class CajaCierreResource extends Resource
 {
+    use TituloEnOracion;
+
     protected static ?string $model = CajaCierre::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Finanzas';
+    protected static string|\UnitEnum|null $navigationGroup = 'Caja';
 
-    protected static ?string $navigationLabel = 'Caja';
+    protected static ?int $navigationSort = 1;
+
+    protected static ?string $navigationLabel = 'Caja del día';
 
     protected static ?string $modelLabel = 'caja';
 

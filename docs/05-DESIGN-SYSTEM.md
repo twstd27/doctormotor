@@ -257,3 +257,35 @@ no asumir que hacen falta los mismos selectores CSS que en Filament 3.
   tiempo interactiva del Módulo 5.
 - **Aprobación**: par Aprobar (relleno lima) / Rechazar (outline neutro).
 - **Login del cliente**: Google (botón blanco) + WhatsApp (botón lima) + formulario manual.
+
+---
+
+## Rediseño del panel admin (v2, noviembre 2026)
+
+Fuente: handoff de Claude Design (`HANDOFF.md`, §3). Rige para el **panel Filament**; la PWA se
+actualiza en pasos posteriores. Lo implementado en el paso 1 vive en
+`backend/resources/css/filament/admin/theme.css` y `AdminPanelProvider`.
+
+- **Acento lima `#C5F82A`** con texto oscuro `#0B0D10` encima (botones primarios). Sobre fondos
+  grandes, nunca.
+- **Superficies:** página `#0B0D10` · menú lateral `#0F1216` · tarjetas `#14181D` · botón
+  secundario `#171B21` · inputs `#0F1216`. Bordes `#222830` (tarjetas) y `#2A313A` (inputs).
+- **Semánticos:** ámbar `#FFB547` (atención, saldo por cobrar), rojo `#FF8A7A` (vencido, error),
+  azul `#6CB4FF` (diagnóstico, info), violeta `#B9A2FF` (control de calidad). En Filament el rojo
+  de los botones es `#E5604D` (500) y `#FF8A7A` (400) para texto, por contraste.
+- **Estados de la orden** (`App\Support\EstadoOrden`, un solo lugar): Recepcionado gris ·
+  En diagnóstico azul · Esperando aprobación ámbar · En reparación lima · Control de calidad
+  violeta · Listo para entrega lima · Entregado gris · Cancelado rojo.
+- **Tipografía** (empaquetada con `@fontsource`, sin CDN): Archivo 700 (títulos de página y de
+  sección), Inter (interfaz), JetBrains Mono (códigos de OT, placas, montos, contadores).
+- **Textos en minúscula de oración:** "Órdenes de trabajo", no "Órdenes De Trabajo"
+  (`App\Filament\Concerns\TituloEnOracion`).
+- **Medidas:** inputs y botones 44 px y radio 10 px · tarjetas radio 16 px · menú lateral 248 px.
+- **Oscuro fijo:** no hay selector de tema claro ni "Sistema" (decisión de producto).
+- **Menú lateral:** Taller (Nueva recepción, Órdenes, Clientes, Vehículos) · Caja (Caja del día,
+  Cobros, Gastos) · Inventario · Reportes · Administración. Contadores: órdenes activas (gris),
+  productos bajo el mínimo (ámbar), mensajes fallidos (rojo).
+- **Barra superior:** búsqueda global (`Ctrl+K`: placa, cliente, orden), estado de la caja
+  ("Caja abierta · Bs X" o "Caja cerrada · Abrir"; el efectivo sale de
+  `CajaCierre::efectivoEsperado()`), campana y menú de usuario.
+- **Avatares:** iniciales en SVG generado localmente; no se usa `ui-avatars.com`.

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Proveedors;
 
+use App\Filament\Concerns\TituloEnOracion;
 use App\Filament\Resources\Proveedors\Pages\CreateProveedor;
 use App\Filament\Resources\Proveedors\Pages\EditProveedor;
 use App\Filament\Resources\Proveedors\Pages\ListProveedors;
@@ -16,6 +17,8 @@ use Filament\Tables\Table;
 
 class ProveedorResource extends Resource
 {
+    use TituloEnOracion;
+
     protected static ?string $model = Proveedor::class;
 
     protected static ?string $slug = 'proveedores';
@@ -23,6 +26,8 @@ class ProveedorResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingStorefront;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Inventario';
+
+    protected static ?int $navigationSort = 5;
 
     protected static ?string $modelLabel = 'proveedor';
 

@@ -2,11 +2,14 @@
 
 namespace App\Filament\Resources\GastoEgresos\Pages;
 
+use App\Filament\Concerns\RedirigeALaLista;
 use App\Filament\Resources\GastoEgresos\GastoEgresoResource;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateGastoEgreso extends CreateRecord
 {
+    use RedirigeALaLista;
+
     protected static string $resource = GastoEgresoResource::class;
 
     protected function mutateFormDataBeforeCreate(array $data): array

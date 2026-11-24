@@ -35,6 +35,15 @@ class CajaCierre extends Model
         return $this->hasMany(Pago::class, 'caja_cierre_id');
     }
 
+    /**
+     * Efectivo que debería haber en la caja: apertura + cobros en efectivo del turno.
+     * Es la única fórmula: la usan el cierre (API y panel) y el indicador de la barra superior.
+     */
+    public function efectivoEsperado(): float
+    {
+        return (float) $this->monto_apertura + (float) $this->pagos()->where('metodo', 'efectivo')->sum('monto');
+    }
+
     public static function abiertaDe(int $cajeroId): ?self
     {
         return static::where('cajero_id', $cajeroId)->where('estado', 'abierta')->first();

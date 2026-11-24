@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\OrdenesTrabajo\Tables;
 
+use App\Support\EstadoOrden;
 use Filament\Actions\EditAction;
-use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -25,25 +25,11 @@ class OrdenesTrabajoTable
                 TextColumn::make('cliente.nombre')
                     ->label('Cliente')
                     ->searchable(),
-                BadgeColumn::make('estado')
+                TextColumn::make('estado')
                     ->label('Estado')
-                    ->colors([
-                        'gray' => ['recepcionado', 'entregado', 'cancelado'],
-                        'info' => ['en_diagnostico', 'control_calidad'],
-                        'warning' => 'esperando_aprobacion',
-                        'success' => ['en_reparacion', 'listo_entrega'],
-                    ])
-                    ->formatStateUsing(fn (string $state) => match ($state) {
-                        'recepcionado' => 'Recepcionado',
-                        'en_diagnostico' => 'En diagnóstico',
-                        'esperando_aprobacion' => 'Esperando aprobación',
-                        'en_reparacion' => 'En reparación',
-                        'control_calidad' => 'Control de calidad',
-                        'listo_entrega' => 'Listo para entrega',
-                        'entregado' => 'Entregado',
-                        'cancelado' => 'Cancelado',
-                        default => $state,
-                    }),
+                    ->badge()
+                    ->color(fn (string $state) => EstadoOrden::color($state))
+                    ->formatStateUsing(fn (string $state) => EstadoOrden::etiqueta($state)),
                 TextColumn::make('tecnicoAsignado.nombre')
                     ->label('Técnico')
                     ->placeholder('Sin asignar'),
@@ -55,16 +41,7 @@ class OrdenesTrabajoTable
             ->defaultSort('fecha_ingreso', 'desc')
             ->filters([
                 SelectFilter::make('estado')
-                    ->options([
-                        'recepcionado' => 'Recepcionado',
-                        'en_diagnostico' => 'En diagnóstico',
-                        'esperando_aprobacion' => 'Esperando aprobación',
-                        'en_reparacion' => 'En reparación',
-                        'control_calidad' => 'Control de calidad',
-                        'listo_entrega' => 'Listo para entrega',
-                        'entregado' => 'Entregado',
-                        'cancelado' => 'Cancelado',
-                    ]),
+                    ->options(EstadoOrden::ETIQUETAS),
             ])
             ->recordActions([
                 EditAction::make(),

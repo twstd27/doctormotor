@@ -2,12 +2,15 @@
 
 namespace App\Filament\Resources\OrdenesTrabajo\Pages;
 
+use App\Filament\Concerns\RedirigeALaLista;
 use App\Filament\Resources\OrdenesTrabajo\OrdenTrabajoResource;
 use App\Models\OrdenTrabajo;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateOrdenTrabajo extends CreateRecord
 {
+    use RedirigeALaLista;
+
     protected static string $resource = OrdenTrabajoResource::class;
 
     protected function mutateFormDataBeforeCreate(array $data): array

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Pagos\Pages;
 
+use App\Filament\Concerns\RedirigeALaLista;
 use App\Filament\Resources\Pagos\PagoResource;
 use App\Models\CajaCierre;
 use App\Models\OrdenTrabajo;
@@ -12,6 +13,8 @@ use Filament\Support\Exceptions\Halt;
 
 class CreatePago extends CreateRecord
 {
+    use RedirigeALaLista;
+
     protected static string $resource = PagoResource::class;
 
     protected function beforeCreate(): void
@@ -28,7 +31,7 @@ class CreatePago extends CreateRecord
                 ->danger()
                 ->send();
 
-            throw new Halt();
+            throw new Halt;
         }
     }
 

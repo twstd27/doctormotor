@@ -20,6 +20,8 @@ class ConectarWhatsapp extends Page
 
     protected static string|\UnitEnum|null $navigationGroup = 'Administración';
 
+    protected static ?int $navigationSort = 3;
+
     protected static ?string $navigationLabel = 'Conectar WhatsApp';
 
     protected static ?string $title = 'Conectar WhatsApp';

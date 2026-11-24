@@ -17,9 +17,11 @@ class InformeIngresosEgresos extends Page
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChartBar;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Finanzas';
+    protected static string|\UnitEnum|null $navigationGroup = 'Reportes';
 
-    protected static ?string $navigationLabel = 'Informe de ingresos y egresos';
+    protected static ?int $navigationSort = 1;
+
+    protected static ?string $navigationLabel = 'Ingresos y egresos';
 
     protected static ?string $title = 'Ingresos y egresos';
 

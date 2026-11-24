@@ -57,7 +57,7 @@ class CajaController extends Controller
             'monto_contado' => ['required', 'numeric', 'min:0'],
         ]);
 
-        $montoEsperado = $caja->monto_apertura + $caja->pagos()->where('metodo', 'efectivo')->sum('monto');
+        $montoEsperado = $caja->efectivoEsperado();
 
         $caja->update([
             'monto_esperado' => $montoEsperado,

@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Users;
 
 use App\Filament\Concerns\SoloSuperAdmin;
+use App\Filament\Concerns\TituloEnOracion;
 use App\Filament\Resources\Users\Pages\CreateUser;
 use App\Filament\Resources\Users\Pages\EditUser;
 use App\Filament\Resources\Users\Pages\ListUsers;
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Builder;
 class UserResource extends Resource
 {
     use SoloSuperAdmin;
+    use TituloEnOracion;
 
     protected static ?string $model = User::class;
 
@@ -26,11 +28,13 @@ class UserResource extends Resource
 
     protected static string|\UnitEnum|null $navigationGroup = 'Administración';
 
+    protected static ?int $navigationSort = 1;
+
     protected static ?string $modelLabel = 'usuario interno';
 
     protected static ?string $pluralModelLabel = 'usuarios internos';
 
-    protected static ?string $navigationLabel = 'Usuarios internos';
+    protected static ?string $navigationLabel = 'Usuarios';
 
     /**
      * Solo staff (super_admin, cajero, operador_tecnico) — las cuentas de clientes se

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Productos;
 
+use App\Filament\Concerns\TituloEnOracion;
 use App\Filament\Resources\Productos\Pages\CreateProducto;
 use App\Filament\Resources\Productos\Pages\EditProducto;
 use App\Filament\Resources\Productos\Pages\ListProductos;
@@ -16,15 +17,37 @@ use Filament\Tables\Table;
 
 class ProductoResource extends Resource
 {
+    use TituloEnOracion;
+
     protected static ?string $model = Producto::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCube;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Inventario';
 
+    protected static ?int $navigationSort = 1;
+
     protected static ?string $modelLabel = 'producto';
 
     protected static ?string $pluralModelLabel = 'productos';
+
+    // Contador ámbar del menú: productos activos en o por debajo de su stock mínimo.
+    public static function getNavigationBadge(): ?string
+    {
+        $bajos = Producto::where('activo', true)->whereColumn('stock_actual', '<=', 'stock_minimo')->count();
+
+        return $bajos > 0 ? (string) $bajos : null;
+    }
+
+    public static function getNavigationBadgeColor(): string|array|null
+    {
+        return 'warning';
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Productos en o por debajo del stock mínimo';
+    }
 
     public static function form(Schema $schema): Schema
     {

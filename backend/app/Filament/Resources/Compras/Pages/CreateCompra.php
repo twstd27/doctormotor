@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Compras\Pages;
 
+use App\Filament\Concerns\RedirigeALaLista;
 use App\Filament\Resources\Compras\CompraResource;
 use App\Http\Controllers\Api\ProductoController;
 use App\Models\Compra;
@@ -11,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 
 class CreateCompra extends CreateRecord
 {
+    use RedirigeALaLista;
+
     protected static string $resource = CompraResource::class;
 
     /**
