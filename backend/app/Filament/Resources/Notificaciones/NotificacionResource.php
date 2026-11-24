@@ -50,9 +50,9 @@ class NotificacionResource extends Resource
         return 'Mensajes fallidos';
     }
 
-    protected static ?string $modelLabel = 'notificación';
+    protected static ?string $modelLabel = 'mensaje enviado';
 
-    protected static ?string $pluralModelLabel = 'notificaciones';
+    protected static ?string $pluralModelLabel = 'mensajes enviados';
 
     public static function table(Table $table): Table
     {

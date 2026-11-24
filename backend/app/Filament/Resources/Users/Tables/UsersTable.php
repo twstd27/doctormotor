@@ -2,20 +2,14 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
-use App\Models\User;
-use App\Services\WhatsAppService;
-use Filament\Actions\Action;
+use App\Filament\Resources\Users\Actions\InvitarUsuario;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Notifications\Notification;
-use Filament\Tables\Columns\BadgeColumn;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Str;
 
 class UsersTable
 {
@@ -23,95 +17,41 @@ class UsersTable
     {
         return $table
             ->columns([
-                TextColumn::make('nombre')
-                    ->label('Nombre')
-                    ->searchable()
+                ViewColumn::make('nombre')
+                    ->label('Usuario')
+                    ->view('filament.usuarios.col-usuario')
+                    ->searchable(['nombre', 'email', 'telefono_whatsapp'])
                     ->sortable(),
-                BadgeColumn::make('rol')
+                TextColumn::make('rol')
                     ->label('Rol')
-                    ->colors([
-                        'primary' => 'super_admin',
-                        'warning' => 'cajero',
-                        'info' => 'operador_tecnico',
-                        'gray' => 'cliente',
-                    ]),
-                TextColumn::make('email')
-                    ->label('Correo')
-                    ->searchable(),
-                TextColumn::make('telefono_whatsapp')
-                    ->label('WhatsApp')
-                    ->searchable(),
-                IconColumn::make('activo')
-                    ->label('Activo')
-                    ->boolean(),
-                TextColumn::make('password')
-                    ->label('Cuenta')
-                    ->state(fn (User $record) => $record->password ? 'Activada' : 'Invitación pendiente')
                     ->badge()
-                    ->color(fn (User $record) => $record->password ? 'success' : 'warning'),
+                    ->color(fn (string $state) => match ($state) {
+                        'super_admin' => 'primary',
+                        'cajero' => 'warning',
+                        default => 'info',
+                    })
+                    ->formatStateUsing(fn (string $state) => match ($state) {
+                        'super_admin' => 'Administrador',
+                        'cajero' => 'Cajero',
+                        'operador_tecnico' => 'Técnico',
+                        default => ucfirst($state),
+                    }),
+                ViewColumn::make('activo')
+                    ->label('Estado')
+                    ->view('filament.usuarios.col-estado'),
+                TextColumn::make('ultimo_login_at')
+                    ->label('Último acceso')
+                    ->since()
+                    ->placeholder('Nunca ha entrado')
+                    ->sortable(),
             ])
             ->defaultSort('nombre')
-            ->filters([
-                SelectFilter::make('rol')
-                    ->label('Rol')
-                    ->options([
-                        'super_admin' => 'Super Admin',
-                        'cajero' => 'Cajero',
-                        'operador_tecnico' => 'Operador técnico',
-                        'cliente' => 'Cliente',
-                    ]),
-            ])
+            ->searchPlaceholder('Nombre, correo o WhatsApp')
             ->recordActions([
-                Action::make('invitar')
-                    ->label('Enviar invitación')
-                    ->icon('heroicon-o-paper-airplane')
-                    ->color('warning')
-                    ->visible(fn (User $record) => ! $record->password)
-                    ->requiresConfirmation()
-                    ->modalDescription(fn (User $record) => "Se manda un enlace por WhatsApp al {$record->telefono_whatsapp} para que {$record->nombre} defina su contraseña.")
-                    ->disabled(fn (User $record) => blank($record->telefono_whatsapp))
-                    ->action(function (User $record, WhatsAppService $whatsApp) {
-                        $token = Str::random(48);
-                        Cache::put("invitacion_tecnico:{$token}", $record->id, now()->addDays(3));
-
-                        $parametros = ['link' => config('services.frontend.url')."/invitacion/{$token}"];
-
-                        $notificacion = $whatsApp->enviarPlantilla(
-                            telefono: $record->telefono_whatsapp,
-                            plantilla: 'invitacion_tecnico',
-                            parametros: $parametros,
-                            userId: $record->id,
-                        );
-
-                        if ($whatsApp->configurado() && $notificacion->estado === 'enviado') {
-                            Notification::make()
-                                ->title('Invitación enviada')
-                                ->body('Meta aceptó el mensaje y lo está entregando por WhatsApp.')
-                                ->success()
-                                ->send();
-
-                            return;
-                        }
-
-                        $rechazado = $whatsApp->configurado();
-
-                        $aviso = Notification::make()
-                            ->title($rechazado ? 'WhatsApp no pudo enviar la invitación' : 'WhatsApp no está configurado todavía')
-                            ->body($rechazado
-                                ? 'Meta rechazó el envío (el detalle está en Administración → Notificaciones). Abre el mensaje ya redactado y mándalo tú mismo.'
-                                : 'Abre el mensaje ya redactado y mándalo tú mismo desde tu WhatsApp.')
-                            ->actions([
-                                Action::make('abrir')
-                                    ->label('Abrir en WhatsApp')
-                                    ->url($whatsApp->linkWaMe($record->telefono_whatsapp, 'invitacion_tecnico', $parametros))
-                                    ->openUrlInNewTab(),
-                            ])
-                            ->persistent();
-
-                        $rechazado ? $aviso->danger() : $aviso->warning();
-                        $aviso->send();
-                    }),
-                EditAction::make(),
+                InvitarUsuario::make()->hiddenLabel()->tooltip('Enviar invitación por WhatsApp'),
+                ActionGroup::make([
+                    EditAction::make()->label('Editar'),
+                ])->label('Más acciones'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

@@ -30,9 +30,9 @@ class UserResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
-    protected static ?string $modelLabel = 'usuario interno';
+    protected static ?string $modelLabel = 'usuario';
 
-    protected static ?string $pluralModelLabel = 'usuarios internos';
+    protected static ?string $pluralModelLabel = 'usuarios';
 
     protected static ?string $navigationLabel = 'Usuarios';
 

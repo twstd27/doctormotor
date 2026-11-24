@@ -1699,3 +1699,39 @@
     color: var(--dm-text);
     font-weight: 600;
 }
+
+/* ── Mensajes enviados y usuarios ───────────────────────────────────────── */
+.dm-error-envio {
+    margin-top: 0.25rem;
+    color: var(--dm-rojo);
+    font-size: 0.75rem;
+}
+
+.dm-aviso--rojo {
+    border-color: rgba(255, 138, 122, 0.3);
+    background: rgba(255, 138, 122, 0.08);
+    color: #ffd6cf;
+}
+
+.dm-aviso--rojo strong {
+    color: #ffd6cf;
+}
+
+.dm-aviso-accion--rojo {
+    padding: 0.4375rem 0.875rem;
+    border: 1px solid var(--dm-border-strong);
+    border-radius: 0.625rem;
+    background: var(--dm-surface-2);
+    color: var(--dm-text);
+}
+
+.dm-stat--falla {
+    border-color: rgba(255, 138, 122, 0.35);
+    background: #1a1110;
+}
+
+.dm-pila {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
