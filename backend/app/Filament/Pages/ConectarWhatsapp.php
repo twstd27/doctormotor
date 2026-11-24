@@ -69,7 +69,7 @@ class ConectarWhatsapp extends Page
     {
         $this->error = null;
 
-        $intercambio = Http::get('https://graph.facebook.com/v21.0/oauth/access_token', [
+        $intercambio = Http::get('https://graph.facebook.com/v24.0/oauth/access_token', [
             'client_id' => config('services.whatsapp.app_id'),
             'client_secret' => config('services.whatsapp.app_secret'),
             'code' => $code,
@@ -87,12 +87,12 @@ class ConectarWhatsapp extends Page
         // Suscribe esta app a los eventos del WABA (mensajes entrantes, etc.) — sin esto,
         // el número queda vinculado pero el webhook de la app nunca recibe nada de él.
         $suscripcion = Http::withToken($accessToken)
-            ->post("https://graph.facebook.com/v21.0/{$wabaId}/subscribed_apps");
+            ->post("https://graph.facebook.com/v24.0/{$wabaId}/subscribed_apps");
 
         // En la coexistencia Meta avisa solo el WABA ID: el número se busca en la cuenta.
         if (blank($phoneNumberId)) {
             $numeros = Http::withToken($accessToken)
-                ->get("https://graph.facebook.com/v21.0/{$wabaId}/phone_numbers", ['fields' => 'id,display_phone_number'])
+                ->get("https://graph.facebook.com/v24.0/{$wabaId}/phone_numbers", ['fields' => 'id,display_phone_number'])
                 ->json('data') ?? [];
             $phoneNumberId = $numeros[0]['id'] ?? null;
 
@@ -108,7 +108,7 @@ class ConectarWhatsapp extends Page
         // chats; pasado ese plazo ya no se puede. Es de una sola vez y los resultados llegan al
         // webhook (que hoy los ignora): se piden igual para no perder la oportunidad.
         foreach (['smb_app_state_sync', 'history'] as $tipoSync) {
-            Http::withToken($accessToken)->post("https://graph.facebook.com/v21.0/{$phoneNumberId}/smb_app_data", [
+            Http::withToken($accessToken)->post("https://graph.facebook.com/v24.0/{$phoneNumberId}/smb_app_data", [
                 'messaging_product' => 'whatsapp',
                 'sync_type' => $tipoSync,
             ]);

@@ -100,7 +100,7 @@
                         appId: '{{ $this->appId() }}',
                         autoLogAppEvents: true,
                         xfbml: true,
-                        version: 'v21.0',
+                        version: 'v24.0',
                         // Sin esto, Chrome intercepta el login con su propio flujo nativo de
                         // FedCM (scope=openid, response_type=token, redirect_uri genérico a la
                         // raíz del dominio) ignorando el config_id del Embedded Signup — por
@@ -157,7 +157,7 @@
                         // En el flujo de coexistencia Meta manda solo el WABA ID; el ID del número lo busca el servidor.
                         if (!code || !ultimoWabaId) {
                             estado.textContent = 'No se completó la conexión. ' + explicarEvento()
-                                + (response?.status ? ' (estado: ' + response.status + ')' : '');
+                                + (response?.status ? ' (estado: ' + response.status + '; ' + (code ? 'con código' : 'SIN código de autorización; campos: ' + Object.keys(response?.authResponse || {}).join(', ')) + ')' : '');
                             return;
                         }
 
