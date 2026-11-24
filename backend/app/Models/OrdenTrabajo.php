@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -94,6 +95,71 @@ class OrdenTrabajo extends Model
     public function costosDirectos(): HasMany
     {
         return $this->hasMany(CostoDirecto::class, 'orden_trabajo_id');
+    }
+
+    /**
+     * Agrega a la consulta `total_aprobado` (suma de ítems de presupuesto aprobados) y
+     * `total_pagado` (suma de pagos) como columnas calculadas, para mostrar el saldo de
+     * muchas órdenes sin una consulta por fila. Misma regla que Cliente::totalFacturado().
+     */
+    public function scopeConSaldo(Builder $query): void
+    {
+        $query->addSelect([
+            'total_aprobado' => PresupuestoItem::query()
+                ->selectRaw('COALESCE(SUM(presupuesto_items.subtotal), 0)')
+                ->join('presupuestos', 'presupuestos.id', '=', 'presupuesto_items.presupuesto_id')
+                ->whereColumn('presupuestos.orden_trabajo_id', 'ordenes_trabajo.id')
+                ->where('presupuesto_items.aprobado', true),
+            'total_pagado' => Pago::query()
+                ->selectRaw('COALESCE(SUM(pagos.monto), 0)')
+                ->whereColumn('pagos.orden_trabajo_id', 'ordenes_trabajo.id'),
+        ]);
+    }
+
+    /** Órdenes cuyo cliente todavía les debe plata (aprobado > pagado). */
+    public function scopeConSaldoPendiente(Builder $query): void
+    {
+        $query->whereRaw(
+            '(SELECT COALESCE(SUM(pi.subtotal), 0) FROM presupuesto_items pi'
+            .' JOIN presupuestos p ON p.id = pi.presupuesto_id'
+            .' WHERE p.orden_trabajo_id = ordenes_trabajo.id AND pi.aprobado = true)'
+            .' > (SELECT COALESCE(SUM(pg.monto), 0) FROM pagos pg WHERE pg.orden_trabajo_id = ordenes_trabajo.id) + 0.009',
+        );
+    }
+
+    public function totalAprobado(): float
+    {
+        return (float) ($this->total_aprobado ?? PresupuestoItem::whereHas(
+            'presupuesto',
+            fn ($q) => $q->where('orden_trabajo_id', $this->id),
+        )->where('aprobado', true)->sum('subtotal'));
+    }
+
+    public function totalPagado(): float
+    {
+        return (float) ($this->total_pagado ?? $this->pagos()->sum('monto'));
+    }
+
+    /** Positivo = el cliente debe; negativo = pagó de más. */
+    public function saldoPendiente(): float
+    {
+        return $this->totalAprobado() - $this->totalPagado();
+    }
+
+    /**
+     * Próximo estado del flujo normal (el que propone el botón "Pasar a…" de la ficha);
+     * null si la orden ya terminó.
+     */
+    public function siguienteEstado(): ?string
+    {
+        $flujo = [
+            'recepcionado', 'en_diagnostico', 'esperando_aprobacion', 'en_reparacion',
+            'control_calidad', 'listo_entrega', 'entregado',
+        ];
+
+        $posicion = array_search($this->estado, $flujo, true);
+
+        return $posicion === false ? null : ($flujo[$posicion + 1] ?? null);
     }
 
     public static function generarCodigo(): string

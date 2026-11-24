@@ -10,21 +10,30 @@ use Filament\Actions\CreateAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
-use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Support\Exceptions\Halt;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\Summarizers\Sum;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class CostosDirectosRelationManager extends RelationManager
 {
     protected static string $relationship = 'costosDirectos';
 
     protected static ?string $title = 'Costos directos';
+
+    // Contador de la pestaña en la ficha de la orden.
+    public static function getBadge(Model $ownerRecord, string $pageClass): ?string
+    {
+        $cantidad = $ownerRecord->costosDirectos()->count();
+
+        return $cantidad > 0 ? (string) $cantidad : null;
+    }
 
     public function form(Schema $schema): Schema
     {
@@ -151,7 +160,7 @@ class CostosDirectosRelationManager extends RelationManager
                             } catch (StockInsuficienteException $e) {
                                 Notification::make()->title($e->getMessage())->danger()->send();
 
-                                throw new Halt();
+                                throw new Halt;
                             }
                         }
 

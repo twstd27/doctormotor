@@ -6,7 +6,10 @@ use App\Filament\Concerns\TituloEnOracion;
 use App\Filament\Resources\OrdenesTrabajo\Pages\CreateOrdenTrabajo;
 use App\Filament\Resources\OrdenesTrabajo\Pages\EditOrdenTrabajo;
 use App\Filament\Resources\OrdenesTrabajo\Pages\ListOrdenesTrabajo;
+use App\Filament\Resources\OrdenesTrabajo\Pages\ViewOrdenTrabajo;
 use App\Filament\Resources\OrdenesTrabajo\RelationManagers\CostosDirectosRelationManager;
+use App\Filament\Resources\OrdenesTrabajo\RelationManagers\HistorialEstadosRelationManager;
+use App\Filament\Resources\OrdenesTrabajo\RelationManagers\PagosRelationManager;
 use App\Filament\Resources\OrdenesTrabajo\Schemas\OrdenTrabajoForm;
 use App\Filament\Resources\OrdenesTrabajo\Tables\OrdenesTrabajoTable;
 use App\Models\OrdenTrabajo;
@@ -85,7 +88,7 @@ class OrdenTrabajoResource extends Resource
 
         $items = array_map(
             fn (NavigationItem $item) => $item->isActiveWhen(
-                fn () => request()->routeIs("{$base}.index", "{$base}.edit"),
+                fn () => request()->routeIs("{$base}.index", "{$base}.view", "{$base}.edit"),
             ),
             parent::getNavigationItems(),
         );
@@ -116,6 +119,8 @@ class OrdenTrabajoResource extends Resource
     {
         return [
             CostosDirectosRelationManager::class,
+            PagosRelationManager::class,
+            HistorialEstadosRelationManager::class,
         ];
     }
 
@@ -124,6 +129,7 @@ class OrdenTrabajoResource extends Resource
         return [
             'index' => ListOrdenesTrabajo::route('/'),
             'create' => CreateOrdenTrabajo::route('/create'),
+            'view' => ViewOrdenTrabajo::route('/{record}'),
             'edit' => EditOrdenTrabajo::route('/{record}/edit'),
         ];
     }

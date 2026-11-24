@@ -26,6 +26,8 @@ class PagoForm
                     ->preload()
                     ->live()
                     ->required()
+                    // La ficha de la orden abre este formulario con cliente y orden ya elegidos.
+                    ->default(fn () => request()->integer('cliente_id') ?: null)
                     ->afterStateUpdated(fn (Set $set) => $set('orden_trabajo_id', null)),
                 Placeholder::make('saldo_cliente')
                     ->label('Estado de cuenta')
@@ -63,6 +65,7 @@ class PagoForm
                     )
                     ->searchable()
                     ->preload()
+                    ->default(fn () => request()->integer('orden_trabajo_id') ?: null)
                     ->disabled(fn (Get $get) => blank($get('cliente_id')))
                     ->helperText('Opcional — dejalo vacío para un abono general a la cuenta del cliente.'),
                 Select::make('tipo')

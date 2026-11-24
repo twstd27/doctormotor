@@ -1,0 +1,560 @@
+/* ──────────────────────────────────────────────────────────────────────────
+   Componentes del rediseño que usan las pantallas del panel (HANDOFF §3):
+   placa, insignia de estado, celdas de tabla, pestañas y la ficha de la orden.
+   Los tokens (--dm-*) viven en theme.css.
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* ── Pestañas: subrayado lima en la activa, contador en mono ─────────────
+   Filament las dibuja de dos maneras: dentro de una tarjeta (.fi-contained) o sueltas,
+   como cápsula centrada (listas con pestañas y relation managers). Las dos quedan igual. */
+.fi-tabs.fi-contained,
+.fi-tabs:not(.fi-contained):not(.fi-vertical) {
+    gap: 1.625rem;
+    max-width: none;
+    margin-inline: 0;
+    padding: 0 1.25rem;
+    border-radius: 0;
+    border-bottom: 1px solid var(--dm-border);
+    background: transparent;
+    box-shadow: none;
+    --tw-ring-shadow: 0 0 #0000;
+}
+
+.fi-tabs:not(.fi-contained):not(.fi-vertical) {
+    padding-inline: 0.25rem;
+}
+
+.fi-tabs:not(.fi-vertical) .fi-tabs-item,
+.fi-tabs:not(.fi-contained):not(.fi-vertical) .fi-tabs-item {
+    height: 2.875rem;
+    padding: 0 0.25rem;
+    border-radius: 0;
+    border-bottom: 2px solid transparent;
+    background: transparent !important;
+}
+
+.fi-tabs:not(.fi-vertical) .fi-tabs-item .fi-tabs-item-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #9aa3ae;
+}
+
+.fi-tabs:not(.fi-vertical) .fi-tabs-item:hover .fi-tabs-item-label {
+    color: var(--dm-text);
+}
+
+.fi-tabs:not(.fi-vertical) .fi-tabs-item.fi-active {
+    border-bottom-color: var(--dm-lima);
+}
+
+.fi-tabs:not(.fi-vertical) .fi-tabs-item.fi-active .fi-tabs-item-label {
+    color: var(--dm-text);
+}
+
+.fi-tabs-item .fi-badge {
+    min-width: 0;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.375rem;
+    font-family: var(--dm-font-mono);
+    font-size: 0.6875rem;
+    font-weight: 600;
+}
+
+/* ── Placa: fondo claro, texto mono, franja azul arriba ─────────────────── */
+.dm-placa {
+    display: inline-block;
+    padding: 0.125rem 0.5rem;
+    border-top: 3px solid #2d5bd0;
+    border-radius: 4px;
+    background: #f2f4ef;
+    color: var(--dm-bg);
+    font-family: var(--dm-font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    line-height: 1.3;
+}
+
+.dm-placa--grande {
+    padding: 0.1875rem 0.625rem;
+    border-top-width: 4px;
+    border-radius: 5px;
+    font-size: 0.9375rem;
+}
+
+/* ── Insignia de estado de la orden: color al ~12 % + punto ─────────────── */
+.dm-estado {
+    display: inline-flex;
+    height: 1.625rem;
+    align-items: center;
+    gap: 0.375rem;
+    padding: 0 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    --dm-e: #a3acb8;
+    background: color-mix(in srgb, var(--dm-e) 13%, transparent);
+    color: var(--dm-e);
+}
+
+.dm-estado > i {
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 9999px;
+    background: currentColor;
+}
+
+.dm-estado--en_diagnostico { --dm-e: var(--dm-azul); }
+.dm-estado--esperando_aprobacion { --dm-e: var(--dm-ambar); }
+.dm-estado--en_reparacion { --dm-e: var(--dm-lima); }
+.dm-estado--control_calidad { --dm-e: var(--dm-violeta); }
+.dm-estado--cancelado { --dm-e: var(--dm-rojo); }
+
+/* Listo para entrega: lima sólido (es la acción que sigue). */
+.dm-estado--listo_entrega {
+    background: var(--dm-lima);
+    color: var(--dm-bg);
+}
+
+/* Entregado: gris con borde, sin relleno. */
+.dm-estado--entregado {
+    background: transparent;
+    border: 1px solid var(--dm-border-strong);
+    color: #9aa3ae;
+}
+
+/* ── Celdas de tabla con dos líneas ─────────────────────────────────────── */
+.dm-celda {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1875rem;
+    padding: 0.25rem 0;
+}
+
+.dm-celda-codigo {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--dm-text);
+}
+
+.dm-celda-titulo {
+    font-weight: 600;
+    color: var(--dm-text);
+}
+
+.dm-celda-titulo--normal {
+    font-weight: 500;
+}
+
+.dm-celda-sub {
+    font-size: 0.75rem;
+    color: var(--dm-muted);
+}
+
+.dm-tecnico {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.dm-tecnico-nombre {
+    color: var(--dm-text-2);
+}
+
+.dm-avatar--sm {
+    width: 1.625rem;
+    height: 1.625rem;
+    font-size: 0.625rem;
+}
+
+.dm-avatar--azul {
+    background: #1e2a3a;
+    color: var(--dm-azul);
+}
+
+.dm-entrega {
+    font-size: 0.8125rem;
+    color: var(--dm-text-2);
+}
+
+.dm-entrega--hoy {
+    font-weight: 600;
+    color: var(--dm-ambar);
+}
+
+.dm-entrega--vencida {
+    font-weight: 600;
+    color: var(--dm-rojo);
+}
+
+.dm-saldo {
+    font-size: 0.875rem;
+    font-weight: 600;
+    white-space: nowrap;
+    color: var(--dm-muted);
+}
+
+.dm-saldo--debe {
+    color: var(--dm-ambar);
+}
+
+.dm-saldo--favor {
+    color: var(--dm-lima);
+}
+
+/* Cuadros de texto de color reutilizables */
+.dm-texto-lima { color: var(--dm-lima); }
+.dm-texto-ambar { color: var(--dm-ambar); }
+.dm-texto-rojo { color: var(--dm-rojo); }
+
+/* Fila de la tabla clicable (abre la ficha) */
+.fi-ta-row.fi-clickable:hover {
+    background: rgba(255, 255, 255, 0.025);
+}
+
+/* ── Ficha de la orden ──────────────────────────────────────────────────── */
+.dm-ficha {
+    overflow: hidden;
+    border: 1px solid var(--dm-border);
+    border-radius: 1rem;
+    background: var(--dm-surface);
+}
+
+.dm-ficha-cuerpo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.5rem;
+}
+
+.dm-ficha-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.625rem;
+}
+
+.dm-chip-aviso {
+    display: inline-flex;
+    height: 1.625rem;
+    align-items: center;
+    padding: 0 0.625rem;
+    border-radius: 9999px;
+    background: rgba(163, 172, 184, 0.12);
+    color: #a3acb8;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.dm-chip-aviso--ambar {
+    background: rgba(255, 181, 71, 0.12);
+    color: var(--dm-ambar);
+}
+
+.dm-chip-aviso--rojo {
+    background: rgba(255, 138, 122, 0.12);
+    color: var(--dm-rojo);
+}
+
+.dm-ficha-titulo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.875rem;
+}
+
+.dm-ficha-titulo h2 {
+    margin: 0;
+    font-family: var(--dm-font-titulo);
+    font-stretch: 110%;
+    font-size: 1.875rem;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--dm-text);
+}
+
+.dm-ficha-datos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.75rem;
+    margin: 0.25rem 0 0;
+}
+
+.dm-ficha-datos dt {
+    font-size: 0.75rem;
+    color: var(--dm-muted);
+}
+
+.dm-ficha-datos dd {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin: 0.1875rem 0 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--dm-text);
+}
+
+.dm-ficha-datos dd.dm-mono {
+    font-weight: 500;
+}
+
+.dm-icono-link {
+    display: inline-flex;
+    color: #25d366;
+}
+
+.dm-icono-link svg {
+    width: 1.0625rem;
+    height: 1.0625rem;
+}
+
+.dm-progreso {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 0.5rem;
+    margin: 0;
+    padding: 1.125rem 1.5rem 1.375rem;
+    border-top: 1px solid var(--dm-border);
+    background: #111418;
+    list-style: none;
+}
+
+.dm-paso {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.dm-paso-barra {
+    height: 4px;
+    border-radius: 2px;
+    background: #262c34;
+}
+
+.dm-paso-texto {
+    font-size: 0.75rem;
+    line-height: 1.3;
+    color: var(--dm-muted);
+}
+
+.dm-paso--hecho .dm-paso-barra {
+    background: #7fa21c;
+}
+
+.dm-paso--hecho .dm-paso-texto {
+    color: #9aa3ae;
+}
+
+.dm-paso--ahora .dm-paso-barra {
+    background: var(--dm-lima);
+    box-shadow: 0 0 0 3px rgba(197, 248, 42, 0.18);
+}
+
+.dm-paso--ahora .dm-paso-texto {
+    font-weight: 700;
+    color: var(--dm-lima);
+}
+
+.dm-progreso-cancelada {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--dm-border);
+    background: #111418;
+    color: var(--dm-rojo);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+@media (max-width: 767px) {
+    .dm-progreso {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        row-gap: 0.875rem;
+    }
+
+    .dm-ficha-titulo h2 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Cuatro números clave */
+.dm-stats {
+    display: grid;
+    gap: 0.875rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 1024px) {
+    .dm-stats--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .dm-stats--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+.dm-stat {
+    display: flex;
+    flex-direction: column;
+    padding: 1.125rem;
+    border: 1px solid var(--dm-border);
+    border-radius: 0.875rem;
+    background: var(--dm-surface);
+}
+
+.dm-stat--saldo {
+    border-color: rgba(255, 181, 71, 0.35);
+    background: #1a1710;
+}
+
+.dm-stat-etiqueta {
+    font-size: 0.8125rem;
+    color: var(--dm-muted);
+}
+
+.dm-stat--saldo .dm-stat-etiqueta {
+    color: #e8c894;
+}
+
+.dm-stat-valor {
+    margin-top: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--dm-text);
+}
+
+.dm-stat-porcentaje {
+    margin-left: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--dm-muted);
+}
+
+.dm-stat-enlace {
+    margin-top: 0.375rem;
+    color: var(--dm-lima);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* Paneles laterales (datos de ingreso, actividad) */
+.dm-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    padding: 1.25rem;
+    border: 1px solid var(--dm-border);
+    border-radius: 1rem;
+    background: var(--dm-surface);
+}
+
+.dm-panel + .dm-panel,
+.fi-sc-group > * + .dm-panel {
+    margin-top: 1rem;
+}
+
+.dm-panel-cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dm-panel-titulo {
+    margin: 0;
+    font-family: var(--dm-font-titulo);
+    font-size: 1rem;
+    font-weight: 650;
+    color: var(--dm-text);
+}
+
+.dm-panel-enlace {
+    color: var(--dm-lima);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.dm-ingreso-celdas {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.dm-ingreso-celda {
+    padding: 0.75rem;
+    border-radius: 0.625rem;
+    background: var(--dm-sidebar);
+}
+
+.dm-ingreso-etiqueta {
+    font-size: 0.75rem;
+    color: var(--dm-muted);
+}
+
+.dm-ingreso-valor {
+    margin-top: 0.25rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--dm-text);
+}
+
+.dm-ingreso-problema {
+    margin: 0.375rem 0 0;
+    font-size: 0.875rem;
+    line-height: 1.55;
+    color: #d5dae0;
+}
+
+.dm-combustible {
+    display: flex;
+    gap: 3px;
+    margin-top: 0.5625rem;
+}
+
+.dm-combustible > span {
+    height: 6px;
+    flex: 1;
+    border-radius: 2px;
+    background: #262c34;
+}
+
+.dm-combustible > .dm-combustible--lleno {
+    background: var(--dm-lima);
+}
+
+.dm-actividad {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.dm-actividad > li {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.dm-actividad-punto {
+    width: 0.5rem;
+    height: 0.5rem;
+    flex: none;
+    margin-top: 0.375rem;
+    border-radius: 9999px;
+    background: #5b6470;
+}
+
+.dm-actividad-punto--success { background: var(--dm-lima); }
+.dm-actividad-punto--warning { background: var(--dm-ambar); }
+.dm-actividad-punto--info { background: var(--dm-azul); }
+.dm-actividad-punto--violet { background: var(--dm-violeta); }
+.dm-actividad-punto--danger { background: var(--dm-rojo); }
+
+.dm-actividad-texto {
+    font-size: 0.875rem;
+    color: var(--dm-text);
+}
+
+.dm-actividad-meta {
+    margin-top: 0.125rem;
+    font-size: 0.75rem;
+    color: var(--dm-muted);
+}
