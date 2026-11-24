@@ -3,19 +3,54 @@
 namespace App\Filament\Resources\Pagos\Pages;
 
 use App\Filament\Concerns\RedirigeALaLista;
+use App\Filament\Resources\OrdenesTrabajo\OrdenTrabajoResource;
 use App\Filament\Resources\Pagos\PagoResource;
 use App\Models\CajaCierre;
 use App\Models\OrdenTrabajo;
 use App\Models\Pago;
+use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Support\Exceptions\Halt;
+use Illuminate\Contracts\Support\Htmlable;
 
 class CreatePago extends CreateRecord
 {
     use RedirigeALaLista;
 
     protected static string $resource = PagoResource::class;
+
+    protected static bool $canCreateAnother = false;
+
+    public function getTitle(): string|Htmlable
+    {
+        return 'Registrar cobro';
+    }
+
+    public function getBreadcrumb(): string
+    {
+        return 'Registrar';
+    }
+
+    protected function getCreateFormAction(): Action
+    {
+        return parent::getCreateFormAction()->label('Registrar cobro');
+    }
+
+    protected function getCreatedNotificationTitle(): ?string
+    {
+        return 'Cobro registrado';
+    }
+
+    // Si el cobro se hizo desde la ficha de una orden, se vuelve a esa ficha.
+    protected function getRedirectUrl(): string
+    {
+        $ordenId = $this->getRecord()?->orden_trabajo_id;
+
+        return $ordenId
+            ? OrdenTrabajoResource::getUrl('view', ['record' => $ordenId])
+            : static::getResource()::getUrl('index');
+    }
 
     protected function beforeCreate(): void
     {
