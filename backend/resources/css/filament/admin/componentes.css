@@ -746,6 +746,12 @@
     justify-content: center;
 }
 
+/* Chips de «Servicio solicitado» en la recepción: píldoras que se reparten en varias filas. */
+.fi-fo-toggle-buttons.dm-chips-servicio .fi-btn {
+    border-radius: 9999px !important;
+    padding-inline: 1rem;
+}
+
 .fi-fo-toggle-buttons .fi-btn:hover {
     background: #1D201D !important;
 }

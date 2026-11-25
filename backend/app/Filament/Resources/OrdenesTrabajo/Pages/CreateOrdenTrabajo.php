@@ -50,6 +50,14 @@ class CreateOrdenTrabajo extends CreateRecord
         $data['estado'] = 'recepcionado';
         $data['fecha_ingreso'] = now();
 
+        // Los chips de "Servicio solicitado" no son columna: se anotan al final del motivo.
+        $servicios = array_filter((array) ($this->form->getRawState()['servicios_solicitados'] ?? []));
+
+        if ($servicios !== []) {
+            $linea = 'Servicio solicitado: '.implode(', ', $servicios);
+            $data['descripcion_problema'] = trim(($data['descripcion_problema'] ?? '')."\n".$linea);
+        }
+
         return $data;
     }
 }

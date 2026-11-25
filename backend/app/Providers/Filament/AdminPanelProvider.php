@@ -75,6 +75,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->brandLogo(fn () => view('filament.brand'))
             ->brandLogoHeight('2.5rem')
+            ->favicon(asset('favicon.svg'))
             ->navigationGroups([
                 NavigationGroup::make('Taller')->collapsible(false),
                 NavigationGroup::make('Caja')->collapsible(false),

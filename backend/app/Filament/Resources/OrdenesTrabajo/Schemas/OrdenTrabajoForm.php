@@ -6,6 +6,7 @@ use App\Filament\Resources\Clientes\Actions\InvitarPorWhatsapp;
 use App\Filament\Resources\Vehiculos\Schemas\VehiculoCampos;
 use App\Models\Cliente;
 use App\Models\OrdenTrabajo;
+use App\Models\ServicioFrecuente;
 use App\Models\User;
 use App\Models\Vehiculo;
 use App\Services\WhatsAppService;
@@ -206,9 +207,27 @@ class OrdenTrabajoForm
                     ->heading(self::titulo(3, 'Motivo de ingreso'))
                     ->description('Anota lo que cuenta el cliente, con sus palabras.')
                     ->schema([
+                        // Atajo de recepción: los servicios frecuentes activos como chips. No se guardan
+                        // aparte: al crear la orden se anotan al final del motivo (ver CreateOrdenTrabajo).
+                        ToggleButtons::make('servicios_solicitados')
+                            ->label('Servicio solicitado')
+                            ->options(fn () => ServicioFrecuente::query()
+                                ->where('activo', true)
+                                ->orderBy('orden')
+                                ->orderBy('nombre')
+                                ->pluck('nombre', 'nombre')
+                                ->all())
+                            ->multiple()
+                            ->inline()
+                            ->live()
+                            ->dehydrated(false)
+                            ->extraAttributes(['class' => 'dm-chips-servicio'])
+                            ->visibleOn('create')
+                            ->hidden(fn () => ! ServicioFrecuente::query()->where('activo', true)->exists())
+                            ->helperText('Opcional: toca los que pidió el cliente. Se anotan junto al motivo.'),
                         Textarea::make('descripcion_problema')
                             ->label('Lo que reporta el cliente')
-                            ->required()
+                            ->required(fn (Get $get, string $operation) => $operation !== 'create' || blank($get('servicios_solicitados')))
                             ->rows(4)
                             ->disabled(fn (?OrdenTrabajo $record) => self::cerrada($record)),
                     ]),
