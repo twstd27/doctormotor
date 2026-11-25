@@ -1,7 +1,8 @@
-import { Envelope, Eye, EyeSlash, GoogleLogo, LockSimple, WhatsappLogo, Wrench } from '@phosphor-icons/react'
+import { Envelope, Eye, EyeSlash, GoogleLogo, LockSimple, Wrench } from '@phosphor-icons/react'
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api, ApiError } from '../lib/api'
+import { hayContactoTaller, whatsappTaller } from '../lib/taller'
 import { useAuthStore, type AuthUser } from '../store/auth'
 
 interface AuthResponse {
@@ -12,16 +13,12 @@ export default function LoginPage() {
   const navigate = useNavigate()
   const setAuth = useAuthStore((s) => s.setAuth)
 
-  const [whatsappAbierto, setWhatsappAbierto] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [pwVisible, setPwVisible] = useState(false)
 
   const [correo, setCorreo] = useState('')
   const [password, setPassword] = useState('')
-
-  const [telefono, setTelefono] = useState('')
-  const [enlaceEnviado, setEnlaceEnviado] = useState(false)
 
   async function handleGoogle() {
     setError(null)
@@ -46,23 +43,6 @@ export default function LoginPage() {
       navigate('/')
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'No se pudo iniciar sesión.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  async function handleWhatsappSubmit(e: FormEvent) {
-    e.preventDefault()
-    setLoading(true)
-    setError(null)
-    try {
-      await api<{ message: string }>('/auth/login/whatsapp-link', {
-        method: 'POST',
-        body: JSON.stringify({ telefono_whatsapp: telefono }),
-      })
-      setEnlaceEnviado(true)
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'No se pudo enviar el enlace.')
     } finally {
       setLoading(false)
     }
@@ -102,45 +82,6 @@ export default function LoginPage() {
             <GoogleLogo size={20} />
             Continuar con Google
           </button>
-
-          {!whatsappAbierto ? (
-            <button
-              type="button"
-              onClick={() => setWhatsappAbierto(true)}
-              className="flex h-[52px] w-full items-center justify-center gap-2 rounded-xl bg-lime-500 hover:bg-lime-600 text-[15px] font-semibold text-lime-ink"
-              style={{ boxShadow: 'var(--shadow-cta-lime)' }}
-            >
-              <WhatsappLogo weight="fill" size={20} />
-              Continuar con WhatsApp
-            </button>
-          ) : enlaceEnviado ? (
-            <div className="flex flex-col items-center gap-3 rounded-xl bg-app-surface p-4 text-center" style={{ border: '1px solid var(--color-app-line)' }}>
-              <p className="text-sm">Te enviamos un enlace de acceso por WhatsApp.</p>
-            </div>
-          ) : (
-            <form onSubmit={handleWhatsappSubmit} className="flex flex-col gap-2 rounded-xl bg-app-surface p-3" style={{ border: '1px solid var(--color-app-line)' }}>
-              <input
-                type="tel"
-                required
-                autoFocus
-                placeholder="59171234567"
-                value={telefono}
-                onChange={(e) => setTelefono(e.target.value)}
-                className="h-[52px] rounded-xl bg-app-surface-2 px-3.5 text-[15px] outline-none placeholder:text-app-faint"
-                style={{ border: '1px solid var(--color-app-line)' }}
-              />
-              <button
-                type="submit"
-                disabled={loading}
-                className="h-[52px] w-full rounded-xl bg-lime-500 hover:bg-lime-600 text-[15px] font-semibold text-lime-ink disabled:opacity-60"
-                style={{ boxShadow: 'var(--shadow-cta-lime)' }}
-              >
-                {loading ? 'Enviando…' : 'Enviar enlace de acceso'}
-              </button>
-            </form>
-          )}
-
-          <p className="text-center text-[12.5px] text-app-faint">Te enviamos un enlace de acceso. Sin contraseña.</p>
 
           <div className="my-1 flex items-center gap-3">
             <span className="h-px flex-1" style={{ background: 'var(--color-app-line)' }} />
@@ -205,6 +146,17 @@ export default function LoginPage() {
           </button>
 
           {error && <p className="text-center text-sm text-cor">{error}</p>}
+
+          {hayContactoTaller && (
+            <a
+              href={whatsappTaller('Hola, no puedo entrar a la app de Doctor Motor.')}
+              target="_blank"
+              rel="noreferrer"
+              className="mx-auto flex h-11 items-center text-[13px] font-medium text-app-muted"
+            >
+              ¿No puedes entrar? Escríbenos por WhatsApp
+            </a>
+          )}
         </div>
       </div>
     </main>
