@@ -614,10 +614,47 @@
     font-weight: 600;
 }
 
-/* ── Insignias: píldora con color al ~12 % y texto pleno ────────────────── */
+/* ── Insignias: píldora con fondo sólido oscuro y texto del color de estado ─
+   Mismos pares texto/fondo que la PWA (docs/05-DESIGN-SYSTEM.md). */
 .fi-badge.fi-color-success {
     background-color: var(--dm-ok-bg) !important;
     color: var(--dm-ok-txt) !important;
+}
+
+.fi-badge.fi-color-primary {
+    background-color: var(--dm-ok-bg) !important;
+    color: #5AE039 !important;
+}
+
+.fi-badge.fi-color-warning {
+    background-color: #3A2808 !important;
+    color: #FCAA2B !important;
+}
+
+.fi-badge.fi-color-danger {
+    background-color: #3A1219 !important;
+    color: #EC485C !important;
+}
+
+.fi-badge.fi-color-info {
+    background-color: #0F2A3D !important;
+    color: #44A8E7 !important;
+}
+
+.fi-badge.fi-color-violet {
+    background-color: #2A2147 !important;
+    color: #B9A2FF !important;
+}
+
+.fi-badge.fi-color-gray,
+.fi-badge:not([class*="fi-color-"]) {
+    background-color: #1D201D !important;
+    color: #ADB1AE !important;
+}
+
+.fi-badge .fi-badge-label,
+.fi-badge .fi-icon {
+    color: inherit !important;
 }
 
 .fi-badge {
