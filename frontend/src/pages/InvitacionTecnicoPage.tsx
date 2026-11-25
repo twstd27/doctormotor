@@ -1,4 +1,4 @@
-import { Eye, EyeSlash, LockSimple, Wrench } from '@phosphor-icons/react'
+import { Eye, EyeSlash, LockSimple } from '@phosphor-icons/react'
 import { useEffect, useState, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ApiError } from '../lib/api'
@@ -52,9 +52,7 @@ export default function InvitacionTecnicoPage() {
     <main className="flex min-h-svh flex-col items-center justify-center bg-app-bg px-[22px] pt-[52px] pb-[34px] text-app-text">
       <div className="dm-in flex w-full max-w-[460px] flex-col items-center gap-[30px]">
         <div className="flex flex-col items-center gap-5">
-          <div className="flex size-[74px] items-center justify-center rounded-[22px] bg-lime-500" style={{ boxShadow: 'var(--shadow-cta-lime)' }}>
-            <Wrench weight="fill" size={38} className="text-lime-ink" />
-          </div>
+          <img src="/favicon.svg" alt="Doctor Motor" className="size-[74px] rounded-[22px]" style={{ boxShadow: 'var(--shadow-cta-lime)' }} />
           <div className="flex flex-col items-center gap-2 text-center">
             <h1 className="text-[30px] leading-[1.1] font-semibold tracking-[-0.03em]">Doctor Motor</h1>
             {invitacion && (

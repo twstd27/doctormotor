@@ -1,4 +1,4 @@
-import { Envelope, Eye, EyeSlash, GoogleLogo, LockSimple, Wrench } from '@phosphor-icons/react'
+import { Envelope, Eye, EyeSlash, GoogleLogo, LockSimple } from '@phosphor-icons/react'
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api, ApiError } from '../lib/api'
@@ -57,12 +57,12 @@ export default function LoginPage() {
               className="absolute size-[82px] animate-[dmPulse_3.6s_ease-in-out_infinite] rounded-[24px]"
               style={{ background: 'rgba(68, 214, 44,.16)' }}
             />
-            <div
-              className="relative flex size-[74px] items-center justify-center rounded-[22px] bg-lime-500"
+            <img
+              src="/favicon.svg"
+              alt="Doctor Motor"
+              className="relative size-[74px] rounded-[22px]"
               style={{ boxShadow: 'var(--shadow-cta-lime)' }}
-            >
-              <Wrench weight="fill" size={38} className="text-lime-ink" />
-            </div>
+            />
           </div>
           <div className="flex flex-col items-center gap-2 text-center">
             <h1 className="text-[30px] leading-[1.1] font-semibold tracking-[-0.03em]">Doctor Motor</h1>
@@ -132,31 +132,19 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <button type="button" className="mx-auto flex h-11 items-center text-[13px] font-medium text-app-muted">
-            ¿Olvidaste tu contraseña?
-          </button>
-
-          <div className="my-1 flex items-center gap-3">
-            <span className="h-px flex-1" style={{ background: 'var(--color-app-line)' }} />
-            <span className="text-[11.5px] text-app-faint">¿No tienes cuenta?</span>
-            <span className="h-px flex-1" style={{ background: 'var(--color-app-line)' }} />
-          </div>
-          <button type="button" className="mx-auto h-11 text-[13px] font-semibold text-lime-txt">
-            Regístrate
-          </button>
-
-          {error && <p className="text-center text-sm text-cor">{error}</p>}
-
+          {/* Sin recuperación automática: se le pide al taller por WhatsApp (el cajero/admin cambia la contraseña). */}
           {hayContactoTaller && (
             <a
-              href={whatsappTaller('Hola, no puedo entrar a la app de Doctor Motor.')}
+              href={whatsappTaller('Hola, olvidé mi contraseña.')}
               target="_blank"
               rel="noreferrer"
               className="mx-auto flex h-11 items-center text-[13px] font-medium text-app-muted"
             >
-              ¿No puedes entrar? Escríbenos por WhatsApp
+              ¿Olvidaste tu contraseña?
             </a>
           )}
+
+          {error && <p className="text-center text-sm text-cor">{error}</p>}
         </div>
       </div>
     </main>
