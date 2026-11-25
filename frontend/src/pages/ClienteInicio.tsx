@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import AppShell, { iniciales } from '../components/AppShell'
-import { Placa, ProgresoEstados, etiquetaEstado, pasoDe, saludo } from '../components/ui'
+import { Placa, ProgresoEstados, SubtituloMarca, etiquetaEstado, fechaCorta, pasoDe, saludo } from '../components/ui'
 import { historialEstados, misOrdenesTrabajo, misVehiculos } from '../lib/garaje'
 import { ESTADOS, type Estado } from '../lib/ordenesTrabajo'
 import { hayContactoTaller, llamarTaller, whatsappTaller } from '../lib/taller'
@@ -49,7 +49,7 @@ export default function ClienteInicio() {
   return (
     <AppShell
       title={`Hola, ${saludo(user.nombre)}`}
-      subtitle="Doctor Motor · Mustang's Garage"
+      subtitle={<SubtituloMarca>{fechaCorta()}</SubtituloMarca>}
       rightAction={
         <span className="flex size-11 items-center justify-center rounded-full bg-lime-500/15 text-sm font-bold text-lime-500">
           {iniciales(user.nombre)}

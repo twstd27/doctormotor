@@ -1,4 +1,25 @@
+import type { ReactNode } from 'react'
 import { ESTADOS, TONO_CLASES, TONO_ESTADO, type Estado } from '../lib/ordenesTrabajo'
+
+/** Palabra de marca «DOCTOR MOTOR» para la línea bajo el saludo. */
+export function Marca() {
+  return (
+    <span className="dm-marca">
+      Doctor <b>Motor</b>
+    </span>
+  )
+}
+
+/** Subtítulo de las pantallas de inicio: marca · texto (fecha, resumen…). */
+export function SubtituloMarca({ children }: { children: ReactNode }) {
+  return (
+    <span className="flex items-center gap-2.5">
+      <Marca />
+      <span aria-hidden="true">·</span>
+      <span className="min-w-0 truncate">{children}</span>
+    </span>
+  )
+}
 
 export function Placa({ placa, className = '' }: { placa: string; className?: string }) {
   return <span className={`dm-plate text-[12px] ${className}`}>{placa}</span>

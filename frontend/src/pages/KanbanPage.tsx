@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { CaretRight } from '@phosphor-icons/react'
 import { Link, Navigate } from 'react-router-dom'
 import AppShell from '../components/AppShell'
-import { Placa } from '../components/ui'
+import { Placa, SubtituloMarca } from '../components/ui'
 import { ESTADOS, TONO_CLASES, TONO_ESTADO, antiguedad, listarOrdenesTrabajo } from '../lib/ordenesTrabajo'
 import { useAuthStore } from '../store/auth'
 
@@ -28,7 +28,7 @@ export default function KanbanPage() {
   return (
     <AppShell
       title="Tablero"
-      subtitle={`${activas.filter((o) => o.estado !== 'entregado').length} órdenes en curso`}
+      subtitle={<SubtituloMarca>{activas.filter((o) => o.estado !== 'entregado').length} órdenes en curso</SubtituloMarca>}
     >
       {isLoading && <p className="text-sm text-app-muted">Cargando…</p>}
 

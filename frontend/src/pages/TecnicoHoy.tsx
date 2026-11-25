@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import AppShell, { iniciales } from '../components/AppShell'
-import { EstadoBadge, Placa, ProgresoEstados, etiquetaEstado, fechaCorta, pasoDe, saludo } from '../components/ui'
+import { EstadoBadge, Placa, ProgresoEstados, etiquetaEstado, fechaCorta, pasoDe, saludo, SubtituloMarca } from '../components/ui'
 import { ESTADOS, antiguedad, listarOrdenesTrabajo, type OrdenTrabajo } from '../lib/ordenesTrabajo'
 import { useAuthStore } from '../store/auth'
 
@@ -58,7 +58,7 @@ export default function TecnicoHoy() {
   return (
     <AppShell
       title={`Hola, ${saludo(user.nombre)}`}
-      subtitle={fechaCorta()}
+      subtitle={<SubtituloMarca>{fechaCorta()}</SubtituloMarca>}
       rightAction={
         <span className="flex size-11 items-center justify-center rounded-full bg-cya-bg text-sm font-bold text-cya">
           {iniciales(user.nombre)}

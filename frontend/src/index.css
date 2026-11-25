@@ -107,6 +107,9 @@ body {
 .dm-card { background: var(--color-app-surface); border: 1px solid var(--color-app-line); border-radius: 16px; padding: 16px; }
 .dm-lab { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--color-app-faint); }
 .dm-display { font-family: var(--font-display); letter-spacing: -0.01em; }
+/* Marca en la línea de fecha: Archivo 800 ancho 118 %, «MOTOR» en verde de marca */
+.dm-marca { font-family: 'Archivo Variable', var(--font-display); font-weight: 800; font-size: 12px; font-stretch: 118%; letter-spacing: .16em; text-transform: uppercase; color: var(--color-app-text); white-space: nowrap; }
+.dm-marca b { font-weight: 800; color: var(--color-lime-500); }
 .dm-plate { font-family: var(--font-mono); font-weight: 600; letter-spacing: .06em; background: #EAEEEA; color: #151815; border-radius: 6px; padding: 2px 8px; border: 1px solid #D0D4D1; }
 .dm-prog { display: flex; gap: 4px; }
 .dm-prog span { flex: 1; height: 5px; border-radius: 3px; background: #262926; }
