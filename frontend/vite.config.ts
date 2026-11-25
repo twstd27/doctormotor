@@ -10,7 +10,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png'],
+      includeAssets: ['assets/icons/icon-192.png', 'assets/icons/icon-512.png', 'assets/icons/maskable-512.png'],
       manifest: {
         name: "Doctor Motor · Mustang's Garage",
         short_name: 'Doctor Motor',
@@ -19,9 +19,9 @@ export default defineConfig({
         background_color: '#0D100D',
         theme_color: '#0D100D',
         icons: [
-          { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
-          { src: '/icons/maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: '/assets/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+          { src: '/assets/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: '/assets/icons/maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
       workbox: {
